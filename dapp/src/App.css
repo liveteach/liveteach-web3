@@ -1,0 +1,10 @@
+.tabColor{
+    color: white !important;
+}
+
+.tableContainer{
+    background-color: #242129;
+    border-radius: 10px;
+    padding: 2%;
+    margin: 1% 0;
+}

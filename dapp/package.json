@@ -1,0 +1,53 @@
+{
+  "name": "vcll-dapp",
+  "version": "1.0.0",
+  "description": "dApp to provide Vegas City Contributions.",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "@alch/alchemy-web3": "^1.1.4",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@fontsource/roboto": "^4.5.1",
+    "@mui/material": "^5.0.2",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
+    "classnames": "^2.2.6",
+    "decentraland-ui": "^4.6.0",
+    "lodash": "^4.17.15",
+    "node-sass": "^4.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-ga": "^2.7.0",
+    "react-redux": "^8.1.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@material-ui/core": "^4.12.3",
+    "ajv": "^7.2.4",
+    "dotenv": "^8.6.0"
+  }
+}
