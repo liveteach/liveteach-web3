@@ -8,7 +8,7 @@ const Logo = ({ className, ...props }) => {
   return (
     <div {...props} className={classes}>
         <Link to="#">
-          <img className={"logo"} src="vegas-city-logo-no-text.png" alt="Open" width="40px" />
+          <img className={"logo"} src="DCLULogo.png" alt="Open" width="40px" />
         </Link>
     </div>
   );
