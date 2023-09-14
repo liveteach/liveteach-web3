@@ -1,4 +1,3 @@
-import { pinJSONToIPFS } from "./pinata";
 import {
   walletStatus_Connected,
   walletStatus_ReloadPage,

@@ -1,7 +1,7 @@
-import React, {useEffect} from "react";
+import React  from "react";
 import { Route, Redirect } from "react-router-dom";
 
-import { userCheck,checkConnectedWalletAddress } from "./AuthCheck";
+import { checkConnectedWalletAddress } from "./AuthCheck";
 
 const AppRouteAdmin = ({
                                  component: Component,
@@ -9,7 +9,6 @@ const AppRouteAdmin = ({
                                  isPrivate,
                                  ...rest
                              }) => {
-    Layout = Layout === undefined ? (props) => <>{props.children}</> : Layout;
 
     const authCheck = checkConnectedWalletAddress()
 
@@ -26,7 +25,7 @@ const AppRouteAdmin = ({
         );
     } else if (!isPrivate || authCheck.auth) {
         return(
-            <Redirect to="/home"/>
+            <Redirect to="/student"/>
         )
 
     } else {

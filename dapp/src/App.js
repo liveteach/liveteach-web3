@@ -15,6 +15,12 @@ import {checkConnectedWalletAddress, userCheck} from "./utils/AuthCheck";
 import {setIsPrivate} from "./store/adminUser";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
+import AppRouteAdmin from "./utils/AppRouteAdmin";
+import ClassroomAdmin from "./components/sections/ClassroomAdmin";
+import LandOperator from "./components/sections/LandOperator";
+import Student from "./components/sections/Student";
+import Teacher from "./components/sections/Teacher";
+import {Test} from "./components/sections/Test";
 
 const App = () => {
   const history = useHistory();
@@ -28,7 +34,7 @@ const App = () => {
   useEffect(() => {
     const auth = checkConnectedWalletAddress();
     if (auth.auth) {
-      history.push("/home");
+      history.push("/student");
     } else {
       history.push("/login");
     }
@@ -41,7 +47,7 @@ const App = () => {
   })
   return (
       <Switch>
-        {/* route to contributors */}
+        {/* route to home */}
           <AppRoute
               exact
               path="/home"
@@ -56,15 +62,38 @@ const App = () => {
             layout={LayoutLogIn}
         />
 
+        {/*common routes*/}
+
+        <AppRoute
+            exact
+            path="/student"
+            component={Student}
+            layout={LayoutDefault}
+        />
+
+        <AppRoute
+            exact
+            path="/teacher"
+            component={Test}
+            layout={LayoutDefault}
+        />
+
         {/* private Routes */}
 
-          {/*<AppRouteAdmin*/}
-          {/*    exact*/}
-          {/*    path="/contributoradmin"*/}
-          {/*    isPrivate={isPrivate}*/}
-          {/*    component={Home}*/}
-          {/*    layout={LayoutDefault}*/}
-          {/*/>*/}
+          <AppRouteAdmin
+              exact
+              path="/classadmin"
+              isPrivate={isPrivate}
+              component={ClassroomAdmin}
+              layout={LayoutDefault}
+          />
+          <AppRouteAdmin
+              exact
+              path="/operator"
+              isPrivate={isPrivate}
+              component={LandOperator}
+              layout={LayoutDefault}
+          />
 
 
           <AppRoute

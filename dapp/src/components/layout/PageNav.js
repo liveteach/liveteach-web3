@@ -14,22 +14,38 @@ export default function PageNav({
             <div className="dcl tabs">
                 <div className="ui container">
                     <div className="dcl tabs-left">
-                        {/*<Link  to={"/contributors"} >*/}
-                        {/*    <div className="dcl tab active tabColor">*/}
-                        {/*        Contributors*/}
-                        {/*    </div>*/}
-                        {/*</Link>*/}
-                        {/*{*/}
-                        {/*    !isPrivate ? (*/}
-                        {/*    <Link to={"/contributoradmin"} >*/}
-                        {/*        <div className="dcl tab tabColor">*/}
-                        {/*            Contributor Admin*/}
-                        {/*        </div>*/}
-                        {/*    </Link>*/}
-                        {/*) : (*/}
-                        {/*    ""*/}
-                        {/*    )*/}
-                        {/*}*/}
+                        <Link  to={"/student"} >
+                            <div className="dcl tab active tabColor">
+                                Student
+                            </div>
+                        </Link>
+                        <Link  to={"/teacher"} >
+                            <div className="dcl tab active tabColor">
+                                Teacher
+                            </div>
+                        </Link>
+                        {
+                            !isPrivate ? (
+                            <Link to={"/classadmin"} >
+                                <div className="dcl tab tabColor">
+                                    Class Admin
+                                </div>
+                            </Link>
+                        ) : (
+                            ""
+                            )
+                        }
+                        {
+                            !isPrivate ? (
+                                <Link to={"/operator"} >
+                                    <div className="dcl tab tabColor">
+                                        Land Operator
+                                    </div>
+                                </Link>
+                            ) : (
+                                ""
+                            )
+                        }
 
                     </div>
                 </div>

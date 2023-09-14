@@ -1,6 +1,7 @@
 import {Button} from "@mui/material";
 import {Modal, Typography} from "@material-ui/core";
 import {useState} from "react";
+import DateAndTimePicker from "../elements/DateAndTimePicker";
 
 const style = {
     position: 'absolute',
@@ -37,13 +38,13 @@ export function Test(props){
                     <div className="ui page modals dimmer transition visible active SignIn center" >
                         <div className="ui modal transition visible active " style={style}>
                             <Typography className="dcl modal-navigation" variant="h6" component="h2">
-                                Text in a modal
+                                Select Date
                             </Typography>
                             <div className="dcl modal-navigation-button modal-navigation-close" onClick={handleClose}>
                             </div>
-                            <Typography className="content" sx={{ mt: 2 }}>
-                                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                            </Typography>
+                            <div className="content" >
+                                <DateAndTimePicker />
+                            </div>
                         </div>
                     </div>
                 </Modal>
