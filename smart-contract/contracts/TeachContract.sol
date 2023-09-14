@@ -8,90 +8,221 @@ bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN");
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
 contract TeachContract is AccessControl {
+    mapping(address => uint256[]) private classroomAdminLandIds;
+
     constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function addStudent(
+    function grantStudentRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(STUDENT, walletAddress);
     }
 
-    function addTeacher(
+    function grantTeacherRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(TEACHER, walletAddress);
     }
 
-    function addClassroomAdmin(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(CLASSROOM_ADMIN, walletAddress);
-    }
-
-    function addLandOperator(
+    function grantLandOperatorRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(LAND_OPERATOR, walletAddress);
     }
 
-    function removeStudent(
+    function revokeStudentRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(STUDENT, walletAddress);
     }
 
-    function removeTeacher(
+    function revokeTeacherRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(TEACHER, walletAddress);
     }
 
-    function removeClassroomAdmin(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(CLASSROOM_ADMIN, walletAddress);
-    }
-
-    function removeLandOperator(
+    function revokeLandOperatorRole(
         address walletAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(LAND_OPERATOR, walletAddress);
     }
 
-    function onlyStudentCanCall() public view onlyRole(STUDENT) returns (uint) {
-        return 1;
+    // classroom admin
+
+    // create
+
+    function grantClassroomAdminRole(
+        address walletAddress
+    )
+        private
+    // onlyRole(LAND_OPERATOR) TODO: this function has been opened up to
+    //                              allow anyone to call for development purposes.
+    //                              This role restriction MUST be re-added before
+    //                              going into anything resembling a production
+    //                              environment.
+    {
+        require(
+            !hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is already CLASSROOM_ADMIN"
+        );
+        grantRole(CLASSROOM_ADMIN, walletAddress);
     }
 
-    function onlyTeacherCanCall() public view onlyRole(TEACHER) returns (uint) {
-        return 2;
+    function createClassroomAdmin(
+        address walletAddress,
+        uint256[] calldata landIds
+    )
+        public
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        require(
+            !hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is already CLASSROOM_ADMIN"
+        );
+        grantClassroomAdminRole(walletAddress);
+        addClassroomAdminLandIds(walletAddress, landIds);
     }
 
-    function onlyClassroomAdminCanCall()
+    // read
+    function isClassroomAdmin(
+        address walletAddress
+    )
         public
         view
-        onlyRole(CLASSROOM_ADMIN)
-        returns (uint)
+        returns (bool)
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
     {
-        return 3;
+        return hasRole(CLASSROOM_ADMIN, walletAddress);
     }
 
-    function onlyLandOperatorCanCall()
+    function getClassroomAdminLandIds(
+        address walletAddress
+    )
         public
         view
-        onlyRole(LAND_OPERATOR)
-        returns (uint)
+        returns (uint256[] memory)
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
     {
-        return 4;
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        return classroomAdminLandIds[walletAddress];
     }
 
-    function onlyAdminCanCall()
-        public
-        view
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (uint)
+    // update
+
+    function addClassroomAdminLandId(
+        address walletAddress,
+        uint256 landId
+    )
+        private
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
     {
-        return 5;
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        classroomAdminLandIds[walletAddress].push(landId);
+    }
+
+    function addClassroomAdminLandIds(
+        address walletAddress,
+        uint256[] calldata landIds
+    )
+        public
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        for (uint i = 0; i < landIds.length; i++) {
+            addClassroomAdminLandId(walletAddress, landIds[i]);
+        }
+    }
+
+    // dev - Removes the entire entry from the mapping.  Use with caution.
+    function deleteFromClassroomAdminLandIds(address walletAddress) private {
+        // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+
+        delete classroomAdminLandIds[walletAddress];
+    }
+
+    function removeAllClassroomAdminLandIds(address walletAddress) public {
+        // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        classroomAdminLandIds[walletAddress] = new uint256[](0);
+    }
+
+    function removeClassroomAdminLandId(
+        address walletAddress,
+        uint256 landId
+    )
+        private
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        for (
+            uint256 i = 0;
+            i < classroomAdminLandIds[walletAddress].length;
+            i++
+        ) {
+            uint256 currentLandId = classroomAdminLandIds[walletAddress][i];
+            if (landId == currentLandId) {
+                // Move the last element into the place to delete
+                classroomAdminLandIds[walletAddress][i] = classroomAdminLandIds[
+                    walletAddress
+                ][classroomAdminLandIds[walletAddress].length - 1];
+                // Remove the last element
+                classroomAdminLandIds[walletAddress].pop();
+                break;
+            }
+        }
+    }
+
+    function removeClassroomAdminLandIds(
+        address walletAddress,
+        uint256[] calldata landIds
+    )
+        public
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        for (uint i = 0; i < landIds.length; i++) {
+            removeClassroomAdminLandId(walletAddress, landIds[i]);
+        }
+    }
+
+    // delete
+
+    function removeClassroomAdmin(
+        address walletAddress
+    )
+        public
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        require(
+            hasRole(CLASSROOM_ADMIN, walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+        deleteFromClassroomAdminLandIds(walletAddress);
+        revokeRole(CLASSROOM_ADMIN, walletAddress);
     }
 }
