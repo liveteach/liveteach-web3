@@ -4,6 +4,7 @@ describe("TeachContract", function () {
   let owner;
   let otherUser;
   let teachContract;
+  let randomWallet = "0xAA14f5F645273Aa6411995Bf8F02557B7C74a154";
 
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
@@ -12,96 +13,121 @@ describe("TeachContract", function () {
     otherUser = accounts[1];
   })
 
-  // admin
-
-  it("Only admin can call", async function () {
-    let result = await teachContract.connect(owner).onlyAdminCanCall();
-    assert.equal(5, result);
+  it("Can create classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    let result = await teachContract.connect(owner).isClassroomAdmin(otherUser);
+    assert.equal("true", result.toString()); // string conversion to assert actual true rather than truthy value
   });
 
-  it("Non admin can't call", async function () {
-    await teachContract.connect(owner).addStudent(otherUser);
+  it("Can add land to existing classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    let result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(4, result.length);
+    assert.equal(1, result[0]);
+    assert.equal(2, result[1]);
+    assert.equal(3, result[2]);
+    assert.equal(4, result[3]);
+    await teachContract.connect(owner).addClassroomAdminLandIds(otherUser, [5, 6]);
+    result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(6, result.length);
+    assert.equal(1, result[0]);
+    assert.equal(2, result[1]);
+    assert.equal(3, result[2]);
+    assert.equal(4, result[3]);
+    assert.equal(5, result[4]);
+    assert.equal(6, result[5]);
+  });
+
+  it("Can remove specific land from existing classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    let result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(4, result.length);
+    await teachContract.connect(owner).removeClassroomAdminLandIds(otherUser, [2, 4]);
+    result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(2, result.length);
+    assert.equal(1, result[0]);
+    assert.equal(3, result[1]);
+  });
+
+  it("Can remove all land from existing classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    let result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(4, result.length);
+    await teachContract.connect(owner).removeAllClassroomAdminLandIds(otherUser);
+    result = await teachContract.connect(owner).getClassroomAdminLandIds(otherUser);
+    assert.equal(0, result.length);
+  });
+
+  it("Can remove existing classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    let result = await teachContract.connect(owner).isClassroomAdmin(otherUser);
+    assert.equal("true", result.toString());
+    await teachContract.connect(owner).removeClassroomAdmin(otherUser);
+    result = await teachContract.connect(owner).isClassroomAdmin(otherUser);
+    assert.equal("false", result.toString());
+  });
+
+  it("Can't create classroom admin if already classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     try {
-      await teachContract.connect(otherUser).onlyAdminCanCall();
+      await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     }
     catch {
       return;
     }
-    assert.fail("Calling onlyAdminCanCall as a non admin doesn't fail!");
+    assert.fail("Create classroom admin can be called twice for the same wallet");
   });
 
-  // student
-
-  it("Only student can call", async function () {
-    await teachContract.connect(owner).addStudent(otherUser);
-    let result = await teachContract.connect(otherUser).onlyStudentCanCall();
-    assert.equal(1, result);
-  });
-
-  it("Non student can't call", async function () {
-    await teachContract.connect(owner).addStudent(otherUser);
+  it("Can't add land to non classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     try {
-      await teachContract.connect(owner).onlyStudentCanCall();
+      await teachContract.connect(owner).addClassroomAdminLandIds(randomWallet, [5, 6]);
     }
     catch {
       return;
     }
-    assert.fail("Calling onlyStudentCanCall as a non student doesn't fail!");
+    assert.fail("Can't add land to non classroom admin");
   });
 
-  // teacher
-  
-  it("Only teacher can call", async function () {
-    await teachContract.connect(owner).addTeacher(otherUser);
-    let result = await teachContract.connect(otherUser).onlyTeacherCanCall();
-    assert.equal(2, result);
-  });
-
-  it("Non teacher can't call", async function () {
-    await teachContract.connect(owner).addClassroomAdmin(otherUser);
+  it("Can't remove specific land from non classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     try {
-      await teachContract.connect(otherUser).onlyTeacherCanCall();
+      await teachContract.connect(owner).removeClassroomAdminLandIds(randomWallet, [2, 4]);
     }
     catch {
       return;
     }
-    assert.fail("Calling onlyTeacherCanCall as a non teacher doesn't fail!");
+    assert.fail("Can't remove specific land from non classroom admin");
   });
 
-  // classroom admin
-
-  it("Only classroom admin can call", async function () {
-    await teachContract.connect(owner).addClassroomAdmin(otherUser);
-    let result = await teachContract.connect(otherUser).onlyClassroomAdminCanCall();
-    assert.equal(3, result);
-  });
-
-  it("Non classroom admin can't call", async function () {
-    await teachContract.connect(owner).addLandOperator(otherUser);
+  it("Can't remove all land from non classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     try {
-      await teachContract.connect(otherUser).onlyClassroomAdminCanCall();
+      await teachContract.connect(owner).removeAllClassroomAdminLandIds(randomWallet);
     }
     catch {
       return;
     }
-    assert.fail("Calling onlyClassroomAdminCanCall as a non classroom admin doesn't fail!");
+    assert.fail("Can't remove all land from non classroom admin");
   });
 
-  // land operator
-
-  it("Only land operator can call", async function () {
-    await teachContract.connect(owner).addLandOperator(otherUser);
-    let result = await teachContract.connect(otherUser).onlyLandOperatorCanCall();
-    assert.equal(4, result);
-  });
-
-  it("Non land operator can't call", async function () {
+  it("Can't remove non classroom admin", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     try {
-      await teachContract.connect(owner).onlyLandOperatorCanCall();
+      await teachContract.connect(owner).removeClassroomAdmin(randomWallet);
     }
     catch {
       return;
     }
-    assert.fail("Calling onlyLandOperatorCanCall as a non land operator doesn't fail!");
+    assert.fail("Can't remove non classroom admin");
   });
+
+
+
+  // can't add same land twice
+
+
+
+  // it("Can create classroom admin with zero land ids", async function () {
+  // });
 });
