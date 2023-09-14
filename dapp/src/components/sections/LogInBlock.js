@@ -4,9 +4,8 @@ import classNames from "classnames";
 import { SectionTilesProps } from "../../utils/SectionProps";
 import SectionHeader from "./partials/SectionHeader";
 import { connectWallet, getCurrentWalletConnected } from "../../utils/interact";
-import { Box, Button, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import {
-  walletStatus_Error,
   walletStatus_Connected,
 } from "../../utils/constants";
 import {Modal} from "@material-ui/core";
@@ -54,7 +53,7 @@ const LogInBlock = ({
     setWalletAddress(address);
     setWalletStatus({ status, message });
     if (status === walletStatus_Connected) {
-      history.push("/home");
+      history.push("/student");
     }
   }, []);
 
@@ -63,7 +62,7 @@ const LogInBlock = ({
     setWalletAddress(address);
     setWalletStatus({ status, message });
     if (status === walletStatus_Connected) {
-      history.push("/home");
+      history.push("/student");
     } else {
       console.log("Opening modal")
       handleOpen()

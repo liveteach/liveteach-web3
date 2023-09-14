@@ -1,4 +1,3 @@
-import {getContributorAdmin} from './interact';
 
 export const checkConnectedWalletAddress = () => {
   if (window?.ethereum?.selectedAddress) {

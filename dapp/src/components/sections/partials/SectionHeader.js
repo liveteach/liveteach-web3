@@ -39,7 +39,7 @@ const SectionHeader = ({
               <div className="container-logo">
                 <img
                   className="profile-photo"
-                  src="./vegas-city-logo.png"
+                  src="./DCLULogo.png"
                   alt={"Carlie Anglemire"}
                 />
               </div>
