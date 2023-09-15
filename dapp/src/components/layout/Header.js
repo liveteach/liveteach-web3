@@ -6,7 +6,8 @@ import Logo from "./partials/Logo";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import {setAvatar, setName, setWalletAddress} from "../../store/adminUser";
-import {getCurrentWalletConnected} from "../../utils/interact";
+import {connectWallet, getCurrentWalletConnected} from "../../utils/interact";
+import {walletStatus_Connected} from "../../utils/constants";
 
 const propTypes = {
   authenticated: PropTypes.bool,
@@ -21,7 +22,7 @@ const Header = ({
                   ...props
                 }) => {
 
-  const { avatar,name } = useSelector((state) => state.adminUser);
+  const { avatar,name,auth } = useSelector((state) => state.adminUser);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null)
@@ -47,11 +48,15 @@ const Header = ({
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
+
+
   }, [isMenuOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+
 
   const getProfile = async (address) => {
     if(address){
@@ -69,8 +74,7 @@ const Header = ({
 
   return (
       <header className="dcl navbar fullscreen">
-        {authenticated && (
-            <>
+         <>
               <nav
                   className="ui container"
               >
@@ -82,11 +86,14 @@ const Header = ({
                     <div className="item tabColor">
                       <Link to={"/FAQ"} ><span className="tabColor">FAQ</span></Link>
                     </div>
+                    <div className="item tabColor">
+                      <Link to={"/docs/page1"} ><span className="tabColor">DOCS</span></Link>
+                    </div>
                   </div>
 
                 </div>
 
-                {authenticated && (
+                {auth ? (
                     <div className="dcl navbar-account">
                       <Button
                           className="ui small basic button"
@@ -136,10 +143,19 @@ const Header = ({
                       </div>
                     </div>
 
+                ) : (
+                    <div className="dcl navbar-account">
+                      <Button
+                          className="ui small basic button"
+                          size="small"
+                          variant="contained"
+                      >
+                        <Link to={'/login'}>LOGIN</Link>
+                      </Button>
+                    </div>
                 )}
               </nav>
             </>
-        )}
       </header>
   );
 };
