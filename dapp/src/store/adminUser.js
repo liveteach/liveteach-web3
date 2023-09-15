@@ -6,7 +6,7 @@ export const adminUserSlice = createSlice({
         walletAddress: "",
         name: "",
         avatar: "",
-        isPrivate: true,
+        isPrivate: false,
         auth: false
     },
     reducers: {
