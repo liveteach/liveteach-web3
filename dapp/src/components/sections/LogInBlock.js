@@ -79,7 +79,7 @@ const LogInBlock = ({
   );
 
   const sectionHeader = {
-    title: "Vegas City",
+    title: "Welcome To DCLU",
     paragraph: "Please connect your metamask.",
   };
 

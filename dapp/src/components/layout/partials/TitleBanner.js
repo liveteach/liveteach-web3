@@ -12,7 +12,7 @@ const TitleBanner = ({ className, ...props }) => {
         <Link to="/">
           <Image
             src="title-banner.png"
-            alt="Vegas City NFT"
+            alt="DCLU"
             width={800}
             height={94}
           />

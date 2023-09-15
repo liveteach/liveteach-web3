@@ -1,7 +1,7 @@
 {
-  "name": "vcll-dapp",
+  "name": "DCLU-dapp",
   "version": "1.0.0",
-  "description": "dApp to provide Vegas City Contributions.",
+  "description": "DCLU dApp.",
   "main": "index.js",
   "private": true,
   "dependencies": {
