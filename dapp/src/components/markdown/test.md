@@ -33,6 +33,3 @@ _You **can** combine them_
   1. Item 3a
   1. Item 3b
 
-## Images
-
-![This is an alt text.](../public/vegas-city-logo.png "This is a sample image.")
