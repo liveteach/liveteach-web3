@@ -94,7 +94,7 @@ const App = () => {
 
           <AppRouteAdmin
               exact
-              path="/classadmin"
+              path="/classroomadmin"
               isPrivate={isPrivate}
               component={ClassroomAdmin}
               layout={LayoutDefault}

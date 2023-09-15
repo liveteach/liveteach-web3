@@ -1,5 +1,5 @@
-import {Divider} from "decentraland-ui";
-import Link from "react-router-dom/es/Link";
+
+import {Link} from "react-router-dom";
 
 export default function ClassroomAdmin(props){
 
