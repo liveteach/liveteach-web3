@@ -1,5 +1,6 @@
 import pageOne from '../markdown/test.md'
 import pageTwo from '../markdown/newTest.md'
+import pageThree from '../markdown/thirdTest.md'
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
 import React, {useEffect, useState} from "react";
@@ -9,6 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import { setMarkdown, setActivePage } from "../../store/docsState";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
+import menuData from '../../resource/menuData.json';
 
 export function DOCS(props){
 
@@ -30,12 +32,22 @@ export function DOCS(props){
     const markdownContent = {
         page1: pageOne,
         page2: pageTwo,
+        page3: pageThree
     };
 
     const handlePageSwitch = (e, page) => {
         console.log(page)
         setActivePage(page);
     };
+
+    const handleDropdown = (id) => {
+        let currentClass = document.getElementById(id).className
+        if(currentClass === "dropDownHidden"){
+            document.getElementById(id).className = "dropDownShow"
+        } else {
+            document.getElementById(id).className = "dropDownHidden"
+        }
+    }
 
     return(
         <>
@@ -44,22 +56,45 @@ export function DOCS(props){
                 <main>
                     <div className="ui container">
                         <Grid container>
-                            <Grid item xs={2}>
+                            <Grid item xs={3}>
                                 <aside className="book-menu sidebar">
                                     <div className="book-menu-content">
                                         <ul>
-                                        {Object.keys(markdownContent).map((page) => (
-                                            <li key={"li" + page}>
-                                                <Link to={`/docs/${page}`} style={{color: 'white'}} key={page} onClick={(e) => handlePageSwitch(e,page)}>
-                                                    {page}
-                                                </Link>
-                                            </li>
-                                        ))}
+                                            {
+                                                menuData.map(item => (
+                                                    <div key={"heading" + item.id}>
+                                                        <h3 style={{textAlign: 'left'}}>{item.heading}</h3>
+                                                        {
+                                                            item.menuItems.map(link => (
+                                                                <li key={link.id}>
+                                                                    <Link style={{color: 'white'}} to={link.link}
+                                                                          key={link.label} onClick={(e) => {
+                                                                        if (link.subMenu) {
+                                                                            e.preventDefault();
+                                                                            handlePageSwitch(e, link.label);
+                                                                            handleDropdown("subMenu"+link.id);
+                                                                        }
+                                                                        }}>{link.label}</Link>
+                                                                        {link.subMenu && (
+                                                                            <ul key={link.subMenu + link.id} className={"dropDownHidden"} id={"subMenu"+link.id}>
+                                                                                {link.subMenu.map(subItem => (
+                                                                                    <li key={subItem.id}>
+                                                                                        <Link style={{color: 'white'}}
+                                                                                              to={subItem.link} key={link.label}
+                                                                                              onClick={(e) => handlePageSwitch(e, link.label)}>{subItem.label}</Link>
+                                                                                    </li>
+                                                                                ))}
+                                                                            </ul>
+                                                                    )}
+                                                            </li>
+                                                            ))}
+                                                    </div>
+                                                ))}
                                         </ul>
                                     </div>
                                 </aside>
                             </Grid>
-                            <Grid item xs={10}>
+                            <Grid item xs={9}>
                                 <MarkdownPage content={markdown}/>
                             </Grid>
                         </Grid>
