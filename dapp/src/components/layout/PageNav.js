@@ -26,9 +26,9 @@ export default function PageNav({
                         </Link>
                         {
                             !isPrivate ? (
-                            <Link to={"/classadmin"} >
+                            <Link to={"/classroomadmin"} >
                                 <div className="dcl tab tabColor">
-                                    Class Admin
+                                    Classroom Admin
                                 </div>
                             </Link>
                         ) : (

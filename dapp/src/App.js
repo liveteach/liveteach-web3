@@ -15,11 +15,10 @@ import {checkConnectedWalletAddress} from "./utils/AuthCheck";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
 import AppRouteAdmin from "./utils/AppRouteAdmin";
-import ClassroomAdmin from "./components/sections/ClassroomAdmin";
+import ClassroomAdmin from "./components/sections/classroomAdmin/ClassroomAdmin";
 import LandOperator from "./components/sections/LandOperator";
-import Student from "./components/sections/Student";
-import Teacher from "./components/sections/Teacher";
-import {Test} from "./components/sections/Test";
+import Student from "./components/sections/student/Student";
+import Teacher from "./components/sections/teacher/Teacher";
 import {DOCS} from "./components/sections/DOCS";
 import {Route} from "react-router-dom";
 import {setAuth} from "./store/adminUser";
@@ -84,7 +83,7 @@ const App = () => {
         <AppRoute
             exact
             path="/teacher"
-            component={Test}
+            component={Teacher}
             layout={LayoutDefault}
         />
 

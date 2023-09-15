@@ -12,6 +12,7 @@
     "@fontsource/roboto": "^4.5.1",
     "@mui/material": "^5.14.8",
     "@mui/styled-engine-sc": "^5.14.8",
+    "@mui/styles": "^5.14.9",
     "@mui/x-date-pickers": "^6.12.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.11.4",
@@ -33,7 +34,6 @@
     "rehype-katex": "^6.0.3",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "styled-components": "^6.0.7",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
