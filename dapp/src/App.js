@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import { useLocation, Switch, useHistory} from "react-router-dom";
 import AppRoute from "./utils/AppRoute";
 import {FAQ} from "./components/sections/FAQ";
@@ -11,8 +11,7 @@ import LayoutLogIn from "./layouts/LayoutLogIn";
 import LogIn from "./views/LogIn";
 
 // AuthCheck Utils
-import {checkConnectedWalletAddress, userCheck} from "./utils/AuthCheck";
-import {setIsPrivate} from "./store/adminUser";
+import {checkConnectedWalletAddress} from "./utils/AuthCheck";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
 import AppRouteAdmin from "./utils/AppRouteAdmin";
@@ -21,24 +20,35 @@ import LandOperator from "./components/sections/LandOperator";
 import Student from "./components/sections/Student";
 import Teacher from "./components/sections/Teacher";
 import {Test} from "./components/sections/Test";
+import {DOCS} from "./components/sections/DOCS";
+import {Route} from "react-router-dom";
+import {setAuth} from "./store/adminUser";
 
 const App = () => {
+
   const history = useHistory();
-  let location = useLocation();
-  const {isPrivate} = useSelector((state) => state.adminUser)
+  const location = useLocation();
+  const currentURL = location.pathname;
+
+  const {isPrivate,auth} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
   useEffect(() => {
     document.body.classList.add("is-loaded");
+      dispatch(setAuth(checkConnectedWalletAddress().auth));
   }, [location]);
 
   useEffect(() => {
-    const auth = checkConnectedWalletAddress();
-    if (auth.auth) {
-      history.push("/student");
-    } else {
-      history.push("/login");
-    }
-  }, []);
+
+        if (auth) {
+          history.push("/student");
+        } else {
+            if(currentURL.includes('/docs/')){
+                history.push(currentURL)
+            } else {
+                history.push("/login");
+            }
+        }
+  }, [auth]);
 
   useEffect(async () => {
       // await userCheck().then(result => {
@@ -96,12 +106,17 @@ const App = () => {
           />
 
 
-          <AppRoute
+          <Route
               exact
               path="/FAQ"
               component={FAQ}
-              layout={LayoutDefault}
           />
+          <Route
+              exact
+              path="/docs/:page"
+              component={DOCS}
+          />
+
       </Switch>
   );
 };
