@@ -11,7 +11,7 @@ const FooterNav = ({
         <div
             className="links"
         >
-          <a href="https://www.vegascity.org/" target="_blank">Website</a>
+          <a href="https://www.decentraland.university/" target="_blank">Website</a>
         </div>
       </div>
   );
