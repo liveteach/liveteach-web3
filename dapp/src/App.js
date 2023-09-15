@@ -23,6 +23,7 @@ import {DOCS} from "./components/sections/DOCS";
 import {Route} from "react-router-dom";
 import {setAuth} from "./store/adminUser";
 import {AddTeacher} from "./components/sections/classroomAdmin/AddTeacher";
+import {AddClassroom} from "./components/sections/classroomAdmin/AddClassroom";
 const App = () => {
 
   const history = useHistory();
@@ -101,6 +102,13 @@ const App = () => {
               path="/classroomadmin/teacher"
               isPrivate={isPrivate}
               component={AddTeacher}
+              layout={LayoutDefault}
+          />
+          <AppRouteAdmin
+              exact
+              path="/classroomadmin/class"
+              isPrivate={isPrivate}
+              component={AddClassroom}
               layout={LayoutDefault}
           />
           <AppRouteAdmin
