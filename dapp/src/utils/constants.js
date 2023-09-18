@@ -9,7 +9,7 @@ export const walletStatus_ReloadPage = "YOU DENIED CONNECTION";
 export const walletStatus_Message_ReloadPage =
   "Click top right button to connect metamask.";
 export const walletStatus_Message_Connected =
-  "You connected metamask. You can checkout your owned Flomigo NFT tokens.";
+  "You connected metamask.";
 export const walletStatus_Message_ConnectWallet =
   "🦊 Connect to Metamask using the top right button.";
 export const walletStatus_Message_InstallWallet = (

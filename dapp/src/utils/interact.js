@@ -122,219 +122,112 @@ export const calculateMetamaskValueFromEthereum = (ethereumAmount) => {
   return bnValue.toString(16);
 };
 
-export const getContributorAdmin = async () => {
-  /* public
-   * returns a single wallet address
-   */
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const contributorAdmin = await window.contract.methods
-    .contributorAdmin()
-    .call();
-  return contributorAdmin;
-};
+// classroom admin 
+// create
 
-export const setContributorAdmin = async (walletAddress) => {
-  // only owner
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.setContributorAdmin(walletAddress).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
-};
+export const createClassroomAdmin = async (walletAddress, landIds) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
 
-export const addContributors = async (walletAddresses) => {
-  // only contributor admin
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.addContributors(walletAddresses).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
+  return callGasTransaction(window.contract.methods.createClassroomAdmin, [walletAddress, landIds]);
 };
-
-export const getContributors = async () => {
-  /* public 
-   * returns an array of wallet addresses or an empty array.
-   */
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const contributors = await window.contract.methods
-    .getContributors()
-    .call();
-  return contributors;
-};
-
-export const removeContributors = async (walletAddresses) => {
-  // only contributor admin
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.removeContributors(walletAddresses).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
-};
-
-export const getEntitlements = async () => {
-  /* public 
-   * returns an array of wallet addresses or an empty array.
-   */
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const entitlements = await window.contract.methods
-    .getEntitlements()
-    .call({ from: window.ethereum.selectedAddress });
-  return entitlements;
-};
-
-export const addEntitlements = async (walletAddress, landIds) => {
-  // only contributor admin
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.addEntitlements(walletAddress, landIds).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
-};
-
-export const removeEntitlements = async (walletAddress, landIds) => {
-  // only contributor admin
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.removeEntitlements(walletAddress, landIds).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
-};
-
-export const removeAllEntitlements = async (walletAddress) => {
-  // only contributor admin
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const transactionParameters = {
-    to: contractAddress,
-    from: window.ethereum.selectedAddress,
-    'data': window.contract.methods.removeAllEntitlements(walletAddress).encodeABI()
-  };
-  try {
-    const txHash = await window.ethereum
-      .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
-    }
-  } catch (error) {
-    return {
-      success: false,
-      status: "😥 Something went wrong: " + error.message
-    }
-  }
-};
-
-export const getContributorEntitlementCounts = async () => {
-  /* public 
-   * returns an array of two elements.
-   * rtn[0] is a list of wallet addresses
-   * rtn[1] is a list of entitlement counts
-   * so, walletAddress = rtn[0][0], count = rtn[1][0] etc...
-   */
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const contributorEntitlementCounts = await window.contract.methods
-    .getContributorEntitlementCounts()
-    .call();
-  return contributorEntitlementCounts;
-};
-
-export const getEntitlementsByWalletAddress = async (walletAddress) => {
-  /**
-   * Returns a pair of arrays.
-   * First contains the encoded landIds of the entitlement
-   * Second contains an array twice the length of the first, representing a pair of coordinates
-   * for each id in the first array i.e. [x,y,x,y,x,y...]
-   */
+// read
+export const isLandIdAssigned = async (landId) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
-    .getEntitlementsByWalletAddress(walletAddress).call();
+    .isClassroomAdminAssignedLandId(landId)
+    .call();
   return result;
 };
+
+export const isLandIdsAssigned = async (landIds) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+
+  // checks all included land Ids to see if they're registered
+  // returns false if any are not.
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .isClassroomAdminAssignedLandIds(landIds)
+    .call();
+  return result;
+};
+
+export const isClassroomAdmin = async (walletAddress) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .isClassroomAdmin(walletAddress)
+    .call();
+  return result;
+};
+
+export const getClassroomAdminLandIds = async (walletAddress) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassroomAdminLandIds(walletAddress)
+    .call();
+  return result;
+};
+// update
+export const addClassroomAdminLandIds = async (walletAddress, landIds) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.addClassroomAdminLandIds,
+    [walletAddress, landIds]);
+}; 
+// delete
+export const removeAllClassroomAdminLandIds = async (walletAddress) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.removeAllClassroomAdminLandIds,
+    [walletAddress]);
+};
+
+export const removeClassroomAdminLandIds = async (walletAddress, landIds) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.removeClassroomAdminLandIds,
+    [walletAddress, landIds]);
+};
+
+export const removeClassroomAdmin = async (walletAddress) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.removeClassroomAdmin,
+    [walletAddress]);
+};
+
+// classroom
+// create
+// read
+// update
+// delete
+
+async function callGasTransaction(func, params) {
+  const transactionParameters = {
+    to: contractAddress,
+    from: window.ethereum.selectedAddress,
+    'data': func.apply(this, params).encodeABI()
+  };
+  try {
+    const txHash = await window.ethereum
+      .request({
+        method: 'eth_sendTransaction',
+        params: [transactionParameters],
+      });
+    return {
+      success: true,
+      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: "😥 Something went wrong: " + error.message
+    }
+  }
+}
+
