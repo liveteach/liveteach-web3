@@ -1,6 +1,10 @@
 import {Link} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {Button} from "@mui/material";
 
 export default function ClassroomAdmin(props){
+
+    const { classrooms, classroomIds, teachers, teachersWallets} = useSelector((state) => state.classroomAdmin)
 
     return(
         <div className="ui container">
@@ -32,21 +36,21 @@ export default function ClassroomAdmin(props){
                             </tr>
 
                             {
-                                // sceneIds.map((item, index) => {
-                                //     return (
-                                //         <tr key={`Contributor_${index}`}>
-                                //             {/*<td>*/}
-                                //             {/*    <input type="checkbox"/>*/}
-                                //             {/*</td>*/}
-                                //             <td>
-                                //                 {item}
-                                //             </td>
-                                //             <td>
-                                //                 {coordinates[index]}
-                                //             </td>
-                                //         </tr>
-                                //     );
-                                // })
+                                classrooms.map((item, index) => {
+                                    return (
+                                        <tr key={`Contributor_${index}`}>
+                                            <td>
+                                                {item}
+                                            </td>
+                                            <td>
+                                                {classroomIds[index]}
+                                            </td>
+                                            <td>
+                                                <Button>Remove</Button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             }
                             </tbody>
                         </table>
@@ -80,21 +84,21 @@ export default function ClassroomAdmin(props){
                             </tr>
 
                             {
-                                // sceneIds.map((item, index) => {
-                                //     return (
-                                //         <tr key={`Contributor_${index}`}>
-                                //             {/*<td>*/}
-                                //             {/*    <input type="checkbox"/>*/}
-                                //             {/*</td>*/}
-                                //             <td>
-                                //                 {item}
-                                //             </td>
-                                //             <td>
-                                //                 {coordinates[index]}
-                                //             </td>
-                                //         </tr>
-                                //     );
-                                // })
+                                teachers.map((item, index) => {
+                                    return (
+                                        <tr key={`Contributor_${index}`}>
+                                            <td>
+                                                {item}
+                                            </td>
+                                            <td>
+                                                {teachersWallets[index]}
+                                            </td>
+                                            <td>
+                                                <Button>Remove</Button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             }
                             </tbody>
                         </table>

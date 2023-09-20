@@ -3,8 +3,10 @@ import { createSlice} from "@reduxjs/toolkit";
 export const classroomAdminStateSlice = createSlice({
     name: "class",
     initialState: {
-        classrooms: [],
-        teachers: [],
+        classrooms: ["test", "test2", "test3"],
+        classroomIds: ["1","2","3"],
+        teachers: ["Yoda", "Batman", "Mr Kimble"],
+        teachersWallets: ["0xed6767397324g", "0x8737980h234579df", "0x987432iu45iu239"],
         landParcels: ["100,91","100,92","100,93","100,94","100,95","100,96"],
         imgEndpoint: ""
     },
@@ -12,8 +14,14 @@ export const classroomAdminStateSlice = createSlice({
         setClassrooms: (state, action) => {
             state.classrooms = action.payload
         },
+        setClassRoomIds: (state, action) => {
+            state.classroomIds = action.payload
+        },
         setTeachers: (state, action)=> {
             state.teachers = action.payload
+        },
+        setTeachersWallets: (state, action) => {
+            state.teachersWallets = action.payload
         },
         setLandParcels: ( state, action ) => {
             state.landParcels = action.payload
@@ -24,6 +32,6 @@ export const classroomAdminStateSlice = createSlice({
     }
 });
 
-export const { setClassrooms,setTeachers, setLandParcels, setImgEndpoint } = classroomAdminStateSlice.actions;
+export const { setClassrooms, setClassRoomIds,setTeachers, setTeachersWallets, setLandParcels, setImgEndpoint } = classroomAdminStateSlice.actions;
 
 export default classroomAdminStateSlice.reducer;
