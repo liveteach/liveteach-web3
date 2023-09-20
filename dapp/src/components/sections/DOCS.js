@@ -1,16 +1,13 @@
-import pageOne from '../markdown/test.md'
-import pageTwo from '../markdown/newTest.md'
-import pageThree from '../markdown/thirdTest.md'
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import { setMarkdown, setActivePage } from "../../store/docsState";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import menuData from '../../resource/menuData.json';
+import DocsNav from "../layout/DocsNav";
 
 export function DOCS(props){
 
@@ -20,7 +17,7 @@ export function DOCS(props){
     const dispatch = useDispatch();
 
     useEffect(() => {
-        fetch(markdownContent[activePage]).then(r => r.text()).then(text => {
+        fetch(props.markup[activePage]).then(r => r.text()).then(text => {
             dispatch(setMarkdown(text))
         })
     }, [activePage])
@@ -29,14 +26,7 @@ export function DOCS(props){
         dispatch(setActivePage(params.page))
     })
 
-    const markdownContent = {
-        page1: pageOne,
-        page2: pageTwo,
-        page3: pageThree
-    };
-
     const handlePageSwitch = (e, page) => {
-        console.log(page)
         setActivePage(page);
     };
 
@@ -52,22 +42,22 @@ export function DOCS(props){
     return(
         <>
         <Header authenticated />
-            <div className="dcl tabs" />
+            <DocsNav />
                 <main>
                     <div className="ui container">
                         <Grid container>
                             <Grid item xs={3}>
-                                <aside className="book-menu sidebar">
-                                    <div className="book-menu-content">
+                                <aside className="book-menu sidebar" >
+                                    <div className="book-menu-content ">
                                         <ul>
                                             {
-                                                menuData.map(item => (
-                                                    <div key={"heading" + item.id}>
+                                                props.menuData.map(item => (
+                                                    <div key={"heading" + item.heading} className="menuSpacing">
                                                         <h3 style={{textAlign: 'left'}}>{item.heading}</h3>
                                                         {
                                                             item.menuItems.map(link => (
                                                                 <li key={link.id}>
-                                                                    <Link style={{color: 'white'}} to={link.link}
+                                                                    <Link style={{color: 'white'}} to={link.link ? link.link : ""}
                                                                           key={link.label} onClick={(e) => {
                                                                         if (link.subMenu) {
                                                                             e.preventDefault();
@@ -80,7 +70,7 @@ export function DOCS(props){
                                                                                 {link.subMenu.map(subItem => (
                                                                                     <li key={subItem.id}>
                                                                                         <Link style={{color: 'white'}}
-                                                                                              to={subItem.link} key={link.label}
+                                                                                              to={subItem.link}
                                                                                               onClick={(e) => handlePageSwitch(e, link.label)}>{subItem.label}</Link>
                                                                                     </li>
                                                                                 ))}

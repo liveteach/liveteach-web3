@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
-import {getContributorAdmin} from "../../utils/interact";
 import {useDispatch, useSelector} from "react-redux";
-import {setWalletAddress } from "../../store/adminUser";
 
 const HomeBlock = ({
                               className,

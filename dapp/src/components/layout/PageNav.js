@@ -1,4 +1,3 @@
-import React, {useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import {useSelector} from "react-redux";
 
@@ -46,7 +45,17 @@ export default function PageNav({
                                 ""
                             )
                         }
-
+                        {
+                            !isPrivate ? (
+                                <Link to={"/worlds"} >
+                                    <div className="dcl tab tabColor">
+                                        Worlds Owner
+                                    </div>
+                                </Link>
+                            ) : (
+                                ""
+                            )
+                        }
                     </div>
                 </div>
             </div>

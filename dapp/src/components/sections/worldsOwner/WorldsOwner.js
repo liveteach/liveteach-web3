@@ -1,12 +1,22 @@
-import {Divider} from "decentraland-ui";
-import {Button} from "@mui/material";
 
-export default function Teacher(props){
-    return(
+export function WorldsOwner(props){
+    return (
         <div className="ui container">
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
-                <h4>Classes</h4>
-                <Divider />
+                <div className="ui container">
+                    <div className="dcl tabs">
+                        <div className="dcl tabs-left">
+                            <h4>Classroom Administrators</h4>
+                        </div>
+                        <div className="dcl tabs-right">
+                          {/*<Link to="/operator/add">*/}
+                                <button
+                                    className="ui small primary button"
+                                >Add</button>
+                            {/*</Link>*/}
+                        </div>
+                    </div>
+                </div>
                 <div className="tableContainer">
 
                     <div className="TableContent">
@@ -14,9 +24,8 @@ export default function Teacher(props){
 
                             <tbody>
                             <tr>
-                                <th>Class Name</th>
-                                <th>Description</th>
-                                <th>Classroom</th>
+                                <th>Classroom Admin Wallet</th>
+                                <th>World</th>
                                 <th></th>
                             </tr>
 
@@ -41,7 +50,6 @@ export default function Teacher(props){
                         </table>
                     </div>
                 </div>
-                <Button>Show All</Button> | <Button>Show Active</Button> | <Button>Show inactive</Button>
             </div>
         </div>
     )

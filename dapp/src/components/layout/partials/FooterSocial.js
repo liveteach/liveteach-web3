@@ -1,13 +1,11 @@
 import React from "react";
-import classNames from "classnames";
 
 const FooterSocial = ({ className, ...props }) => {
-  const classes = classNames("footer-social", className);
 
   return (
       <div {...props} className="secondary-footer">
         <div className="social-links">
-          <a href="https://www.facebook.com/dcluni/" target="_blank">
+          <a href="https://www.facebook.com/dcluni/" target="_blank" rel="noreferrer">
             <svg
                 width="16"
                 height="16"
@@ -20,7 +18,7 @@ const FooterSocial = ({ className, ...props }) => {
           </a>
         </div>
         <div className="social-links">
-          <a href="https://twitter.com/dcluniversity" target="_blank">
+          <a href="https://twitter.com/dcluniversity" target="_blank" rel="noreferrer">
             <svg
                 width="16"
                 height="16"

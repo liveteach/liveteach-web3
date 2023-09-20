@@ -1,4 +1,3 @@
-
 import {Link} from "react-router-dom";
 
 export default function ClassroomAdmin(props){
@@ -102,7 +101,6 @@ export default function ClassroomAdmin(props){
                     </div>
                 </div>
             </div>
-
         </div>
     )
 }
