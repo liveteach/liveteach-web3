@@ -203,12 +203,68 @@
         "type": "address"
       }
     ],
+    "name": "getClassroomAdmin",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "walletAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "landIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct TeachContract.ClassroomAdmin",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "walletAddress",
+        "type": "address"
+      }
+    ],
     "name": "getClassroomAdminLandIds",
     "outputs": [
       {
         "internalType": "uint256[]",
         "name": "",
         "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getClassroomAdmins",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "walletAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "landIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct TeachContract.ClassroomAdmin[]",
+        "name": "",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
