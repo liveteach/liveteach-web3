@@ -1,5 +1,3 @@
-import {Divider} from "decentraland-ui";
-import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
 
 export function LandOperator(props){

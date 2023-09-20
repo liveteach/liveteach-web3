@@ -6,8 +6,7 @@ import Logo from "./partials/Logo";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import {setAvatar, setName, setWalletAddress} from "../../store/adminUser";
-import {connectWallet, getCurrentWalletConnected} from "../../utils/interact";
-import {walletStatus_Connected} from "../../utils/constants";
+import { getCurrentWalletConnected} from "../../utils/interact";
 
 const propTypes = {
   authenticated: PropTypes.bool,
@@ -120,13 +119,13 @@ const Header = ({
                             </div>
                           </div>
                           <ul className="actions">
-                            <a href="https://account.decentraland.org" target="_blank">
+                            <a href="https://account.decentraland.org" target="_blank" rel="noreferrer" >
                               <li>
                                 <i aria-hidden={true} className="user icon" ></i>
                                 Profile
                               </li>
                             </a>
-                            <a href="https://profile.decentraland.org"  target="_blank">
+                            <a href="https://profile.decentraland.org"  target="_blank" rel="noreferrer" >
                               <li>
                                 <div className="WalletIcon">
                                   <svg width={13} height={13} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">

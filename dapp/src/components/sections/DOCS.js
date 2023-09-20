@@ -1,9 +1,6 @@
-import pageOne from '../markdown/test.md'
-import pageTwo from '../markdown/newTest.md'
-import pageThree from '../markdown/thirdTest.md'
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";

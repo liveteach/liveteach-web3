@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useLocation} from "react-router-dom";
 
 
@@ -7,7 +7,6 @@ export default function DocsNav(){
     const location = useLocation();
     const currentURL = location.pathname;
 
-    // Use state to keep track of the active tab
     const [activeTab, setActiveTab] = useState(null);
 
     useEffect(() => {

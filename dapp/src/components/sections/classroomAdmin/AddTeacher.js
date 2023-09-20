@@ -1,13 +1,4 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles({
-    customTextField: {
-        '& .MuiInputBase-root': {
-            backgroundColor: 'lightblue', // Set your desired background color here
-        },
-    },
-});
 
 export function AddTeacher(props){
 
