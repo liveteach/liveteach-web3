@@ -56,8 +56,6 @@ const Header = ({
     setIsMenuOpen(!isMenuOpen);
   };
 
-
-
   const getProfile = async (address) => {
     if(address){
       try {
@@ -87,7 +85,7 @@ const Header = ({
                       <Link to={"/FAQ"} ><span className="tabColor">FAQ</span></Link>
                     </div>
                     <div className="item tabColor">
-                      <Link to={"/docs/page1"} ><span className="tabColor">DOCS</span></Link>
+                      <Link to={"/docs"} ><span className="tabColor">DOCS</span></Link>
                     </div>
                   </div>
 

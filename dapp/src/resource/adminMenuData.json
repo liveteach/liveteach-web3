@@ -1,0 +1,23 @@
+[
+  {
+    "heading": "Main menu",
+    "menuItems": [
+      {
+        "id": 11,
+        "label": "page1",
+        "link": "/docs/admin/page1"
+      },
+      {
+        "id": 13,
+        "label": "Page Two Dropdown",
+        "subMenu": [
+          {
+            "id": 131,
+            "label": "page2",
+            "link": "/docs/admin/page2"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -46,7 +46,17 @@ export default function PageNav({
                                 ""
                             )
                         }
-
+                        {
+                            !isPrivate ? (
+                                <Link to={"/worlds"} >
+                                    <div className="dcl tab tabColor">
+                                        Worlds Owner
+                                    </div>
+                                </Link>
+                            ) : (
+                                ""
+                            )
+                        }
                     </div>
                 </div>
             </div>
