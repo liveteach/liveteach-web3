@@ -132,6 +132,26 @@ export const createClassroomAdmin = async (walletAddress, landIds) => {
   return callGasTransaction(window.contract.methods.createClassroomAdmin, [walletAddress, landIds]);
 };
 // read
+export const getClassroomAdmins = async () => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassroomAdmins()
+    .call();
+  return result;
+};
+
+export const getClassroomAdmin = async (walletAddress) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassroomAdmin(walletAddress)
+    .call();
+  return result;
+};
+
 export const isLandIdAssigned = async (landId) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
 
@@ -178,7 +198,7 @@ export const addClassroomAdminLandIds = async (walletAddress, landIds) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.addClassroomAdminLandIds,
     [walletAddress, landIds]);
-}; 
+};
 // delete
 export const removeAllClassroomAdminLandIds = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone

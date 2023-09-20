@@ -9,6 +9,7 @@ bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
 contract TeachContract is AccessControl {
     // classroom admin
+    address[] private classroomAdminWalletAddresses;
     mapping(address => uint256[]) private classroomAdminToLandIds;
     mapping(uint256 => address) private landIdToClassroomAdmin;
     // classroom
@@ -235,9 +236,58 @@ contract TeachContract is AccessControl {
         );
         grantClassroomAdminRole(walletAddress);
         addClassroomAdminLandIds(walletAddress, landIds);
+        classroomAdminWalletAddresses.push(walletAddress);
     }
 
     // read
+    struct ClassroomAdmin {
+        address walletAddress;
+        uint256[] landIds;
+    }
+
+    function getClassroomAdmins()
+        public
+        view
+        returns (ClassroomAdmin[] memory)
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {
+        ClassroomAdmin[] memory rtn = new ClassroomAdmin[](
+            classroomAdminWalletAddresses.length
+        );
+        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
+            rtn[i] = ClassroomAdmin({
+                walletAddress: classroomAdminWalletAddresses[i],
+                landIds: classroomAdminToLandIds[
+                    classroomAdminWalletAddresses[i]
+                ]
+            });
+        }
+        return rtn;
+    }
+
+    function getClassroomAdmin(
+        address walletAddress
+    )
+        public
+        view
+        returns (ClassroomAdmin memory)
+    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+    {   
+        bool exists = false;
+        for(uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
+            if(walletAddress == classroomAdminWalletAddresses[i]) {
+                exists = true;
+                break;
+            }
+        }
+        require(exists, "Classroom admin not found.");
+        return
+            ClassroomAdmin({
+                walletAddress: walletAddress,
+                landIds: classroomAdminToLandIds[walletAddress]
+            });
+    }
+
     function isClassroomAdminAssignedLandId(
         uint256 landId
     )
@@ -434,5 +484,19 @@ contract TeachContract is AccessControl {
         );
         deleteFromClassroomAdminLandIds(walletAddress);
         revokeRole(CLASSROOM_ADMIN, walletAddress);
+
+        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
+            if (walletAddress == classroomAdminWalletAddresses[i]) {
+                // Move the last element into the place to delete
+                classroomAdminWalletAddresses[
+                    i
+                ] = classroomAdminWalletAddresses[
+                    classroomAdminWalletAddresses.length - 1
+                ];
+                // Remove the last element
+                classroomAdminWalletAddresses.pop();
+                break;
+            }
+        }
     }
 }
