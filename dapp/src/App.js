@@ -35,6 +35,7 @@ const App = () => {
 
   const {isPrivate,auth} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
+
   useEffect(() => {
     document.body.classList.add("is-loaded");
       dispatch(setAuth(checkConnectedWalletAddress().auth));
@@ -57,6 +58,7 @@ const App = () => {
       //       dispatch(setIsPrivate(!result.admin));
       // })
   })
+
   return (
       <Switch>
         {/* route to home */}
@@ -134,6 +136,9 @@ const App = () => {
               component={WorldsOwner}
               layout={LayoutDefault}
           />
+
+          {/*outside login routes*/}
+
           <Route
               exact
               path="/FAQ"

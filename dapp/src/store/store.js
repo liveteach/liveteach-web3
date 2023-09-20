@@ -3,6 +3,9 @@ import adminUserReducer from './adminUser';
 import timeAndDateStateReducer from './timeAndDateState';
 import docsStateReducer from './docsState';
 import classroomAdminStateReducer from './classroomAdminState';
+import teacherStateReducer from './teacherState';
+import studentStateReducer from './studentState';
+import classStateReducer from './classState';
 
 // can use multiple stores for separate items
 export default configureStore({
@@ -10,7 +13,10 @@ export default configureStore({
         adminUser: adminUserReducer,
         timeAndDate: timeAndDateStateReducer,
         docs: docsStateReducer,
-        classroomAdmin: classroomAdminStateReducer
+        classroomAdmin: classroomAdminStateReducer,
+        class: classStateReducer,
+        teacher: teacherStateReducer,
+        student: studentStateReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

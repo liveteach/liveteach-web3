@@ -1,12 +1,28 @@
 import {Divider} from "decentraland-ui";
 import {Button} from "@mui/material";
+import {useSelector} from "react-redux";
+import {Link} from "react-router-dom";
 
 export default function Teacher(props){
+
+    const {classNames, descriptions, classrooms} = useSelector((state) => state.teacher)
     return(
         <div className="ui container">
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
-                <h4>Classes</h4>
-                <Divider />
+                <div className="ui container">
+                    <div className="dcl tabs">
+                        <div className="dcl tabs-left">
+                            <h4>Classes</h4>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <Link to="/teacher/add">
+                                <button
+                                    className="ui small primary button"
+                                >Add</button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
                 <div className="tableContainer">
 
                     <div className="TableContent">
@@ -21,21 +37,30 @@ export default function Teacher(props){
                             </tr>
 
                             {
-                                // sceneIds.map((item, index) => {
-                                //     return (
-                                //         <tr key={`Contributor_${index}`}>
-                                //             {/*<td>*/}
-                                //             {/*    <input type="checkbox"/>*/}
-                                //             {/*</td>*/}
-                                //             <td>
-                                //                 {item}
-                                //             </td>
-                                //             <td>
-                                //                 {coordinates[index]}
-                                //             </td>
-                                //         </tr>
-                                //     );
-                                // })
+                                classNames.map((item, index) => {
+                                    return (
+                                        <tr key={`Contributor_${index}`}>
+                                            <td>
+                                                {item}
+                                            </td>
+                                            <td>
+                                                {descriptions[index]}
+                                            </td>
+                                            <td>
+                                                {classrooms[index]}
+                                            </td>
+                                            <td>
+                                                <Link to="/teacher/edit">
+                                                    <Button
+                                                        className="ui small basic button"
+                                                        size="small"
+                                                        variant="contained"
+                                                    >Edit</Button>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             }
                             </tbody>
                         </table>
