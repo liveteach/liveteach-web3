@@ -1,7 +1,7 @@
 import { createSlice} from "@reduxjs/toolkit";
 
 export const classroomAdminStateSlice = createSlice({
-    name: "class",
+    name: "classroomAdmin",
     initialState: {
         classrooms: ["test", "test2", "test3"],
         classroomIds: ["1","2","3"],
