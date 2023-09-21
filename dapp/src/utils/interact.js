@@ -222,10 +222,50 @@ export const removeClassroomAdmin = async (walletAddress) => {
 };
 
 // classroom
+
 // create
+export const createClassroom = async (name, landIds) => {
+  // onlyRole(CLASSROOM_ADMIN)
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.createClassroom,
+    [name, landIds]);
+};
 // read
+export const getClassrooms = async () => {
+  // onlyRole(CLASSROOM_ADMIN)
+  // gets All a classroom admin's assigned classrooms
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassrooms()
+    .call();
+  return result;
+};
+
+export const getClassroom = async (id) => {
+  // onlyRole(CLASSROOM_ADMIN)
+  // gets a classroom admin's classroom by id
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassroom(id)
+    .call();
+  return result;
+};
 // update
+export const updateClassroom = async (id, name, landIds) => {
+  // onlyRole(CLASSROOM_ADMIN)
+  // updates fields for a given classroom id
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.updateClassroom,
+    [id, name, landIds]);
+};
 // delete
+export const deleteClassroom = async (id) => {
+  // onlyRole(CLASSROOM_ADMIN)
+  // deletes a classroom by id
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.deleteClassroom,
+    [id]);
+};
 
 async function callGasTransaction(func, params) {
   const transactionParameters = {
