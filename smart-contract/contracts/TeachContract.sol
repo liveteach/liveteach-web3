@@ -129,42 +129,31 @@ contract TeachContract is AccessControl {
         });
 
         classroomIdToClassroom[_id] = newClassroom;
-        removeClassroomAdminToClassroomsClassroom(_id);
+        removeClassroomFromArrayMaintainOrder(
+            classroomAdminToClassrooms[msg.sender],
+            _id
+        );
         classroomAdminToClassrooms[msg.sender].push(newClassroom);
     }
 
     // delete
-
-    function deleteClassroom(uint256 id) public view onlyRole(CLASSROOM_ADMIN) {
-        // TODO
-    }
-
-    function removeClassroomAdminToClassroomsClassroom(
-        uint256 classroomId
-    ) private onlyRole(CLASSROOM_ADMIN) {
-        for (
-            uint256 i = 0;
-            i < classroomAdminToClassrooms[msg.sender].length;
-            i++
-        ) {
-            Classroom memory currentClassroom = classroomAdminToClassrooms[
-                msg.sender
-            ][i];
-            if (classroomId == currentClassroom.id) {
-                // Move the last element into the place to delete
-                classroomAdminToClassrooms[msg.sender][
-                    i
-                ] = classroomAdminToClassrooms[msg.sender][
-                    classroomAdminToClassrooms[msg.sender].length - 1
-                ];
-                // Remove the last element
-                classroomAdminToClassrooms[msg.sender].pop();
-                break;
-            }
+    function deleteClassroom(uint256 id) public onlyRole(CLASSROOM_ADMIN) {
+        require(
+            msg.sender == classroomIdToClassroomAdmin[id],
+            "Requested classroom either not assigned to you or doesn't exist."
+        );
+        Classroom memory classroom = classroomIdToClassroom[id];
+        for (uint256 i = 0; i < classroom.landIds.length; i++) {
+            delete classroomAssignedLandIds[classroom.landIds[i]];
         }
-    }
+        delete classroomIdToClassroom[id];
 
-    // deleteClassroom
+        removeClassroomFromArrayMaintainOrder(
+            classroomAdminToClassrooms[msg.sender],
+            id
+        );
+        delete classroomIdToClassroomAdmin[id];
+    }
 
     function grantStudentRole(
         address walletAddress
@@ -272,10 +261,10 @@ contract TeachContract is AccessControl {
         view
         returns (ClassroomAdmin memory)
     // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {   
+    {
         bool exists = false;
-        for(uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
-            if(walletAddress == classroomAdminWalletAddresses[i]) {
+        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
+            if (walletAddress == classroomAdminWalletAddresses[i]) {
                 exists = true;
                 break;
             }
@@ -433,24 +422,10 @@ contract TeachContract is AccessControl {
             hasRole(CLASSROOM_ADMIN, walletAddress),
             "Provided wallet address is not CLASSROOM_ADMIN"
         );
-        for (
-            uint256 i = 0;
-            i < classroomAdminToLandIds[walletAddress].length;
-            i++
-        ) {
-            uint256 currentLandId = classroomAdminToLandIds[walletAddress][i];
-            if (landId == currentLandId) {
-                // Move the last element into the place to delete
-                classroomAdminToLandIds[walletAddress][
-                    i
-                ] = classroomAdminToLandIds[walletAddress][
-                    classroomAdminToLandIds[walletAddress].length - 1
-                ];
-                // Remove the last element
-                classroomAdminToLandIds[walletAddress].pop();
-                break;
-            }
-        }
+        removeUintFromArrayMaintainOrder(
+            classroomAdminToLandIds[walletAddress],
+            landId
+        );
         delete landIdToClassroomAdmin[landId];
     }
 
@@ -484,17 +459,47 @@ contract TeachContract is AccessControl {
         );
         deleteFromClassroomAdminLandIds(walletAddress);
         revokeRole(CLASSROOM_ADMIN, walletAddress);
+        removeAddressFromArrayMaintainOrder(
+            classroomAdminWalletAddresses,
+            walletAddress
+        );
+    }
 
-        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
-            if (walletAddress == classroomAdminWalletAddresses[i]) {
-                // Move the last element into the place to delete
-                classroomAdminWalletAddresses[
-                    i
-                ] = classroomAdminWalletAddresses[
-                    classroomAdminWalletAddresses.length - 1
-                ];
-                // Remove the last element
-                classroomAdminWalletAddresses.pop();
+    // utility
+    function removeAddressFromArrayMaintainOrder(
+        address[] storage arr,
+        address val
+    ) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (val == arr[i]) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
+                break;
+            }
+        }
+    }
+
+    function removeUintFromArrayMaintainOrder(
+        uint256[] storage arr,
+        uint256 val
+    ) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (val == arr[i]) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
+                break;
+            }
+        }
+    }
+
+    function removeClassroomFromArrayMaintainOrder(
+        Classroom[] storage arr,
+        uint256 _classroomId
+    ) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (_classroomId == arr[i].id) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
                 break;
             }
         }
