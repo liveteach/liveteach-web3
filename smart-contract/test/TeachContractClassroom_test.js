@@ -11,7 +11,6 @@ describe("TeachContractClassroom", function () {
     owner = accounts[0];
     otherUser = accounts[1];
     otherUser2 = accounts[2];
-
   })
 
   // create
@@ -242,14 +241,39 @@ describe("TeachContractClassroom", function () {
     assert.equal([1n, 2n].toString(), classroom.landIds.toString());
   });
 
-  // // delete
+  // delete
+  it("Classroom admin can delete their own classroom", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2]);
+    await teachContract.connect(otherUser).createClassroom("Test Classroom 1", [1, 2]);
+    await teachContract.connect(otherUser).deleteClassroom(0);
+    let allClassrooms = await teachContract.connect(otherUser).getClassrooms();
+    assert.equal(0, allClassrooms.length);
+    expect(teachContract.connect(otherUser).getClassroom(0)).to.be.revertedWith("Classroom id not recognised or does not belong to caller.");
 
+  });
+  it("Non classroom admin cannot delete classroom", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2]);
+    await teachContract.connect(otherUser).createClassroom("Test Classroom 1", [1, 2]);
+    await expect(teachContract.connect(otherUser2).deleteClassroom(0))
+      .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
+    let allClassrooms = await teachContract.connect(otherUser).getClassrooms();
+    assert.equal(1, allClassrooms.length);
+    let result = await teachContract.connect(otherUser).getClassroom(0);
+    assert.equal("Test Classroom 1", result.name);
+    assert.equal([1n, 2n].toString(), result.landIds);
+  });
+  
+  it("Classroom admin cannot delete a classroom that doesn't belong to them", async function () {
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2]);
+    await teachContract.connect(owner).createClassroomAdmin(otherUser2, [3, 4]);
+    await teachContract.connect(otherUser).createClassroom("Test Classroom 1", [1, 2]);
+    await expect(teachContract.connect(otherUser2).deleteClassroom(0))
+      .to.be.revertedWith("Requested classroom either not assigned to you or doesn't exist.");
+    let allClassrooms = await teachContract.connect(otherUser).getClassrooms();
+    assert.equal(1, allClassrooms.length);
+    let result = await teachContract.connect(otherUser).getClassroom(0);
+    assert.equal("Test Classroom 1", result.name);
+    assert.equal([1n, 2n].toString(), result.landIds);
+  });
   // clear land ids from classroomAssignedLandIds when classroom is destroyed / reassigned.
-
-  // it("Classroom admin can delete a classroom", async function () {
-  // });
-
-  // it("Non classroom admin cannot delete a classroom", async function () {
-  // });
-
 });
