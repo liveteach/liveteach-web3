@@ -1,33 +1,35 @@
 import React, {useEffect, useState} from "react";
 import {Link, useLocation} from "react-router-dom";
-
+import {useSelector} from "react-redux";
 
 export default function DocsNav(){
 
     const location = useLocation();
     const currentURL = location.pathname;
+    const pathSegments = currentURL.split('/');
+    const secondPathSegment = pathSegments[2];
 
     const [activeTab, setActiveTab] = useState(null);
 
     useEffect(() => {
         console.log(currentURL);
-        switch (currentURL) {
-            case '/docs/dev/page1':
+        switch (secondPathSegment) {
+            case 'dev':
                 setActiveTab('dev');
                 break;
-            case '/docs/teacher/page1':
+            case 'teacher':
                 setActiveTab('teacher');
                 break;
-            case '/docs/owner/page1':
+            case 'owner':
                 setActiveTab('owner');
                 break;
-            case '/docs/admin/page1':
+            case 'admin':
                 setActiveTab('admin');
                 break;
             default:
                 setActiveTab(null);
         }
-    }, [currentURL]);
+    }, [currentURL, secondPathSegment]);
 
     return (
         <div className="Navigation">

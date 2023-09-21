@@ -6,8 +6,8 @@ import classroomAdminStateReducer from './classroomAdminState';
 import teacherStateReducer from './teacherState';
 import studentStateReducer from './studentState';
 import classStateReducer from './classState';
+import landOperatorStateReducer from './landOperatorState';
 
-// can use multiple stores for separate items
 export default configureStore({
     reducer: {
         adminUser: adminUserReducer,
@@ -16,7 +16,8 @@ export default configureStore({
         classroomAdmin: classroomAdminStateReducer,
         class: classStateReducer,
         teacher: teacherStateReducer,
-        student: studentStateReducer
+        student: studentStateReducer,
+        landOperator: landOperatorStateReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
