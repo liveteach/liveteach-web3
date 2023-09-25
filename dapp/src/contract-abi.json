@@ -93,33 +93,125 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "allClassrooms",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "landIds",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "landIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "int256[][]",
+            "name": "landCoordinates",
+            "type": "int256[][]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "teacherIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct TeachContract.Classroom[]",
+        "name": "",
+        "type": "tuple[]"
       }
     ],
-    "name": "addClassroomAdminLandIds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "allLands",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "classroomId",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TeachContract.Land[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "allTeachers",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "walletAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "classroomIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct TeachContract.Teacher[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "address",
-        "name": "walletAddress",
+        "name": "_walletAddress",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "landIds",
+        "name": "_landIds",
         "type": "uint256[]"
       }
     ],
@@ -167,12 +259,56 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "walletAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "classroomIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "createTeacher",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "id",
         "type": "uint256"
       }
     ],
     "name": "deleteClassroom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_walletAddress",
+        "type": "address"
+      }
+    ],
+    "name": "deleteClassroomAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteTeacher",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -190,6 +326,11 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
             "internalType": "string",
             "name": "name",
             "type": "string"
@@ -200,9 +341,19 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
+            "internalType": "int256[][]",
+            "name": "landCoordinates",
+            "type": "int256[][]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "teacherIds",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct TeachContract.Classroom",
@@ -217,7 +368,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "walletAddress",
+        "name": "_walletAddress",
         "type": "address"
       }
     ],
@@ -234,30 +385,26 @@
             "internalType": "uint256[]",
             "name": "landIds",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "int256[][]",
+            "name": "landCoordinates",
+            "type": "int256[][]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "classroomIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "teacherIds",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct TeachContract.ClassroomAdmin",
         "name": "",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getClassroomAdminLandIds",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -278,6 +425,21 @@
             "internalType": "uint256[]",
             "name": "landIds",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "int256[][]",
+            "name": "landCoordinates",
+            "type": "int256[][]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "classroomIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "teacherIds",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct TeachContract.ClassroomAdmin[]",
@@ -295,6 +457,11 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
             "internalType": "string",
             "name": "name",
             "type": "string"
@@ -305,9 +472,19 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
+            "internalType": "int256[][]",
+            "name": "landCoordinates",
+            "type": "int256[][]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "teacherIds",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct TeachContract.Classroom[]",
@@ -340,14 +517,77 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
       }
     ],
-    "name": "grantLandOperatorRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "getTeacher",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "walletAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "classroomIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct TeachContract.Teacher",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTeachers",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "walletAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "classroomIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address",
+            "name": "classroomAdminId",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct TeachContract.Teacher[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -364,32 +604,6 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "grantStudentRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "grantTeacherRole",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -422,7 +636,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "walletAddress",
+        "name": "_walletAddress",
         "type": "address"
       }
     ],
@@ -435,88 +649,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "landId",
-        "type": "uint256"
-      }
-    ],
-    "name": "isClassroomAdminAssignedLandId",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "landIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "isClassroomAdminAssignedLandIds",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "removeAllClassroomAdminLandIds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "removeClassroomAdmin",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "landIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "removeClassroomAdminLandIds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -540,19 +672,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "revokeLandOperatorRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -564,32 +683,6 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "revokeStudentRole",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "revokeTeacherRole",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -617,13 +710,31 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_id",
+        "name": "id",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "name",
         "type": "string"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "landIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "updateClassroom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_walletAddress",
+        "type": "address"
       },
       {
         "internalType": "uint256[]",
@@ -631,7 +742,25 @@
         "type": "uint256[]"
       }
     ],
-    "name": "updateClassroom",
+    "name": "updateClassroomAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "classroomIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "updateTeacher",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

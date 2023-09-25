@@ -8,71 +8,244 @@ bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN");
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
 contract TeachContract is AccessControl {
-    // classroom admin
-    address[] private classroomAdminWalletAddresses;
-    mapping(address => uint256[]) private classroomAdminToLandIds;
-    mapping(uint256 => address) private landIdToClassroomAdmin;
-    // classroom
-    mapping(uint256 => Classroom) private classroomIdToClassroom;
-    mapping(address => Classroom[]) private classroomAdminToClassrooms;
-    mapping(uint256 => address) private classroomIdToClassroomAdmin;
-    mapping(uint256 => bool) private classroomAssignedLandIds;
-
     constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    // CLASSROOM
+    // id generators, start at one so we can determine unassigned.
+    uint256 private latestClassroomId = 1;
+    uint256 private latestTeacherId = 1;
+
+    function getNewClassroomId() private returns (uint256) {
+        return latestClassroomId++;
+    }
+
+    function getNewTeacherId() private returns (uint256) {
+        return latestTeacherId++;
+    }
+
+    // structs
+    struct Land {
+        uint256 id;
+        address classroomAdminId;
+        uint256 classroomId;
+    }
+
+    struct ClassroomAdmin {
+        address walletAddress;
+        uint256[] landIds;
+        int[][] landCoordinates; // not persisted
+        uint256[] classroomIds;
+        uint256[] teacherIds;
+    }
+
     struct Classroom {
+        uint256 id;
         string name;
         uint256[] landIds;
+        int[][] landCoordinates; // not persisted
+        address classroomAdminId;
+        uint256[] teacherIds;
+    }
+
+    struct Teacher {
         uint256 id;
+        address walletAddress;
+        uint256[] classroomIds;
+        address classroomAdminId;
     }
 
-    uint256 private classroomId;
+    struct RegisteredIds {
+        uint256[] landsRegisteredToClassroomAdmin;
+        mapping(uint256 => bool) landsRegisteredToClassroomAdminBool;
+        address[] classroomAdmin;
+        mapping(address => bool) classroomAdminBool;
+        uint256[] classroom;
+        mapping(uint256 => bool) classroomBool;
+        uint256[] landsRegisteredToClassroom;
+        mapping(uint256 => bool) landsRegisteredToClassroomBool;
+        uint256[] teacher;
+        mapping(uint256 => bool) teacherBool;
+    }
 
-    function getNewClassroomId()
-        private
-        onlyRole(CLASSROOM_ADMIN)
-        returns (uint256)
+    // id to object mappings
+    struct IdsToObjects {
+        mapping(uint256 => Land) land;
+        mapping(address => ClassroomAdmin) classroomAdmin;
+        mapping(uint256 => Classroom) classroom;
+        mapping(uint256 => Teacher) teacher;
+    }
+
+    RegisteredIds private registeredIds;
+    IdsToObjects private idsToObjects;
+
+    // OWNER ONLY METHODS
+
+    function allLands()
+        public
+        view
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (Land[] memory)
     {
-        return classroomId++;
+        uint256[] memory allLandIds = registeredIds
+            .landsRegisteredToClassroomAdmin;
+        Land[] memory rtn = new Land[](allLandIds.length);
+        for (uint256 i = 0; i < allLandIds.length; i++) {
+            rtn[i] = idsToObjects.land[allLandIds[i]];
+        }
+        return rtn;
     }
 
+    function allClassrooms()
+        public
+        view
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (Classroom[] memory)
+    {
+        uint256[] memory allClassroomIds = registeredIds.classroom;
+        Classroom[] memory rtn = new Classroom[](allClassroomIds.length);
+        for (uint256 i = 0; i < allClassroomIds.length; i++) {
+            rtn[i] = idsToObjects.classroom[allClassroomIds[i]];
+        }
+        return rtn;
+    }
+
+    function allTeachers()
+        public
+        view
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (Teacher[] memory)
+    {
+        uint256[] memory allTeacherIds = registeredIds.teacher;
+        Teacher[] memory rtn = new Teacher[](allTeacherIds.length);
+        for (uint256 i = 0; i < allTeacherIds.length; i++) {
+            rtn[i] = idsToObjects.teacher[allTeacherIds[i]];
+        }
+        return rtn;
+    }
+
+    // CLASSROOM ADMIN
+    // create
+
+    function createClassroomAdmin(
+        address _walletAddress,
+        uint256[] memory _landIds // onlyRole(LAND_OPERATOR) TODO: development only.
+    ) public {
+        require(
+            !hasRole(CLASSROOM_ADMIN, _walletAddress),
+            "Provided wallet address is already CLASSROOM_ADMIN"
+        );
+
+        require(
+            !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
+            "Provided land id already registered."
+        );
+        registerClassroomAdmin(_walletAddress, _landIds);
+    }
+
+    // read
+    function isClassroomAdmin(
+        address _walletAddress
+    )
+        public
+        view
+        returns (
+            // onlyRole(LAND_OPERATOR) TODO: development only.
+            bool
+        )
+    {
+        return hasRole(CLASSROOM_ADMIN, _walletAddress);
+    }
+
+    function getClassroomAdmins()
+        public
+        view
+        returns (
+            // onlyRole(LAND_OPERATOR) TODO: development only.
+            ClassroomAdmin[] memory
+        )
+    {
+        address[] memory registeredClassroomAdminIds = registeredIds
+            .classroomAdmin;
+        ClassroomAdmin[] memory rtn = new ClassroomAdmin[](
+            registeredClassroomAdminIds.length
+        );
+        for (uint256 i = 0; i < registeredClassroomAdminIds.length; i++) {
+            rtn[i] = idsToObjects.classroomAdmin[
+                registeredClassroomAdminIds[i]
+            ];
+            rtn[i].landCoordinates = getCoordinatesFromLandIds(rtn[i].landIds);
+        }
+        return rtn;
+    }
+
+    function getClassroomAdmin(
+        address _walletAddress
+    )
+        public
+        view
+        returns (
+            // onlyRole(LAND_OPERATOR) TODO: development only.
+            ClassroomAdmin memory
+        )
+    {
+        require(isClassroomAdmin(_walletAddress), "Classroom admin not found.");
+        ClassroomAdmin memory rtn = idsToObjects.classroomAdmin[_walletAddress]; 
+        rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
+        return rtn;
+    }
+
+    // update
+
+    function updateClassroomAdmin(
+        address _walletAddress,
+        uint256[] memory _landIds // onlyRole(LAND_OPERATOR) TODO: development only.
+    ) public {
+        require(
+            hasRole(CLASSROOM_ADMIN, _walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+
+        require(
+            !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
+            "Provided land id already registered."
+        );
+
+        // remove existing mappings
+        unregisterClassroomAdmin(_walletAddress);
+        // recreate with same wallet address
+        registerClassroomAdmin(_walletAddress, _landIds);
+    }
+
+    // delete
+
+    function deleteClassroomAdmin(address _walletAddress) public {
+        require(
+            hasRole(CLASSROOM_ADMIN, _walletAddress),
+            "Provided wallet address is not CLASSROOM_ADMIN"
+        );
+
+        // remove existing mappings
+        unregisterClassroomAdmin(_walletAddress);
+    }
+
+    // CLASSROOM
     // create
 
     function createClassroomLandIds(
-        string calldata _name,
+        string memory _name,
         uint256[] memory _landIds
     ) public onlyRole(CLASSROOM_ADMIN) {
-        for (uint256 i = 0; i < _landIds.length; i++) {
-            require(
-                landIdToClassroomAdmin[_landIds[i]] == msg.sender,
-                "Can only create classroom using assigned land ids."
-            );
-            // check landId isn't used in different classroom
-            require(
-                !classroomAssignedLandIds[_landIds[i]],
-                "Land id already assigned to a different classroom."
-            );
-            classroomAssignedLandIds[_landIds[i]] = true;
-        }
-        // if a more complex identifer is required
-        // we could add a hash (block.timestamp + getNewClassroomId)
-        uint256 _id = getNewClassroomId();
-        Classroom memory classroom = Classroom({
-            id: _id,
-            name: _name,
-            landIds: _landIds
-        });
-        classroomAdminToClassrooms[msg.sender].push(classroom);
-        classroomIdToClassroomAdmin[_id] = msg.sender;
-        classroomIdToClassroom[_id] = classroom;
+        require(
+            checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, _landIds),
+            "Provided land id not valid."
+        );
+        registerClassroom(getNewClassroomId(), _name, _landIds, msg.sender);
     }
 
     function createClassroomCoordinates(
-        string calldata _name,
-        int[][] calldata coordinatePairs
+        string memory _name,
+        int[][] memory coordinatePairs
     ) public onlyRole(CLASSROOM_ADMIN) {
         uint256[] memory landIds = new uint256[](coordinatePairs.length);
         for (uint256 i = 0; i < coordinatePairs.length; i++) {
@@ -91,393 +264,409 @@ contract TeachContract is AccessControl {
         onlyRole(CLASSROOM_ADMIN)
         returns (Classroom[] memory)
     {
-        return classroomAdminToClassrooms[msg.sender];
+        uint256[] memory classroomIds = idsToObjects
+            .classroomAdmin[msg.sender]
+            .classroomIds;
+        Classroom[] memory rtn = new Classroom[](classroomIds.length);
+        for (uint256 i = 0; i < classroomIds.length; i++) {
+            rtn[i] = idsToObjects.classroom[classroomIds[i]];
+            rtn[i].landCoordinates = getCoordinatesFromLandIds(rtn[i].landIds);
+        }
+        return rtn;
     }
 
     function getClassroom(
         uint256 id
     ) public view onlyRole(CLASSROOM_ADMIN) returns (Classroom memory) {
+        // check you're entitled to view this classroom
         require(
-            msg.sender == classroomIdToClassroomAdmin[id],
-            "Classroom id not recognised or does not belong to caller."
+            walletOwnsClassroom(msg.sender, id),
+            "This classroom does not exist or you do not have access to it."
         );
-        return classroomIdToClassroom[id];
+        Classroom memory rtn = idsToObjects.classroom[id];
+        rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds); 
+        return rtn;
     }
 
     // update
-
     function updateClassroom(
-        uint256 _id,
-        string calldata _name,
-        uint256[] calldata _landIds
+        uint256 id,
+        string memory name,
+        uint256[] memory landIds
     ) public onlyRole(CLASSROOM_ADMIN) {
+        // check you're entitled to this classroom
         require(
-            // checkCallerOwnsClassroom
-            msg.sender == classroomIdToClassroomAdmin[_id],
-            "Classroom id not recognised or does not belong to caller."
+            walletOwnsClassroom(msg.sender, id),
+            "This classroom does not exist or you do not have access to it."
         );
-
-        // clear landIds for this classroom
-        Classroom memory classroom = classroomIdToClassroom[_id];
-        for (uint256 i = 0; i < classroom.landIds.length; i++) {
-            delete classroomAssignedLandIds[classroom.landIds[i]];
-        }
-
-        for (uint256 i = 0; i < _landIds.length; i++) {
-            require(
-                // checkCallerIsAssignedLandIds
-                landIdToClassroomAdmin[_landIds[i]] == msg.sender,
-                "Can only use assigned land ids while updating classroom."
-            );
-            // checkLandIdsAreUnassignedToOtherClassrooms
-            require(
-                !classroomAssignedLandIds[_landIds[i]],
-                "Land id already assigned to a different classroom."
-            );
-            classroomAssignedLandIds[_landIds[i]] = true;
-        }
-
-        Classroom memory newClassroom = Classroom({
-            id: _id,
-            name: _name,
-            landIds: _landIds
-        });
-
-        classroomIdToClassroom[_id] = newClassroom;
-        removeClassroomFromArrayMaintainOrder(
-            classroomAdminToClassrooms[msg.sender],
-            _id
+        require(
+            checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, landIds),
+            "Provided land id not valid."
         );
-        classroomAdminToClassrooms[msg.sender].push(newClassroom);
+        unregisterClassroom(id);
+        registerClassroom(id, name, landIds, msg.sender);
     }
 
     // delete
     function deleteClassroom(uint256 id) public onlyRole(CLASSROOM_ADMIN) {
+        // check you're entitled to this classroom
         require(
-            msg.sender == classroomIdToClassroomAdmin[id],
-            "Requested classroom either not assigned to you or doesn't exist."
+            walletOwnsClassroom(msg.sender, id),
+            "This classroom does not exist or you do not have access to it."
         );
-        Classroom memory classroom = classroomIdToClassroom[id];
-        for (uint256 i = 0; i < classroom.landIds.length; i++) {
-            delete classroomAssignedLandIds[classroom.landIds[i]];
-        }
-        delete classroomIdToClassroom[id];
-
-        removeClassroomFromArrayMaintainOrder(
-            classroomAdminToClassrooms[msg.sender],
-            id
-        );
-        delete classroomIdToClassroomAdmin[id];
+        unregisterClassroom(id);
     }
 
-    function grantStudentRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(STUDENT, walletAddress);
-    }
+    // TEACHER
 
-    function grantTeacherRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(TEACHER, walletAddress);
-    }
-
-    function grantLandOperatorRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(LAND_OPERATOR, walletAddress);
-    }
-
-    function revokeStudentRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(STUDENT, walletAddress);
-    }
-
-    function revokeTeacherRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(TEACHER, walletAddress);
-    }
-
-    function revokeLandOperatorRole(
-        address walletAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(LAND_OPERATOR, walletAddress);
-    }
-
-    // CLASSROOM ADMIN
-
-    // create
-
-    function grantClassroomAdminRole(
-        address walletAddress
-    )
-        private
-    // onlyRole(LAND_OPERATOR) TODO: this function has been opened up to
-    //                              allow anyone to call for development purposes.
-    //                              This role restriction MUST be re-added before
-    //                              going into anything resembling a production
-    //                              environment.
-    {
-        require(
-            !hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is already CLASSROOM_ADMIN"
-        );
-        grantRole(CLASSROOM_ADMIN, walletAddress);
-    }
-
-    function createClassroomAdmin(
+    function createTeacher(
         address walletAddress,
-        uint256[] calldata landIds
-    )
-        public
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
+        uint256[] memory classroomIds
+    ) public onlyRole(CLASSROOM_ADMIN) {
+        // check classroom ids belong to this
+        // classroom admin
         require(
-            !hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is already CLASSROOM_ADMIN"
+            checkClassroomIdsSuitableToBeAssignedToTeacher(
+                msg.sender,
+                classroomIds
+            ),
+            "Provided classroom id not valid."
         );
-        grantClassroomAdminRole(walletAddress);
-        addClassroomAdminLandIds(walletAddress, landIds);
-        classroomAdminWalletAddresses.push(walletAddress);
+        registerTeacher(
+            getNewTeacherId(),
+            walletAddress,
+            classroomIds,
+            msg.sender
+        );
     }
 
     // read
-    struct ClassroomAdmin {
-        address walletAddress;
-        uint256[] landIds;
-    }
-
-    function getClassroomAdmins()
+    function getTeachers()
         public
         view
-        returns (ClassroomAdmin[] memory)
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
+        onlyRole(CLASSROOM_ADMIN)
+        returns (Teacher[] memory)
     {
-        ClassroomAdmin[] memory rtn = new ClassroomAdmin[](
-            classroomAdminWalletAddresses.length
-        );
-        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
-            rtn[i] = ClassroomAdmin({
-                walletAddress: classroomAdminWalletAddresses[i],
-                landIds: classroomAdminToLandIds[
-                    classroomAdminWalletAddresses[i]
-                ]
-            });
+        uint256[] memory teacherIds = idsToObjects
+            .classroomAdmin[msg.sender]
+            .teacherIds;
+        Teacher[] memory rtn = new Teacher[](teacherIds.length);
+        for (uint256 i = 0; i < teacherIds.length; i++) {
+            rtn[i] = idsToObjects.teacher[teacherIds[i]];
         }
         return rtn;
     }
 
-    function getClassroomAdmin(
-        address walletAddress
-    )
-        public
-        view
-        returns (ClassroomAdmin memory)
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        bool exists = false;
-        for (uint256 i = 0; i < classroomAdminWalletAddresses.length; i++) {
-            if (walletAddress == classroomAdminWalletAddresses[i]) {
-                exists = true;
-                break;
-            }
-        }
-        require(exists, "Classroom admin not found.");
-        return
-            ClassroomAdmin({
-                walletAddress: walletAddress,
-                landIds: classroomAdminToLandIds[walletAddress]
-            });
+    function getTeacher(
+        uint256 id
+    ) public view onlyRole(CLASSROOM_ADMIN) returns (Teacher memory) {
+        require(
+            walletOwnsTeacher(msg.sender, id),
+            "This teacher does not exist or you do not have access to it."
+        );
+        return idsToObjects.teacher[id];
     }
 
-    function isClassroomAdminAssignedLandId(
-        uint256 landId
-    )
-        public
-        view
-        returns (
-            // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-            bool
-        )
-    {
-        if (landIdToClassroomAdmin[landId] != address(0x0)) {
-            return true;
-        } else {
-            return false;
-        }
+    // update
+    function updateTeacher(
+        uint256 id,
+        uint256[] memory classroomIds
+    ) public onlyRole(CLASSROOM_ADMIN) {
+        require(
+            walletOwnsTeacher(msg.sender, id),
+            "This teacher does not exist or you do not have access to it."
+        );
+        require(
+            checkClassroomIdsSuitableToBeAssignedToTeacher(
+                msg.sender,
+                classroomIds
+            ),
+            "Provided classroom id not valid."
+        );
+
+        _updateTeacher(id, classroomIds);
     }
 
-    // dev - checks all included land Ids to see if they're registered
-    // returns false if any are not.
-    function isClassroomAdminAssignedLandIds(
-        uint256[] calldata landIds
-    )
-        public
-        view
-        returns (
-            // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-            bool
-        )
-    {
+    // delete
+    function deleteTeacher(uint256 id) public onlyRole(CLASSROOM_ADMIN) {
+        require(
+            walletOwnsTeacher(msg.sender, id),
+            "This teacher does not exist or you do not have access to it."
+        );
+        unregisterTeacher(id);
+    }
+
+    // private
+    // land
+    function areAnyLandIdsAssignedToClassroomAdmin(
+        uint256[] memory landIds,
+        address classroomAdminWallet
+    ) private returns (bool) {
+        // Relies on call being reverted to unregister
+        // landIds.  Should only be used in a require.
         for (uint256 i = 0; i < landIds.length; i++) {
-            if (!isClassroomAdminAssignedLandId(landIds[i])) {
+            if (registeredIds.landsRegisteredToClassroomAdminBool[landIds[i]]) {
+                return true;
+            }
+            registerLandToClassroomAdmin(landIds[i], classroomAdminWallet);
+        }
+        return false;
+    }
+
+    function walletOwnsClassroom(
+        address walletId,
+        uint256 _classroomId
+    ) private view returns (bool) {
+        return
+            idsToObjects.classroom[_classroomId].classroomAdminId == walletId;
+    }
+
+    function walletOwnsTeacher(
+        address walletId,
+        uint256 _teacherId
+    ) private view returns (bool) {
+        return idsToObjects.teacher[_teacherId].classroomAdminId == walletId;
+    }
+
+    function checkLandIdsSuitableToBeAssignedToClassroom(
+        address _walletAddress,
+        uint256[] memory _landIds
+    ) private view returns (bool) {
+        for (uint256 i = 0; i < _landIds.length; i++) {
+            uint256 landId = _landIds[i];
+            // do the land ids exist?
+            if (!registeredIds.landsRegisteredToClassroomAdminBool[landId]) {
+                return false;
+            }
+            Land memory land = idsToObjects.land[landId];
+            // are they yours?
+            if (_walletAddress != land.classroomAdminId) {
+                return false;
+            }
+            // are they assigned to any classrooms?
+            if (land.classroomId != 0) {
                 return false;
             }
         }
         return true;
     }
 
-    function isClassroomAdmin(
-        address walletAddress
-    )
-        public
-        view
-        returns (bool)
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        return hasRole(CLASSROOM_ADMIN, walletAddress);
-    }
-
-    function getClassroomAdminLandIds(
-        address walletAddress
-    )
-        public
-        view
-        returns (uint256[] memory)
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
-        return classroomAdminToLandIds[walletAddress];
-    }
-
-    // update
-
-    function addClassroomAdminLandId(
-        address walletAddress,
-        uint256 landId
-    )
-        private
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
-        require(
-            landIdToClassroomAdmin[landId] == address(0x0),
-            "Land ID already assigned"
-        );
-        classroomAdminToLandIds[walletAddress].push(landId);
-        landIdToClassroomAdmin[landId] = walletAddress;
-    }
-
-    function addClassroomAdminLandIds(
-        address walletAddress,
-        uint256[] calldata landIds
-    )
-        public
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
-        for (uint256 i = 0; i < landIds.length; i++) {
-            addClassroomAdminLandId(walletAddress, landIds[i]);
+    function checkClassroomIdsSuitableToBeAssignedToTeacher(
+        address classroomAdminWallet,
+        uint256[] memory classroomIds
+    ) private view returns (bool) {
+        for (uint256 i = 0; i < classroomIds.length; i++) {
+            uint256 classroomId = classroomIds[i];
+            // do the classroom ids exist?
+            if (!registeredIds.classroomBool[classroomId]) {
+                return false;
+            }
+            Classroom memory classroom = idsToObjects.classroom[classroomId];
+            // are they yours?
+            if (classroomAdminWallet != classroom.classroomAdminId) {
+                return false;
+            }
         }
+        return true;
     }
 
-    function deleteFromClassroomAdminAssignedLandIds(
-        uint256[] memory landIds
+    function registerLandToClassroomAdmin(
+        uint256 landId,
+        address _classroomAdminId
     ) private {
-        // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-        for (uint256 i = 0; i < landIds.length; i++) {
-            delete landIdToClassroomAdmin[landIds[i]];
-        }
+        idsToObjects.land[landId] = Land({
+            id: landId,
+            classroomAdminId: _classroomAdminId,
+            classroomId: 0
+        });
+
+        registeredIds.landsRegisteredToClassroomAdmin.push(landId);
+        registeredIds.landsRegisteredToClassroomAdminBool[landId] = true;
     }
 
-    // dev - Removes the entire entry from the mapping.  Use with caution.
-    function deleteFromClassroomAdminLandIds(address walletAddress) private {
-        // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
-        deleteFromClassroomAdminAssignedLandIds(
-            classroomAdminToLandIds[walletAddress]
-        );
-        delete classroomAdminToLandIds[walletAddress];
-    }
-
-    function removeAllClassroomAdminLandIds(address walletAddress) public {
-        // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
-        deleteFromClassroomAdminAssignedLandIds(
-            classroomAdminToLandIds[walletAddress]
-        );
-        classroomAdminToLandIds[walletAddress] = new uint256[](0);
-    }
-
-    function removeClassroomAdminLandId(
-        address walletAddress,
-        uint256 landId
-    )
-        private
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
-        );
+    function unregisterLandFromClassroomAdmin(uint256 landId) private {
+        delete idsToObjects.land[landId];
         removeUintFromArrayMaintainOrder(
-            classroomAdminToLandIds[walletAddress],
+            registeredIds.landsRegisteredToClassroomAdmin,
             landId
         );
-        delete landIdToClassroomAdmin[landId];
+        delete registeredIds.landsRegisteredToClassroomAdminBool[landId];
     }
 
-    function removeClassroomAdminLandIds(
-        address walletAddress,
-        uint256[] calldata landIds
-    )
-        public
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
+    function registerLandToClassroom(
+        uint256 landId,
+        uint256 _classroomId
+    ) private {
+        idsToObjects.land[landId].classroomId = _classroomId;
+        registeredIds.landsRegisteredToClassroom.push(landId);
+        registeredIds.landsRegisteredToClassroomBool[landId] = true;
+    }
+
+    function unregisterLandFromClassroom(uint256 landId) private {
+        idsToObjects.land[landId].classroomId = 0;
+        removeUintFromArrayMaintainOrder(
+            registeredIds.landsRegisteredToClassroom,
+            landId
         );
-        for (uint256 i = 0; i < landIds.length; i++) {
-            removeClassroomAdminLandId(walletAddress, landIds[i]);
+        delete registeredIds.landsRegisteredToClassroomBool[landId];
+    }
+
+    // classroomAdmin
+    function registerClassroomAdmin(
+        address _walletAddress,
+        uint256[] memory landIds
+    ) private {
+        uint256[] memory emptyUintList;
+        int[][] memory _landCoordinates;
+
+        idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
+            walletAddress: _walletAddress,
+            landIds: landIds,
+            landCoordinates: _landCoordinates,
+            classroomIds: emptyUintList,
+            teacherIds: emptyUintList
+        });
+        registeredIds.classroomAdmin.push(_walletAddress);
+        registeredIds.classroomAdminBool[_walletAddress] = true;
+        grantRole(CLASSROOM_ADMIN, _walletAddress);
+        // landIds automatically registered in require
+    }
+
+    function unregisterClassroomAdmin(address _walletAddress) private {
+        ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
+            _walletAddress
+        ];
+
+        for (uint256 i = 0; i < classroomAdmin.landIds.length; i++) {
+            unregisterLandFromClassroomAdmin(classroomAdmin.landIds[i]);
         }
+
+        // delete classrooms
+        for (uint256 i = 0; i < classroomAdmin.classroomIds.length; i++) {
+            unregisterClassroom(classroomAdmin.classroomIds[i]);
+        }
+
+        delete idsToObjects.classroomAdmin[_walletAddress];
+        removeAddressFromArrayMaintainOrder(
+            registeredIds.classroomAdmin,
+            _walletAddress
+        );
+        delete registeredIds.classroomAdminBool[_walletAddress];
+        revokeRole(CLASSROOM_ADMIN, _walletAddress);
     }
 
-    // delete
+    function registerClassroom(
+        uint256 _id,
+        string memory _name,
+        uint256[] memory _landIds,
+        address _classroomAdminId
+    ) private {
+        uint256[] memory emptyUintList;
+        int[][] memory emptyIntList;
 
-    function removeClassroomAdmin(
-        address walletAddress
-    )
-        public
-    // onlyRole(LAND_OPERATOR) TODO: development only.  See addClassroomAdmin above.
-    {
-        require(
-            hasRole(CLASSROOM_ADMIN, walletAddress),
-            "Provided wallet address is not CLASSROOM_ADMIN"
+        idsToObjects.classroom[_id] = Classroom({
+            id: _id,
+            name: _name,
+            landIds: _landIds,
+            landCoordinates: emptyIntList,
+            classroomAdminId: _classroomAdminId,
+            teacherIds: emptyUintList
+        });
+        registeredIds.classroom.push(_id);
+        registeredIds.classroomBool[_id] = true;
+        for (uint256 i = 0; i < _landIds.length; i++) {
+            registerLandToClassroom(_landIds[i], _id);
+        }
+        idsToObjects.classroomAdmin[_classroomAdminId].classroomIds.push(_id);
+    }
+
+    function unregisterClassroom(uint256 _id) private {
+        Classroom memory classroom = idsToObjects.classroom[_id];
+        uint256[] memory _landIds = classroom.landIds;
+        removeUintFromArrayMaintainOrder(registeredIds.classroom, _id);
+
+        delete registeredIds.classroomBool[_id];
+        for (uint256 i = 0; i < _landIds.length; i++) {
+            unregisterLandFromClassroom(_landIds[i]);
+        }
+        removeUintFromArrayMaintainOrder(
+            idsToObjects
+                .classroomAdmin[classroom.classroomAdminId]
+                .classroomIds,
+            _id
         );
-        deleteFromClassroomAdminLandIds(walletAddress);
-        revokeRole(CLASSROOM_ADMIN, walletAddress);
-        removeAddressFromArrayMaintainOrder(
-            classroomAdminWalletAddresses,
-            walletAddress
+
+        // delete orphaned teachers
+        for (uint256 i = 0; i < classroom.teacherIds.length; i++) {
+            Teacher memory teacher = idsToObjects.teacher[
+                classroom.teacherIds[i]
+            ];
+            if (teacher.classroomIds.length == 1) {
+                unregisterTeacher(teacher.id);
+            } else {
+                // remove this classroom from the teacher
+                uint256[] memory newClassroomIds = new uint256[](
+                    teacher.classroomIds.length - 1
+                );
+                // build the new array
+                // skip the classroom to be removed
+                uint256 keyCounter = 0;
+                for (uint256 j = 0; j < teacher.classroomIds.length; j++) {
+                    if (teacher.classroomIds[j] != _id) {
+                        newClassroomIds[j] = teacher.classroomIds[keyCounter];
+                        keyCounter++;
+                    }
+                }
+                _updateTeacher(teacher.id, newClassroomIds);
+            }
+        }
+
+        delete idsToObjects.classroom[_id];
+    }
+
+    function registerTeacher(
+        uint256 _id,
+        address _walletAddress,
+        uint256[] memory _classroomIds,
+        address classroomAdminWallet
+    ) private {
+        idsToObjects.teacher[_id] = Teacher({
+            id: _id,
+            walletAddress: _walletAddress,
+            classroomIds: _classroomIds,
+            classroomAdminId: classroomAdminWallet
+        });
+        registeredIds.teacher.push(_id);
+        registeredIds.teacherBool[_id] = true;
+        // associate with classrooms
+        for (uint256 i = 0; i < _classroomIds.length; i++) {
+            idsToObjects.classroom[_classroomIds[i]].teacherIds.push(_id);
+        }
+        idsToObjects.classroomAdmin[classroomAdminWallet].teacherIds.push(_id);
+    }
+
+    function unregisterTeacher(uint256 _id) private {
+        Teacher memory teacher = idsToObjects.teacher[_id];
+        removeUintFromArrayMaintainOrder(registeredIds.teacher, _id);
+        delete registeredIds.teacherBool[_id];
+        for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
+            removeUintFromArrayMaintainOrder(
+                idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
+                _id
+            );
+        }
+        removeUintFromArrayMaintainOrder(
+            idsToObjects.classroomAdmin[teacher.classroomAdminId].teacherIds,
+            _id
         );
+        delete idsToObjects.teacher[_id];
+    }
+
+    function _updateTeacher(uint256 id, uint256[] memory classroomIds) private {
+        address walletAddress = idsToObjects.teacher[id].walletAddress;
+
+        unregisterTeacher(id);
+        registerTeacher(id, walletAddress, classroomIds, msg.sender);
     }
 
     // utility
@@ -518,6 +707,19 @@ contract TeachContract is AccessControl {
                 break;
             }
         }
+    }
+
+    function getCoordinatesFromLandIds(
+        uint256[] memory landIds
+    ) private pure returns (int[][] memory) {
+        int[][] memory rtn = new int[][](landIds.length);
+        for (uint256 i = 0; i < landIds.length; i++) {
+            (int x, int y) = _decodeTokenId(landIds[i]);
+            rtn[i] = new int[](2);
+            rtn[i][0] = x;
+            rtn[i][1] = y;
+        }
+        return rtn;
     }
 
     // methods and variables to encode / decode land token ids
