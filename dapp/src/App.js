@@ -27,6 +27,7 @@ import {AddClass} from "./components/sections/teacher/AddClass";
 import {WorldsOwner} from "./components/sections/worldsOwner/WorldsOwner";
 import {DocsInitialPage} from "./components/sections/DocsInitialPage";
 import {adminDocs, devDocs, ownerDocs, teacherDocs} from "./utils/markup";
+import {EditClass} from "./components/sections/teacher/EditClass";
 
 const App = () => {
 
@@ -57,9 +58,9 @@ const App = () => {
   useEffect( () => {
       userCheck().then(result => {
           console.log(result.admin)
-            dispatch(setIsPrivate(!result.admin))
+          dispatch(setIsPrivate(!result.admin))
       })
-  },[])
+  },[auth])
 
   return (
       <Switch>
@@ -94,6 +95,18 @@ const App = () => {
             layout={LayoutDefault}
         />
 
+          <AppRoute
+              exact
+              path="/teacher/add"
+              component={AddClass}
+              layout={LayoutDefault}
+          />
+          <AppRoute
+              exact
+              path="/teacher/edit"
+              component={EditClass}
+              layout={LayoutDefault}
+          />
         {/* private Routes */}
 
           <AppRouteAdmin
