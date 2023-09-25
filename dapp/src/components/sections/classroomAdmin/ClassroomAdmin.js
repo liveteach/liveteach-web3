@@ -1,10 +1,21 @@
 import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Button} from "@mui/material";
+import {useEffect} from "react";
+import { getClassrooms, deleteClassroom } from "../../../utils/interact";
+import {setClassrooms} from "../../../store/classroomAdminState";
 
 export default function ClassroomAdmin(props){
 
-    const { classrooms, classroomIds, teachers, teachersWallets} = useSelector((state) => state.classroomAdmin)
+    const { classrooms, teachers, teachersWallets} = useSelector((state) => state.classroomAdmin)
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        getClassrooms().then(result => {
+            console.log(result)
+            dispatch(setClassrooms(result))
+        })
+    },[])
 
     return(
         <div className="ui container">
@@ -40,13 +51,18 @@ export default function ClassroomAdmin(props){
                                     return (
                                         <tr key={`Contributor_${index}`}>
                                             <td>
-                                                {item}
+                                                {item.name}
                                             </td>
                                             <td>
-                                                {classroomIds[index]}
+                                                {item.id}
                                             </td>
                                             <td>
-                                                <Button>Remove</Button>
+                                                <Button
+                                                onClick={() =>{
+                                                    deleteClassroom(item.id).then(result => {
+                                                        console.log(result)
+                                                    })
+                                                }}>Remove</Button>
                                             </td>
                                         </tr>
                                     );

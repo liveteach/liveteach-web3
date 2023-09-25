@@ -13,7 +13,6 @@ const AppRoute = ({
   Layout = Layout === undefined ? (props) => <>{props.children}</> : Layout;
 
   const authCheck = checkConnectedWalletAddress();
-  console.log(isPrivate)
   if (!isPrivate || authCheck.auth) {
     return (
       <Route

@@ -11,7 +11,7 @@ import LayoutLogIn from "./layouts/LayoutLogIn";
 import LogIn from "./views/LogIn";
 
 // AuthCheck Utils
-import {checkConnectedWalletAddress} from "./utils/AuthCheck";
+import {checkConnectedWalletAddress, userCheck} from "./utils/AuthCheck";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
 import AppRouteAdmin from "./utils/AppRouteAdmin";
@@ -20,20 +20,21 @@ import { LandOperator} from "./components/sections/landOperator/LandOperator";
 import Student from "./components/sections/student/Student";
 import Teacher from "./components/sections/teacher/Teacher";
 import {Route} from "react-router-dom";
-import {setAuth} from "./store/adminUser";
+import {setAuth, setIsPrivate} from "./store/adminUser";
 import {AddTeacher} from "./components/sections/classroomAdmin/AddTeacher";
 import {AddClassroom} from "./components/sections/classroomAdmin/AddClassroom";
 import {AddClass} from "./components/sections/teacher/AddClass";
 import {WorldsOwner} from "./components/sections/worldsOwner/WorldsOwner";
 import {DocsInitialPage} from "./components/sections/DocsInitialPage";
 import {adminDocs, devDocs, ownerDocs, teacherDocs} from "./utils/markup";
+
 const App = () => {
 
   const history = useHistory();
   const location = useLocation();
   const currentURL = location.pathname;
 
-  const {isPrivate,auth} = useSelector((state) => state.adminUser)
+  const {isPrivate,auth,walletAddress} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -54,10 +55,11 @@ const App = () => {
   }, [auth]);
 
   useEffect( () => {
-      // await userCheck().then(result => {
-      //       dispatch(setIsPrivate(!result.admin));
-      // })
-  })
+      userCheck().then(result => {
+          console.log(result.admin)
+            dispatch(setIsPrivate(!result.admin))
+      })
+  },[])
 
   return (
       <Switch>

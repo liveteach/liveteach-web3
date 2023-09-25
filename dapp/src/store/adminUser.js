@@ -6,8 +6,9 @@ export const adminUserSlice = createSlice({
         walletAddress: "",
         name: "",
         avatar: "",
-        isPrivate: false,
-        auth: false
+        isPrivate: true,
+        auth: false,
+        avatarLoaded: false
     },
     reducers: {
         setWalletAddress: (state, action)=> {
@@ -24,10 +25,13 @@ export const adminUserSlice = createSlice({
         }),
         setAuth: ((state, action) => {
             state.auth = action.payload
+        }),
+        setAvatarLoaded: ((state, action) => {
+            state.avatarLoaded = action.payload;
         })
     }
 });
 
-export const { setWalletAddress, setName, setAvatar, setIsPrivate, setAuth } = adminUserSlice.actions;
+export const { setWalletAddress, setName, setAvatar, setIsPrivate, setAuth, setAvatarLoaded } = adminUserSlice.actions;
 
 export default adminUserSlice.reducer;

@@ -1,3 +1,4 @@
+import {getCurrentWalletConnected, isClassroomAdmin} from "./interact";
 
 export const checkConnectedWalletAddress = () => {
   if (window?.ethereum?.selectedAddress) {
@@ -13,18 +14,15 @@ export const checkConnectedWalletAddress = () => {
 };
 
 export const userCheck = async () => {
-  // try {
-  //   const result = await getContributorAdmin();
-  //   console.log(result);
-  //   console.log(window.ethereum.selectedAddress);
-  //
-  //   return{
-  //     admin:window.ethereum.selectedAddress.toLowerCase() === result.toLowerCase()
-  //   }
-  // } catch (error) {
-  //   console.error(error);
-  //   return {
-  //     admin: false
-  //   };
-  // }
+  try {
+    const walletAddress = getCurrentWalletConnected();
+    const result = await isClassroomAdmin((await walletAddress).address);
+    console.log(result);
+    return {admin: result}
+  } catch (error) {
+    console.error(error);
+    return {
+      admin: false
+    };
+  }
 };
