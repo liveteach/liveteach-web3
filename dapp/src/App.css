@@ -63,12 +63,16 @@
     border-color: #ff2d55;
 }
 
-.selectMenu,
-.selectItem{
+.selectMenu{
     background-color: white !important;
     border-radius: 5px;
     border-color: white !important;
     color: black !important;
+}
+.selectItem{
+    background-color: white !important;
+    color: black !important;
+    width: 100%;
 }
 
 .menuSpacing{
