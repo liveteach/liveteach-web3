@@ -103,12 +103,13 @@ export function AddClassroom(props){
             <div className="ui container">
                 <Grid container>
                     <Grid item xs={6}>
-                        <div style={{backgroundColor: 'white', color: 'black',width: '90%'}}>
-                            <MuiChipsInput value={classLandIds} onChange={handleChange} />
+                        <h4>LAND Parcels</h4>
+                        <div style={{backgroundColor: 'white', color: 'black'}}>
+                            <MuiChipsInput value={classLandIds} onChange={handleChange} fullWidth={true}/>
                         </div>
                     </Grid>
                     <Grid item xs={6}>
-                            <img src={imgEndpoint} style={{width: '40%'}}/>
+                            <img src={imgEndpoint} style={{width: '40%', marginLeft: '100px'}}/>
                     </Grid>
                 </Grid>
             </div>
