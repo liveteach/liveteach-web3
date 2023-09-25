@@ -44,6 +44,18 @@ export function AddClassroom(props){
         return logicalCenter;
     }
 
+    function createArrayCoordsToInt(coords){
+        let arr = [];
+        console.log(coords)
+        for(let i = 0; i < coords.length; i++){
+            console.log(coords[i])
+            let coordArr = coords[i].split(",");
+            let parsedCoords = coordArr.map(coord => parseInt(coord, 10));
+            arr.push(parsedCoords);
+        }
+        return arr
+    }
+
     return(
         <div className="ui container">
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
@@ -55,7 +67,9 @@ export function AddClassroom(props){
                         <div className="dcl tabs-right">
                                 <button
                                     onClick={() => {
-                                        createClassroom(className,classLandIds).then(result => {
+                                        let landIds = createArrayCoordsToInt(classLandIds);
+                                        console.log(landIds)
+                                        createClassroom(className,landIds).then(result => {
                                             console.log(result)
                                         })
                                     }}
