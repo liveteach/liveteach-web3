@@ -109,7 +109,7 @@ export function AddClassroom(props){
                         </div>
                     </Grid>
                     <Grid item xs={6}>
-                            <img src={imgEndpoint} style={{width: '40%'}}/>
+                            <img src={imgEndpoint} style={{width: '40%', marginLeft: '100px'}}/>
                     </Grid>
                 </Grid>
             </div>
