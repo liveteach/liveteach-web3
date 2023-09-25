@@ -113,24 +113,6 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_landIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "createClassroom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "walletAddress",
         "type": "address"
@@ -142,6 +124,42 @@
       }
     ],
     "name": "createClassroomAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "int256[][]",
+        "name": "coordinatePairs",
+        "type": "int256[][]"
+      }
+    ],
+    "name": "createClassroomCoordinates",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_landIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "createClassroomLandIds",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

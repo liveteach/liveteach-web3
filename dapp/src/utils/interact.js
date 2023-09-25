@@ -97,7 +97,7 @@ export const getBalanceOfUser = async () => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const balanceOfUser = await window.contract.methods
     .balanceOf("0x88ad51a54cc7bee75dfa052ad6be78d772dd9d81")
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return balanceOfUser;
 };
 
@@ -107,10 +107,10 @@ export const getTokenOfOwnerByIndex = async (index) => {
       "0x88ad51a54cc7bee75dfa052ad6be78d772dd9d81",
       index + ""
     )
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   const coordinate = await window.contract.methods
     .decodeTokenId(token + "")
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   const visit = `https://play.decentraland.org?position=${coordinate[0]},${coordinate[1]}`;
   const opensea = `https://opensea.io/assets/${contractAddress}/${token}`;
   return { token, coordinate, visit, opensea };
@@ -138,7 +138,7 @@ export const getClassroomAdmins = async () => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .getClassroomAdmins()
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -148,7 +148,7 @@ export const getClassroomAdmin = async (walletAddress) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .getClassroomAdmin(walletAddress)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -158,7 +158,7 @@ export const isLandIdAssigned = async (landId) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .isClassroomAdminAssignedLandId(landId)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -170,7 +170,7 @@ export const isLandIdsAssigned = async (landIds) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .isClassroomAdminAssignedLandIds(landIds)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -180,7 +180,7 @@ export const isClassroomAdmin = async (walletAddress) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .isClassroomAdmin(walletAddress)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -189,7 +189,7 @@ export const getClassroomAdminLandIds = async (walletAddress) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .getClassroomAdminLandIds(walletAddress)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 // update
@@ -224,11 +224,27 @@ export const removeClassroomAdmin = async (walletAddress) => {
 // classroom
 
 // create
-export const createClassroom = async (name, landIds) => {
+export const createClassroomLandIds = async (name, landIds) => {
   // onlyRole(CLASSROOM_ADMIN)
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.createClassroom,
     [name, landIds]);
+};
+export const createClassroom = async (name, coordinatePairs) => {
+  /*
+  coordinatePairs - a 2d signed integer array of x,y values 
+  representing land coordinates
+  i.e.
+  coordinatePairs = [
+    [1, 2],
+    [50, 99],
+    [-128, 256]
+  ] 
+  */
+  // onlyRole(CLASSROOM_ADMIN)
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.createClassroomCoordinates,
+    [name, coordinatePairs]);
 };
 // read
 export const getClassrooms = async () => {
@@ -237,7 +253,7 @@ export const getClassrooms = async () => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .getClassrooms()
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
@@ -247,7 +263,7 @@ export const getClassroom = async (id) => {
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .getClassroom(id)
-    .call({from: window.ethereum.selectedAddress});
+    .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 // update

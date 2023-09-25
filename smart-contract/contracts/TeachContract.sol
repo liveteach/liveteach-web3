@@ -40,9 +40,10 @@ contract TeachContract is AccessControl {
     }
 
     // create
-    function createClassroom(
+
+    function createClassroomLandIds(
         string calldata _name,
-        uint256[] calldata _landIds
+        uint256[] memory _landIds
     ) public onlyRole(CLASSROOM_ADMIN) {
         for (uint256 i = 0; i < _landIds.length; i++) {
             require(
@@ -67,6 +68,20 @@ contract TeachContract is AccessControl {
         classroomAdminToClassrooms[msg.sender].push(classroom);
         classroomIdToClassroomAdmin[_id] = msg.sender;
         classroomIdToClassroom[_id] = classroom;
+    }
+
+    function createClassroomCoordinates(
+        string calldata _name,
+        int[][] calldata coordinatePairs
+    ) public onlyRole(CLASSROOM_ADMIN) {
+        uint256[] memory landIds = new uint256[](coordinatePairs.length);
+        for (uint256 i = 0; i < coordinatePairs.length; i++) {
+            landIds[i] = _encodeTokenId(
+                coordinatePairs[i][0],
+                coordinatePairs[i][1]
+            );
+        }
+        createClassroomLandIds(_name, landIds);
     }
 
     // read
@@ -503,5 +518,56 @@ contract TeachContract is AccessControl {
                 break;
             }
         }
+    }
+
+    // methods and variables to encode / decode land token ids
+    // TODO: remove thiese and rely on external contract when
+    // we have something in place.
+    uint256 constant clearLow =
+        0xffffffffffffffffffffffffffffffff00000000000000000000000000000000;
+    uint256 constant clearHigh =
+        0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff;
+    uint256 constant factor = 0x100000000000000000000000000000000;
+
+    // function encodeTokenId(int x, int y) external pure returns (uint) {
+    //     return _encodeTokenId(x, y);
+    // }
+
+    function _encodeTokenId(int x, int y) internal pure returns (uint result) {
+        require(
+            -1000000 < x && x < 1000000 && -1000000 < y && y < 1000000,
+            "The coordinates should be inside bounds"
+        );
+        return _unsafeEncodeTokenId(x, y);
+    }
+
+    function _unsafeEncodeTokenId(int x, int y) internal pure returns (uint) {
+        return ((uint(x) * factor) & clearLow) | (uint(y) & clearHigh);
+    }
+
+    // function decodeTokenId(uint value) external pure returns (int, int) {
+    //     return _decodeTokenId(value);
+    // }
+
+    function _unsafeDecodeTokenId(
+        uint value
+    ) internal pure returns (int x, int y) {
+        x = expandNegative128BitCast((value & clearLow) >> 128);
+        y = expandNegative128BitCast(value & clearHigh);
+    }
+
+    function _decodeTokenId(uint value) internal pure returns (int x, int y) {
+        (x, y) = _unsafeDecodeTokenId(value);
+        require(
+            -1000000 < x && x < 1000000 && -1000000 < y && y < 1000000,
+            "The coordinates should be inside bounds"
+        );
+    }
+
+    function expandNegative128BitCast(uint value) internal pure returns (int) {
+        if (value & (1 << 127) != 0) {
+            return int(value | clearLow);
+        }
+        return int(value);
     }
 }
