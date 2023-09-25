@@ -3,8 +3,9 @@ import { createSlice} from "@reduxjs/toolkit";
 export const classroomAdminStateSlice = createSlice({
     name: "classroomAdmin",
     initialState: {
-        classrooms: ["test", "test2", "test3"],
-        classroomIds: ["1","2","3"],
+        classrooms: [{name: "test", id: 2, landIds: ["1","2"]}],
+        className: "",
+        classLandIds: [],
         teachers: ["Yoda", "Batman", "Mr Kimble"],
         teachersWallets: ["0xed6767397324g", "0x8737980h234579df", "0x987432iu45iu239"],
         landParcels: ["100,91","100,92","100,93","100,94","100,95","100,96"],
@@ -14,8 +15,11 @@ export const classroomAdminStateSlice = createSlice({
         setClassrooms: (state, action) => {
             state.classrooms = action.payload
         },
-        setClassRoomIds: (state, action) => {
-            state.classroomIds = action.payload
+        setClassName: (state, action) => {
+            state.className = action.payload
+        },
+        setClassLandIds:(state, action) => {
+            state.classLandIds = action.payload
         },
         setTeachers: (state, action)=> {
             state.teachers = action.payload
@@ -32,6 +36,6 @@ export const classroomAdminStateSlice = createSlice({
     }
 });
 
-export const { setClassrooms, setClassRoomIds,setTeachers, setTeachersWallets, setLandParcels, setImgEndpoint } = classroomAdminStateSlice.actions;
+export const { setClassrooms, setClassName, setClassLandIds, setTeachers, setTeachersWallets, setLandParcels, setImgEndpoint } = classroomAdminStateSlice.actions;
 
 export default classroomAdminStateSlice.reducer;
