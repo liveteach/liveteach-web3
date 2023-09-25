@@ -5,8 +5,9 @@ import {Link} from "react-router-dom";
 import Logo from "./partials/Logo";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
-import {setAvatar, setName, setWalletAddress} from "../../store/adminUser";
+import {setAuth, setAvatar, setName, setWalletAddress, setAvatarLoaded} from "../../store/adminUser";
 import { getCurrentWalletConnected} from "../../utils/interact";
+import {checkConnectedWalletAddress} from "../../utils/AuthCheck";
 
 const propTypes = {
   authenticated: PropTypes.bool,
@@ -21,18 +22,12 @@ const Header = ({
                   ...props
                 }) => {
 
-  const { avatar,name,auth } = useSelector((state) => state.adminUser);
+  const { avatar,name,auth, avatarLoaded } = useSelector((state) => state.adminUser);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null)
 
-  useEffect(async () => {
-
-    await getCurrentWalletConnected().then(result => {
-      console.log(result)
-      getProfile(result.address);
-      dispatch(setWalletAddress(result.address))
-    })
+  useEffect( () => {
 
     const handleOutsideClick = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -51,6 +46,15 @@ const Header = ({
 
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    dispatch(setAuth(checkConnectedWalletAddress().auth));
+    getCurrentWalletConnected().then( result => {
+      console.log(result)
+      getProfile(result.address).then(() => dispatch(setAvatarLoaded(true)));
+      dispatch(setWalletAddress(result.address))
+    })
+  },[avatarLoaded])
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -63,7 +67,7 @@ const Header = ({
         );
         console.log(result);
         dispatch(setAvatar(result.data.avatars[0].avatar.snapshots.face256));
-        dispatch(setName(result.data.avatars[0].name))
+        dispatch(setName(result.data.avatars[0].name));
       } catch (error) {
         console.error("Error:", error);
       }
@@ -90,12 +94,13 @@ const Header = ({
 
                 </div>
 
-                {auth ? (
+                {(auth && avatarLoaded) ? (
                     <div className="dcl navbar-account">
                       <Button
                           className="ui small basic button"
                           size="small"
                           variant="contained"
+                          disabled
                       >
                         connected
                       </Button>
