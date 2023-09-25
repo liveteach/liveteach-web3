@@ -1,6 +1,10 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
+import {useSelector} from "react-redux";
+import {Button} from "@material-ui/core";
 
 export function EditClass(props){
+
+    const { selectedClass } = useSelector((state) => state.teacher)
 
     return (
         <div className="ui container">
@@ -29,6 +33,7 @@ export function EditClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
+                                value={selectedClass.name}
                             />
                         </div>
                     </Grid>
@@ -36,9 +41,13 @@ export function EditClass(props){
                         <div className={"inputFields"}>
                             <h4>Location</h4>
                             <Select className="selectMenu" fullWidth={true}>
-                                <MenuItem className="selectItem">Class 1</MenuItem>
-                                <MenuItem className="selectItem">Class 2</MenuItem>
-                                <MenuItem className="selectItem">Class 3</MenuItem>
+                                {
+                                    selectedClass.location.map((item, index) => {
+                                        return(
+                                            <MenuItem className="selectItem" key={`${item + index}`} value={item}>{item}</MenuItem>
+                                        )
+                                    })
+                                }
                             </Select>
                         </div>
                     </Grid>
@@ -51,6 +60,7 @@ export function EditClass(props){
                             fullWidth={true}
                             className="textInput"
                             color="error"
+                            value={selectedClass.description}
                         />
                     </div>
                 </Grid>
@@ -78,34 +88,27 @@ export function EditClass(props){
                             <tbody>
                             <tr>
                                 <th>Name</th>
+                                <th></th>
                             </tr>
 
-                            {/*{*/}
-                            {/*    classNames.map((item, index) => {*/}
-                            {/*        return (*/}
-                            {/*            <tr key={`Contributor_${index}`}>*/}
-                            {/*                <td>*/}
-                            {/*                    {item}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    {descriptions[index]}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    {classrooms[index]}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    <Link to="/teacher/edit">*/}
-                            {/*                        <Button*/}
-                            {/*                            className="ui small basic button"*/}
-                            {/*                            size="small"*/}
-                            {/*                            variant="contained"*/}
-                            {/*                        >Edit</Button>*/}
-                            {/*                    </Link>*/}
-                            {/*                </td>*/}
-                            {/*            </tr>*/}
-                            {/*        );*/}
-                            {/*    })*/}
-                            {/*}*/}
+                            {
+                                selectedClass.enrollments.map((item, index) => {
+                                    return (
+                                        <tr key={`Contributor_${index}`}>
+                                            <td>
+                                                {item}
+                                            </td>
+                                            <td>
+                                                <Button
+                                                    className="ui small basic button"
+                                                    size="small"
+                                                    variant="contained"
+                                                >Remove</Button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            }
                             </tbody>
                         </table>
                     </div>
