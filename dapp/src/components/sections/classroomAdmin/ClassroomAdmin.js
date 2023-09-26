@@ -2,18 +2,22 @@ import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {Button} from "@mui/material";
 import {useEffect} from "react";
-import { getClassrooms, deleteClassroom } from "../../../utils/interact";
-import {setClassrooms} from "../../../store/classroomAdminState";
+import { getClassrooms, deleteClassroom, getTeachers, deleteTeacher } from "../../../utils/interact";
+import {setClassrooms, setTeachers} from "../../../store/classroomAdminState";
 
 export default function ClassroomAdmin(props){
 
-    const { classrooms, teachers, teachersWallets} = useSelector((state) => state.classroomAdmin)
+    const { classrooms, teachers } = useSelector((state) => state.classroomAdmin)
     const dispatch = useDispatch();
 
     useEffect(() => {
         getClassrooms().then(result => {
             console.log(result)
             dispatch(setClassrooms(result))
+        })
+        getTeachers().then(result => {
+            console.log(result)
+            dispatch(setTeachers(result))
         })
     },[])
 
@@ -104,13 +108,19 @@ export default function ClassroomAdmin(props){
                                     return (
                                         <tr key={`Contributor_${index}`}>
                                             <td>
-                                                {item}
+                                                {item.walletAddress}
                                             </td>
                                             <td>
-                                                {teachersWallets[index]}
+                                                {item.classRoomIds}
                                             </td>
                                             <td>
-                                                <Button>Remove</Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        deleteTeacher(item.id).then(result => {
+                                                            console.log(result)
+                                                        })
+                                                    }}
+                                                >Remove</Button>
                                             </td>
                                         </tr>
                                     );
