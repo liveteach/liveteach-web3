@@ -1,5 +1,5 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
-import {updateTeacher, getClassrooms, createTeacher} from "../../../utils/interact";
+import { getClassrooms, createTeacher} from "../../../utils/interact";
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
 import {setClassrooms} from "../../../store/classroomAdminState";
@@ -14,7 +14,7 @@ export function AddTeacher(props){
     useEffect(() => {
         getClassrooms().then(result => {
             if(result.length > 0){
-               // dispatch(setClassrooms(result))
+               dispatch(setClassrooms(result))
             }
         })
     },[])
