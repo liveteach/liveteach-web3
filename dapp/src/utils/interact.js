@@ -174,7 +174,7 @@ export const updateClassroomAdmin = async (walletAddress, landIds) => {
 export const removeClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.removeClassroomAdmin,
+  return callGasTransaction(window.contract.methods.deleteClassroomAdmin,
     [walletAddress]);
 };
 
