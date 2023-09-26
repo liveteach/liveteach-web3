@@ -152,31 +152,8 @@ export const getClassroomAdmin = async (walletAddress) => {
   return result;
 };
 
-export const isLandIdAssigned = async (landId) => {
-  // should only be callable by LAND_OPERATOR, currently callable by anyone
-
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const result = await window.contract.methods
-    .isClassroomAdminAssignedLandId(landId)
-    .call({ from: window.ethereum.selectedAddress });
-  return result;
-};
-
-export const isLandIdsAssigned = async (landIds) => {
-  // should only be callable by LAND_OPERATOR, currently callable by anyone
-
-  // checks all included land Ids to see if they're registered
-  // returns false if any are not.
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const result = await window.contract.methods
-    .isClassroomAdminAssignedLandIds(landIds)
-    .call({ from: window.ethereum.selectedAddress });
-  return result;
-};
-
 export const isClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
-
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
     .isClassroomAdmin(walletAddress)
@@ -184,36 +161,16 @@ export const isClassroomAdmin = async (walletAddress) => {
   return result;
 };
 
-export const getClassroomAdminLandIds = async (walletAddress) => {
-  // should only be callable by LAND_OPERATOR, currently callable by anyone
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const result = await window.contract.methods
-    .getClassroomAdminLandIds(walletAddress)
-    .call({ from: window.ethereum.selectedAddress });
-  return result;
-};
 // update
-export const addClassroomAdminLandIds = async (walletAddress, landIds) => {
+export const updateClassroomAdmin = async (walletAddress, landIds) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
+  // updates landIds for a classroom admin
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.addClassroomAdminLandIds,
+  return callGasTransaction(window.contract.methods.updateClassroom,
     [walletAddress, landIds]);
 };
+
 // delete
-export const removeAllClassroomAdminLandIds = async (walletAddress) => {
-  // should only be callable by LAND_OPERATOR, currently callable by anyone
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.removeAllClassroomAdminLandIds,
-    [walletAddress]);
-};
-
-export const removeClassroomAdminLandIds = async (walletAddress, landIds) => {
-  // should only be callable by LAND_OPERATOR, currently callable by anyone
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.removeClassroomAdminLandIds,
-    [walletAddress, landIds]);
-};
-
 export const removeClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
@@ -282,6 +239,51 @@ export const deleteClassroom = async (id) => {
   return callGasTransaction(window.contract.methods.deleteClassroom,
     [id]);
 };
+
+// Teachers
+// create
+export const createTeacher = async (walletAddress, classroomIds) => {
+  // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.createTeacher,
+    [walletAddress, classroomIds]);
+}
+// read
+export const getTeachers = async () => {
+  // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getTeachers()
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+export const getTeacher = async (id) => {
+  // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getTeacher(id)
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+// update
+export const updateTeacher = async (id, classroomIds) => {
+  // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.updateTeacher,
+    [id, classroomIds]);
+}
+// delete
+export const deleteTeacher = async (id) => {
+  // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.deleteTeacher,
+    [id]);
+}
 
 async function callGasTransaction(func, params) {
   const transactionParameters = {
