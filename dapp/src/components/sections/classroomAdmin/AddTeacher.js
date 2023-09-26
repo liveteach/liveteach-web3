@@ -1,20 +1,20 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
-import {createTeacher, getClassrooms} from "../../../utils/interact";
+import {updateTeacher, getClassrooms, createTeacher} from "../../../utils/interact";
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
 import {setClassrooms} from "../../../store/classroomAdminState";
-import {setWalletAddress,setTeacherClassroom} from "../../../store/teacherState";
+import {setWalletAddress,setTeacherClassrooms} from "../../../store/teacherState";
 
 export function AddTeacher(props){
 
-    const {walletAddress,teacherClassroom} = useSelector((state) => state.teacher);
+    const {walletAddress,teacherClassrooms} = useSelector((state) => state.teacher);
     const {classrooms} = useSelector((state) => state.classroomAdmin)
     const dispatch = useDispatch();
 
     useEffect(() => {
         getClassrooms().then(result => {
             if(result.length > 0){
-                dispatch(setClassrooms(result))
+               // dispatch(setClassrooms(result))
             }
         })
     },[])
@@ -30,7 +30,7 @@ export function AddTeacher(props){
                         <div className="dcl tabs-right">
                             <button
                                 onClick={() => {
-                                    createTeacher(walletAddress,teacherClassroom).then(result => {
+                                    createTeacher(walletAddress,teacherClassrooms).then(result => {
                                         console.log(result)
                                     })
                                 }}
@@ -61,9 +61,10 @@ export function AddTeacher(props){
                                 className="selectMenu"
                                 fullWidth={true}
                                 id="selectMenuAddTeacher"
-                                value={teacherClassroom}
+                                multiple
+                                value={teacherClassrooms}
                                 onChange={(e) => {
-                                    dispatch(setTeacherClassroom(e.target.value))
+                                    dispatch(setTeacherClassrooms(e.target.value))
                                 }}
                             >
                                 {

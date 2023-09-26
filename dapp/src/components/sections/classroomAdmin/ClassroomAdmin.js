@@ -13,11 +13,11 @@ export default function ClassroomAdmin(props){
     useEffect(() => {
         getClassrooms().then(result => {
             console.log(result)
-            dispatch(setClassrooms(result))
+            //dispatch(setClassrooms(result))
         })
         getTeachers().then(result => {
             console.log(result)
-            dispatch(setTeachers(result))
+            //dispatch(setTeachers(result))
         })
     },[])
 
