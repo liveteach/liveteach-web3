@@ -116,7 +116,7 @@ export default function ClassroomAdmin(props){
                                             <td>
                                                 <Button
                                                     onClick={() => {
-                                                        deleteTeacher(item.id).then(result => {
+                                                        deleteTeacher(item.walletAddress).then(result => {
                                                             console.log(result)
                                                         })
                                                     }}
