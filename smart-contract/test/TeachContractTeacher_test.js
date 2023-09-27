@@ -258,9 +258,4 @@ describe("TeachContractTeacher", function () {
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
   });
-
-  // ENSURE - the same wallet could be used in teachers belonging to another classroom admin!
-  // ALSO should getClassroom/s return information about the teachers?
-  // also to consider - now if I delete a classroom admin - do their teachers get deleted?
-  // i think it should cascade downwards
 });
