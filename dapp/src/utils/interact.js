@@ -259,30 +259,30 @@ export const getTeachers = async () => {
     .call({ from: window.ethereum.selectedAddress });
   return result;
 }
-export const getTeacher = async (id) => {
+export const getTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
-    .getTeacher(id)
+    .getTeacher(walletAddress)
     .call({ from: window.ethereum.selectedAddress });
   return result;
 }
 // update
-export const updateTeacher = async (id, classroomIds) => {
+export const updateTeacher = async (walletAddress, classroomIds) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.updateTeacher,
-    [id, classroomIds]);
+    [walletAddress, classroomIds]);
 }
 // delete
-export const deleteTeacher = async (id) => {
+export const deleteTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.deleteTeacher,
-    [id]);
+    [walletAddress]);
 }
 
 async function callGasTransaction(func, params) {

@@ -19,7 +19,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
   });
@@ -40,9 +40,9 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser2).createTeacher(randomWallet, [1]))
       .to.be.revertedWith("Provided classroom id not valid.");
-    await expect(teachContract.connect(otherUser).getTeacher(1))
+    await expect(teachContract.connect(otherUser).getTeacher(randomWallet))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
-    await expect(teachContract.connect(otherUser2).getTeacher(1))
+    await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
     let teachers = await teachContract.connect(otherUser).getTeachers();
     assert.equal(0, teachers.length);
@@ -63,8 +63,7 @@ describe("TeachContractTeacher", function () {
 
     assert.equal(randomWallet, teachers[0].walletAddress);
     assert.equal(otherUser2.address, teachers[1].walletAddress);
-    assert.equal(1, teachers[0].id);
-    assert.equal(2, teachers[1].id);
+
     assert.equal([1n].toString(), teachers[0].classroomIds.toString());
     assert.equal([1n].toString(), teachers[1].classroomIds.toString());
   });
@@ -99,9 +98,8 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal(1, teacher.id);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
   });
 
@@ -112,7 +110,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
-    await expect(teachContract.connect(otherUser2).getTeacher(1))
+    await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith(
         "AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b"
       );
@@ -125,7 +123,7 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-    await expect(teachContract.connect(otherUser2).getTeacher(1))
+    await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
   });
 
@@ -138,15 +136,15 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await teachContract.connect(otherUser).updateTeacher(1, [1, 2]);
-    teacher = await teachContract.connect(otherUser).getTeacher(1);
+    await teachContract.connect(otherUser).updateTeacher(randomWallet, [1, 2]);
+    teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal([1n, 2n].toString(), teacher.classroomIds.toString());
 
-    await teachContract.connect(otherUser).updateTeacher(1, [1, 2]);
-    teacher = await teachContract.connect(otherUser).getTeacher(1);
+    await teachContract.connect(otherUser).updateTeacher(randomWallet, [1, 2]);
+    teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal([1n, 2n].toString(), teacher.classroomIds.toString());
   });
 
@@ -158,10 +156,10 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser2).updateTeacher(1, [1, 2]))
+    await expect(teachContract.connect(otherUser2).updateTeacher(randomWallet, [1, 2]))
       .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
   });
 
@@ -175,10 +173,10 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser2).updateTeacher(1, [1, 2]))
+    await expect(teachContract.connect(otherUser2).updateTeacher(randomWallet, [1, 2]))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
   });
 
@@ -192,10 +190,10 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser).updateTeacher(1, [5]))
+    await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [5]))
       .to.be.revertedWith("Provided classroom id not valid.");
   });
 
@@ -209,11 +207,11 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(1);
+    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
 
-    await expect(teachContract.connect(otherUser).updateTeacher(1, [99]))
+    await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [99]))
       .to.be.revertedWith("Provided classroom id not valid.");
 
   });
@@ -226,13 +224,12 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    await teachContract.connect(otherUser).deleteTeacher(1);
+    await teachContract.connect(otherUser).deleteTeacher(randomWallet);
     let result = await teachContract.connect(otherUser).getTeachers();
 
     assert.equal(1, result.length);
     let teacher = result[0];
-    assert.equal(2, teacher.id);
-    assert.equal(randomWallet, teacher.walletAddress);
+    assert.equal(otherUser2.address, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
     assert.equal(otherUser.address, teacher.classroomAdminId);
   });
@@ -243,7 +240,7 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
 
-    await expect(teachContract.connect(otherUser2).deleteTeacher(1))
+    await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
       .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
 
   });
@@ -258,7 +255,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
-    await expect(teachContract.connect(otherUser2).deleteTeacher(1))
+    await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
       .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
   });
 
