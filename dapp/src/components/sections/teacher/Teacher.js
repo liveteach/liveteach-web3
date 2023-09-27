@@ -30,6 +30,7 @@ export default function Teacher(props){
 
                             <tbody>
                             <tr>
+                                <th>URL</th>
                                 <th>Class Name</th>
                                 <th>Description</th>
                                 <th>Classroom</th>
@@ -40,6 +41,9 @@ export default function Teacher(props){
                                 classNames.map((item, index) => {
                                     return (
                                         <tr key={`Contributor_${index}`}>
+                                            <td>
+
+                                            </td>
                                             <td>
                                                 {item}
                                             </td>
