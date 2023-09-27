@@ -20,10 +20,6 @@ contract TeachContract is AccessControl {
         return latestClassroomId++;
     }
 
-    function getNewTeacherId() private returns (uint256) {
-        return latestTeacherId++;
-    }
-
     // structs
     struct Land {
         uint256 id;
@@ -36,7 +32,7 @@ contract TeachContract is AccessControl {
         uint256[] landIds;
         int[][] landCoordinates; // not persisted
         uint256[] classroomIds;
-        uint256[] teacherIds;
+        address[] teacherIds;
     }
 
     struct Classroom {
@@ -45,11 +41,10 @@ contract TeachContract is AccessControl {
         uint256[] landIds;
         int[][] landCoordinates; // not persisted
         address classroomAdminId;
-        uint256[] teacherIds;
+        address[] teacherIds;
     }
 
     struct Teacher {
-        uint256 id;
         address walletAddress;
         uint256[] classroomIds;
         address classroomAdminId;
@@ -64,8 +59,8 @@ contract TeachContract is AccessControl {
         mapping(uint256 => bool) classroomBool;
         uint256[] landsRegisteredToClassroom;
         mapping(uint256 => bool) landsRegisteredToClassroomBool;
-        uint256[] teacher;
-        mapping(uint256 => bool) teacherBool;
+        address[] teacher;
+        mapping(address => bool) teacherBool;
     }
 
     // id to object mappings
@@ -73,7 +68,7 @@ contract TeachContract is AccessControl {
         mapping(uint256 => Land) land;
         mapping(address => ClassroomAdmin) classroomAdmin;
         mapping(uint256 => Classroom) classroom;
-        mapping(uint256 => Teacher) teacher;
+        mapping(address => Teacher) teacher;
     }
 
     RegisteredIds private registeredIds;
@@ -116,7 +111,7 @@ contract TeachContract is AccessControl {
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (Teacher[] memory)
     {
-        uint256[] memory allTeacherIds = registeredIds.teacher;
+        address[] memory allTeacherIds = registeredIds.teacher;
         Teacher[] memory rtn = new Teacher[](allTeacherIds.length);
         for (uint256 i = 0; i < allTeacherIds.length; i++) {
             rtn[i] = idsToObjects.teacher[allTeacherIds[i]];
@@ -190,7 +185,7 @@ contract TeachContract is AccessControl {
         )
     {
         require(isClassroomAdmin(_walletAddress), "Classroom admin not found.");
-        ClassroomAdmin memory rtn = idsToObjects.classroomAdmin[_walletAddress]; 
+        ClassroomAdmin memory rtn = idsToObjects.classroomAdmin[_walletAddress];
         rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
         return rtn;
     }
@@ -284,7 +279,7 @@ contract TeachContract is AccessControl {
             "This classroom does not exist or you do not have access to it."
         );
         Classroom memory rtn = idsToObjects.classroom[id];
-        rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds); 
+        rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
         return rtn;
     }
 
@@ -332,12 +327,7 @@ contract TeachContract is AccessControl {
             ),
             "Provided classroom id not valid."
         );
-        registerTeacher(
-            getNewTeacherId(),
-            walletAddress,
-            classroomIds,
-            msg.sender
-        );
+        registerTeacher(walletAddress, classroomIds, msg.sender);
     }
 
     // read
@@ -347,7 +337,7 @@ contract TeachContract is AccessControl {
         onlyRole(CLASSROOM_ADMIN)
         returns (Teacher[] memory)
     {
-        uint256[] memory teacherIds = idsToObjects
+        address[] memory teacherIds = idsToObjects
             .classroomAdmin[msg.sender]
             .teacherIds;
         Teacher[] memory rtn = new Teacher[](teacherIds.length);
@@ -358,7 +348,7 @@ contract TeachContract is AccessControl {
     }
 
     function getTeacher(
-        uint256 id
+        address id
     ) public view onlyRole(CLASSROOM_ADMIN) returns (Teacher memory) {
         require(
             walletOwnsTeacher(msg.sender, id),
@@ -369,7 +359,7 @@ contract TeachContract is AccessControl {
 
     // update
     function updateTeacher(
-        uint256 id,
+        address id,
         uint256[] memory classroomIds
     ) public onlyRole(CLASSROOM_ADMIN) {
         require(
@@ -388,7 +378,7 @@ contract TeachContract is AccessControl {
     }
 
     // delete
-    function deleteTeacher(uint256 id) public onlyRole(CLASSROOM_ADMIN) {
+    function deleteTeacher(address id) public onlyRole(CLASSROOM_ADMIN) {
         require(
             walletOwnsTeacher(msg.sender, id),
             "This teacher does not exist or you do not have access to it."
@@ -423,7 +413,7 @@ contract TeachContract is AccessControl {
 
     function walletOwnsTeacher(
         address walletId,
-        uint256 _teacherId
+        address _teacherId
     ) private view returns (bool) {
         return idsToObjects.teacher[_teacherId].classroomAdminId == walletId;
     }
@@ -517,6 +507,7 @@ contract TeachContract is AccessControl {
         uint256[] memory landIds
     ) private {
         uint256[] memory emptyUintList;
+        address[] memory emptyAddressList;
         int[][] memory _landCoordinates;
 
         idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
@@ -524,7 +515,7 @@ contract TeachContract is AccessControl {
             landIds: landIds,
             landCoordinates: _landCoordinates,
             classroomIds: emptyUintList,
-            teacherIds: emptyUintList
+            teacherIds: emptyAddressList
         });
         registeredIds.classroomAdmin.push(_walletAddress);
         registeredIds.classroomAdminBool[_walletAddress] = true;
@@ -561,7 +552,7 @@ contract TeachContract is AccessControl {
         uint256[] memory _landIds,
         address _classroomAdminId
     ) private {
-        uint256[] memory emptyUintList;
+        address[] memory emptyAddressList;
         int[][] memory emptyIntList;
 
         idsToObjects.classroom[_id] = Classroom({
@@ -570,7 +561,7 @@ contract TeachContract is AccessControl {
             landIds: _landIds,
             landCoordinates: emptyIntList,
             classroomAdminId: _classroomAdminId,
-            teacherIds: emptyUintList
+            teacherIds: emptyAddressList
         });
         registeredIds.classroom.push(_id);
         registeredIds.classroomBool[_id] = true;
@@ -602,7 +593,7 @@ contract TeachContract is AccessControl {
                 classroom.teacherIds[i]
             ];
             if (teacher.classroomIds.length == 1) {
-                unregisterTeacher(teacher.id);
+                unregisterTeacher(teacher.walletAddress);
             } else {
                 // remove this classroom from the teacher
                 uint256[] memory newClassroomIds = new uint256[](
@@ -617,7 +608,7 @@ contract TeachContract is AccessControl {
                         keyCounter++;
                     }
                 }
-                _updateTeacher(teacher.id, newClassroomIds);
+                _updateTeacher(teacher.walletAddress, newClassroomIds);
             }
         }
 
@@ -625,48 +616,50 @@ contract TeachContract is AccessControl {
     }
 
     function registerTeacher(
-        uint256 _id,
         address _walletAddress,
         uint256[] memory _classroomIds,
         address classroomAdminWallet
     ) private {
-        idsToObjects.teacher[_id] = Teacher({
-            id: _id,
+        idsToObjects.teacher[_walletAddress] = Teacher({
             walletAddress: _walletAddress,
             classroomIds: _classroomIds,
             classroomAdminId: classroomAdminWallet
         });
-        registeredIds.teacher.push(_id);
-        registeredIds.teacherBool[_id] = true;
+        registeredIds.teacher.push(_walletAddress);
+        registeredIds.teacherBool[_walletAddress] = true;
         // associate with classrooms
         for (uint256 i = 0; i < _classroomIds.length; i++) {
-            idsToObjects.classroom[_classroomIds[i]].teacherIds.push(_id);
+            idsToObjects.classroom[_classroomIds[i]].teacherIds.push(
+                _walletAddress
+            );
         }
-        idsToObjects.classroomAdmin[classroomAdminWallet].teacherIds.push(_id);
+        idsToObjects.classroomAdmin[classroomAdminWallet].teacherIds.push(
+            _walletAddress
+        );
     }
 
-    function unregisterTeacher(uint256 _id) private {
+    function unregisterTeacher(address _id) private {
         Teacher memory teacher = idsToObjects.teacher[_id];
-        removeUintFromArrayMaintainOrder(registeredIds.teacher, _id);
+        removeAddressFromArrayMaintainOrder(registeredIds.teacher, _id);
         delete registeredIds.teacherBool[_id];
         for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
-            removeUintFromArrayMaintainOrder(
+            removeAddressFromArrayMaintainOrder(
                 idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
                 _id
             );
         }
-        removeUintFromArrayMaintainOrder(
+        removeAddressFromArrayMaintainOrder(
             idsToObjects.classroomAdmin[teacher.classroomAdminId].teacherIds,
             _id
         );
         delete idsToObjects.teacher[_id];
     }
 
-    function _updateTeacher(uint256 id, uint256[] memory classroomIds) private {
+    function _updateTeacher(address id, uint256[] memory classroomIds) private {
         address walletAddress = idsToObjects.teacher[id].walletAddress;
 
         unregisterTeacher(id);
-        registerTeacher(id, walletAddress, classroomIds, msg.sender);
+        registerTeacher(walletAddress, classroomIds, msg.sender);
     }
 
     // utility
