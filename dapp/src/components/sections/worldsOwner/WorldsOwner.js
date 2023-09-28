@@ -1,7 +1,13 @@
+import {useSelector} from "react-redux";
 
 export function WorldsOwner(props){
+
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("worldsOwner")
+
     return (
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -51,6 +57,11 @@ export function WorldsOwner(props){
                     </div>
                 </div>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
         </div>
     )
 }

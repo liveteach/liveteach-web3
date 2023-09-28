@@ -8,16 +8,23 @@ import {setClassConfigs,setSelectedClass} from "../../../store/teacherState";
 export default function Teacher(props){
 
     const {classConfigs} = useSelector((state) => state.teacher)
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("teacher")
     const dispatch = useDispatch()
-    
+
+
     useEffect(() => {
-        getClassConfigs().then(result => {
-            dispatch(setClassConfigs(result))
-        })
+        console.log(roles)
+        if(render){
+            getClassConfigs().then(result => {
+                dispatch(setClassConfigs(result))
+            })
+        }
     },[])
 
     return(
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -77,6 +84,11 @@ export default function Teacher(props){
                 </div>
                 <Button>Show All</Button> | <Button>Show Active</Button> | <Button>Show inactive</Button>
             </div>
+                ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
         </div>
     )
 }

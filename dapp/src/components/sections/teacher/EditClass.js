@@ -6,10 +6,13 @@ import {setNewClassUrl, setNewClassReference} from "../../../store/teacherState"
 export function EditClass(props){
 
     const { selectedClass, newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("teacher")
     const dispatch = useDispatch()
 
     return (
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -74,6 +77,11 @@ export function EditClass(props){
                     </Grid>
                 </Grid>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
         </div>
    )
 }

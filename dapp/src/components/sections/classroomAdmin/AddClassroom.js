@@ -9,6 +9,8 @@ import {createClassroom} from '../../../utils/interact';
 export function AddClassroom(props){
 
     const {className, classLandIds, imgEndpoint} = useSelector((state) => state.classroomAdmin)
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("classroomAdmin")
     const dispatch = useDispatch()
     const baseUrl = "https://api.decentraland.org/v2/map.png?"
 
@@ -58,6 +60,7 @@ export function AddClassroom(props){
 
     return(
         <div className="ui container">
+            {render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -100,6 +103,12 @@ export function AddClassroom(props){
                     />
                 </div>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
+            { render ? (
             <div className="ui container">
                 <Grid container>
                     <Grid item xs={6}>
@@ -113,6 +122,10 @@ export function AddClassroom(props){
                     </Grid>
                 </Grid>
             </div>
+                ) : (
+                <div>
+                </div>
+                )}
         </div>
     )
 }

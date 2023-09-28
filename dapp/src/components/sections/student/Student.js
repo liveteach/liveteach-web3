@@ -1,10 +1,14 @@
 import {Divider} from "decentraland-ui";
+import {useSelector} from "react-redux";
 
 export default function Student(props){
 
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("student")
 
     return(
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <h4>Enrolments</h4>
                 <Divider />
@@ -43,6 +47,12 @@ export default function Student(props){
                     </div>
                 </div>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
+            {render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <h4>History</h4>
                 <Divider />
@@ -80,7 +90,10 @@ export default function Student(props){
                     </div>
                 </div>
             </div>
-
+                ) : (
+                <div>
+                </div>
+                )}
         </div>
     )
 }
