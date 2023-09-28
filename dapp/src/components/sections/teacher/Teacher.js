@@ -9,11 +9,10 @@ export default function Teacher(props){
 
     const {classConfigs} = useSelector((state) => state.teacher)
     const dispatch = useDispatch()
+    
     useEffect(() => {
         getClassConfigs().then(result => {
-            console.log(result)
             dispatch(setClassConfigs(result))
-            console.log(classConfigs)
         })
     },[])
 
