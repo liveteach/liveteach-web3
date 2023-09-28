@@ -1,6 +1,6 @@
 import {Grid, TextField} from "@mui/material";
 import {useEffect} from "react";
-import {setImgEndpoint, setLandParcels} from "../../../store/classroomAdminState";
+import {setImgEndpoint} from "../../../store/classroomAdminState";
 import {useDispatch, useSelector} from "react-redux";
 import {setClassName, setClassLandIds} from "../../../store/classroomAdminState";
 import { MuiChipsInput} from "mui-chips-input";

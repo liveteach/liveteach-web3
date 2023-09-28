@@ -1,6 +1,12 @@
-import {Grid, MenuItem, Select, TextField} from "@mui/material";
+import {Grid, TextField, Button} from "@mui/material";
+import {useDispatch, useSelector} from "react-redux";
+import {setNewClassReference, setNewClassUrl} from "../../../store/teacherState";
+import { createClassConfig } from "../../../utils/interact";
 
 export function AddClass(props){
+
+    const { newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const dispatch = useDispatch()
 
     return (
         <div className="ui container">
@@ -11,105 +17,47 @@ export function AddClass(props){
                             <h4>Add Class</h4>
                         </div>
                         <div className="dcl tabs-right">
-                            <button
+                            <Button
                                 onClick={() => {
-                                    console.log("Clicky")
-
+                                    createClassConfig(newClassReference, newClassUrl).then(result => {
+                                        console.log(result)
+                                    })
                                 }}
                                 className="ui small primary button"
-                            >Add Class</button>
+                            ><span>Add</span></Button>
                         </div>
                     </div>
                 </div>
                 <Grid container>
                     <Grid item xs={8}>
                         <div className={"inputFields"}>
-                            <h4>Name</h4>
+                            <h4>Class Config Reference</h4>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
+                                value={newClassReference}
+                                onChange={(e) => {
+                                    dispatch(setNewClassReference(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={8}>
                         <div className={"inputFields"}>
-                            <h4>Location</h4>
-                            <Select className="selectMenu" fullWidth={true}>
-                                <MenuItem className="selectItem">Class 1</MenuItem>
-                                <MenuItem className="selectItem">Class 2</MenuItem>
-                                <MenuItem className="selectItem">Class 3</MenuItem>
-                            </Select>
+                            <h4>Class Configuration</h4>
+                            <TextField
+                                fullWidth={true}
+                                className="textInput"
+                                color="error"
+                                value={newClassUrl}
+                                onChange={(e) => {
+                                    dispatch(setNewClassUrl(e.target.value))
+                                }}
+                            />
                         </div>
                     </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <div className="inputFields">
-                        <h4>Description</h4>
-                        <TextField
-                            multiline
-                            fullWidth={true}
-                            className="textInput"
-                            color="error"
-                        />
-                    </div>
-                </Grid>
-            </div>
-            <div>
-                <div className="ui container">
-                    <div className="dcl tabs">
-                        <div className="dcl tabs-left">
-                            <h4>Enrollments</h4>
-                        </div>
-                        <div className="dcl tabs-right">
-                            <button
-                                onClick={() => {
-                                    console.log("Clicky")
-
-                                }}
-                                className="ui small primary button"
-                            >Add</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="tableContainer">
-                    <div className="TableContent">
-                        <table className="ui very basic table">
-                            <tbody>
-                            <tr>
-                                <th>Name</th>
-                            </tr>
-
-                            {/*{*/}
-                            {/*    classNames.map((item, index) => {*/}
-                            {/*        return (*/}
-                            {/*            <tr key={`Contributor_${index}`}>*/}
-                            {/*                <td>*/}
-                            {/*                    {item}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    {descriptions[index]}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    {classrooms[index]}*/}
-                            {/*                </td>*/}
-                            {/*                <td>*/}
-                            {/*                    <Link to="/teacher/edit">*/}
-                            {/*                        <Button*/}
-                            {/*                            className="ui small basic button"*/}
-                            {/*                            size="small"*/}
-                            {/*                            variant="contained"*/}
-                            {/*                        >Edit</Button>*/}
-                            {/*                    </Link>*/}
-                            {/*                </td>*/}
-                            {/*            </tr>*/}
-                            {/*        );*/}
-                            {/*    })*/}
-                            {/*}*/}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     )

@@ -1,10 +1,20 @@
 import {Button} from "@mui/material";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
+import {useEffect} from "react";
+import {getClassConfigs} from "../../../utils/interact";
+import {setClassConfigs,setSelectedClass} from "../../../store/teacherState";
 
 export default function Teacher(props){
 
-    const {classNames, descriptions, teacherClassroom} = useSelector((state) => state.teacher)
+    const {classConfigs} = useSelector((state) => state.teacher)
+    const dispatch = useDispatch()
+    
+    useEffect(() => {
+        getClassConfigs().then(result => {
+            dispatch(setClassConfigs(result))
+        })
+    },[])
 
     return(
         <div className="ui container">
@@ -30,24 +40,20 @@ export default function Teacher(props){
 
                             <tbody>
                             <tr>
-                                <th>Class Name</th>
-                                <th>Description</th>
-                                <th>Classroom</th>
+                                <th>URL</th>
+                                <th>Class Reference</th>
                                 <th></th>
                             </tr>
 
                             {
-                                classNames.map((item, index) => {
+                                classConfigs.map((item, index) => {
                                     return (
                                         <tr key={`Contributor_${index}`}>
                                             <td>
-                                                {item}
+                                                <a href={item.contentUrl}>{item.contentUrl}</a>
                                             </td>
                                             <td>
-                                                {descriptions[index]}
-                                            </td>
-                                            <td>
-                                                {teacherClassroom}
+                                                {item.classReference}
                                             </td>
                                             <td>
                                                 <Link to="/teacher/edit">
@@ -55,6 +61,9 @@ export default function Teacher(props){
                                                         className="ui small basic button"
                                                         size="small"
                                                         variant="contained"
+                                                        onClick={() => {
+                                                            dispatch(setSelectedClass(item))
+                                                        }}
                                                     >Edit</Button>
                                                 </Link>
                                             </td>
