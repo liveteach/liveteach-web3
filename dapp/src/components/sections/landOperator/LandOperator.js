@@ -35,7 +35,7 @@ export function LandOperator(props){
 
     function handleSplit(ids){
         let arr = ids.split(",");
-        arr = arr.map(item => item.trim().replace(/\n/g, ''));
+        arr = arr.map(item => parseInt(item.trim().replace(/\n/g, '')));
         return arr;
     }
 
@@ -107,7 +107,7 @@ export function LandOperator(props){
                 <div className="ui page modals dimmer transition visible active SignIn center" >
                     <div className="ui modal transition visible active " style={style}>
                         <Typography className="dcl modal-navigation" variant="h6" component="h2">
-                            Set Operator Wallet
+                            Add Classroom Admin
                         </Typography>
                         <div className="dcl modal-navigation-button modal-navigation-close" onClick={handleClose}>
                         </div>
