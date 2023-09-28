@@ -326,7 +326,7 @@ export const deleteClassConfig = async (id) => {
   // onlyRole(TEACHER)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.deleteTeacher,
+  return callGasTransaction(window.contract.methods.deleteClassConfig,
     [id]);
 }
 ////

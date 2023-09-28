@@ -1,10 +1,12 @@
-import {Grid, MenuItem, Select, TextField} from "@mui/material";
-import {useSelector} from "react-redux";
-import {Button} from "@material-ui/core";
+import {Grid, TextField,Button} from "@mui/material";
+import {useDispatch, useSelector} from "react-redux";
+import {deleteClassConfig, updateClassConfig} from "../../../utils/interact";
+import {setNewClassUrl, setNewClassReference} from "../../../store/teacherState";
 
 export function EditClass(props){
 
-    const { selectedClass } = useSelector((state) => state.teacher)
+    const { selectedClass, newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const dispatch = useDispatch()
 
     return (
         <div className="ui container">
@@ -15,104 +17,62 @@ export function EditClass(props){
                             <h4>Edit Class</h4>
                         </div>
                         <div className="dcl tabs-right">
-                            <button
+                            <Button
                                 onClick={() => {
-                                    console.log("Clicky")
-
+                                    console.log(selectedClass.id,selectedClass.classReference, selectedClass.contentUrl)
+                                    let id = parseInt(selectedClass.id)
+                                    updateClassConfig(id,selectedClass.classReference, selectedClass.contentUrl).then(result =>{
+                                        console.log(result)
+                                    })
                                 }}
                                 className="ui small primary button"
-                            >Save</button>
+                            >update</Button>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <Button
+                                onClick={() => {
+                                    let id = parseInt(selectedClass.id)
+                                    deleteClassConfig(id).then(result => {
+                                        console.log(result)
+                                    })
+                                }}
+                                className="ui small primary button"
+                            >Delete</Button>
                         </div>
                     </div>
                 </div>
                 <Grid container>
                     <Grid item xs={8}>
                         <div className={"inputFields"}>
-                            <h4>Name</h4>
+                            <h4>Class Config Reference</h4>
+                            <p>Current: <span style={{color: 'grey'}}>{selectedClass.classReference}</span></p>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={selectedClass.name}
+                                value={newClassReference}
+                                onChange={(e) => {
+                                        dispatch(setNewClassReference(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={8}>
                         <div className={"inputFields"}>
-                            <h4>Location</h4>
-                            <Select className="selectMenu" fullWidth={true}>
-                                {
-                                    selectedClass.location.map((item, index) => {
-                                        return(
-                                            <MenuItem className="selectItem" key={`${item + index}`} value={item}>{item}</MenuItem>
-                                        )
-                                    })
-                                }
-                            </Select>
+                            <h4>Class Configuration</h4>
+                            <p>Current: <span style={{color: 'grey'}}>{selectedClass.contentUrl}</span></p>
+                            <TextField
+                                fullWidth={true}
+                                className="textInput"
+                                color="error"
+                                value={newClassUrl}
+                                onChange={(e) => {
+                                    dispatch(setNewClassUrl(e.target.value))
+                                }}
+                            />
                         </div>
                     </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <div className="inputFields">
-                        <h4>Description</h4>
-                        <TextField
-                            multiline
-                            fullWidth={true}
-                            className="textInput"
-                            color="error"
-                            value={selectedClass.description}
-                        />
-                    </div>
-                </Grid>
-            </div>
-            <div>
-                <div className="ui container">
-                    <div className="dcl tabs">
-                        <div className="dcl tabs-left">
-                            <h4>Enrollments</h4>
-                        </div>
-                        <div className="dcl tabs-right">
-                            <button
-                                onClick={() => {
-                                    console.log("Clicky")
-
-                                }}
-                                className="ui small primary button"
-                            >Add</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="tableContainer">
-                    <div className="TableContent">
-                        <table className="ui very basic table">
-                            <tbody>
-                            <tr>
-                                <th>Name</th>
-                                <th></th>
-                            </tr>
-
-                            {
-                                selectedClass.enrollments.map((item, index) => {
-                                    return (
-                                        <tr key={`Contributor_${index}`}>
-                                            <td>
-                                                {item}
-                                            </td>
-                                            <td>
-                                                <Button
-                                                    className="ui small basic button"
-                                                    size="small"
-                                                    variant="contained"
-                                                >Remove</Button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
    )
