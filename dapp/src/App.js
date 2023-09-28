@@ -11,16 +11,15 @@ import LayoutLogIn from "./layouts/LayoutLogIn";
 import LogIn from "./views/LogIn";
 
 // AuthCheck Utils
-import {checkConnectedWalletAddress, userCheck} from "./utils/AuthCheck";
+import {checkConnectedWalletAddress} from "./utils/AuthCheck";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
-import AppRouteAdmin from "./utils/AppRouteAdmin";
 import ClassroomAdmin from "./components/sections/classroomAdmin/ClassroomAdmin";
 import { LandOperator} from "./components/sections/landOperator/LandOperator";
 import Student from "./components/sections/student/Student";
 import Teacher from "./components/sections/teacher/Teacher";
 import {Route} from "react-router-dom";
-import {setAuth, setIsPrivate} from "./store/adminUser";
+import {setAuth, setRoles} from "./store/adminUser";
 import {AddTeacher} from "./components/sections/classroomAdmin/AddTeacher";
 import {AddClassroom} from "./components/sections/classroomAdmin/AddClassroom";
 import {AddClass} from "./components/sections/teacher/AddClass";
@@ -28,6 +27,7 @@ import {WorldsOwner} from "./components/sections/worldsOwner/WorldsOwner";
 import {DocsInitialPage} from "./components/sections/DocsInitialPage";
 import {adminDocs, devDocs, ownerDocs, teacherDocs} from "./utils/markup";
 import {EditClass} from "./components/sections/teacher/EditClass";
+import {getUserRoles} from "./utils/interact";
 
 const App = () => {
 
@@ -35,11 +35,12 @@ const App = () => {
   const location = useLocation();
   const currentURL = location.pathname;
 
-  const {isPrivate,auth,walletAddress} = useSelector((state) => state.adminUser)
+  const {isPrivate,auth, roles} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
 
   useEffect(() => {
     document.body.classList.add("is-loaded");
+
       dispatch(setAuth(checkConnectedWalletAddress().auth));
   }, []);
 
@@ -56,9 +57,9 @@ const App = () => {
   }, [auth]);
 
   useEffect( () => {
-      userCheck().then(result => {
-          console.log(result.admin)
-          dispatch(setIsPrivate(!result.admin))
+      getUserRoles().then(result => {
+          console.log(result)
+          dispatch(setRoles(result))
       })
   },[auth])
 
@@ -109,45 +110,39 @@ const App = () => {
           />
         {/* private Routes */}
 
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/classroomadmin"
-              isPrivate={isPrivate}
               component={ClassroomAdmin}
               layout={LayoutDefault}
           />
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/classroomadmin/teacher"
-              isPrivate={isPrivate}
               component={AddTeacher}
               layout={LayoutDefault}
           />
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/classroomadmin/class"
-              isPrivate={isPrivate}
               component={AddClassroom}
               layout={LayoutDefault}
           />
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/operator"
-              isPrivate={isPrivate}
               component={LandOperator}
               layout={LayoutDefault}
           />
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/operator/add"
-              isPrivate={isPrivate}
               component={AddClass}
               layout={LayoutDefault}
           />
-          <AppRouteAdmin
+          <AppRoute
               exact
               path="/worlds"
-              isPrivate={isPrivate}
               component={WorldsOwner}
               layout={LayoutDefault}
           />

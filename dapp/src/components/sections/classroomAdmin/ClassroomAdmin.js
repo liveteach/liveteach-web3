@@ -8,21 +8,27 @@ import {setClassrooms, setTeachers} from "../../../store/classroomAdminState";
 export default function ClassroomAdmin(props){
 
     const { classrooms, teachers } = useSelector((state) => state.classroomAdmin)
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("classroomAdmin")
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getClassrooms().then(result => {
-            console.log(result)
-            dispatch(setClassrooms(result))
-        })
-        getTeachers().then(result => {
-            console.log(result)
-            dispatch(setTeachers(result))
-        })
+        if(render) {
+            getClassrooms().then(result => {
+                console.log(result)
+                dispatch(setClassrooms(result))
+            })
+            getTeachers().then(result => {
+                console.log(result)
+                dispatch(setTeachers(result))
+            })
+        }
     },[])
 
     return(
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -77,6 +83,12 @@ export default function ClassroomAdmin(props){
                     </div>
                 </div>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -131,6 +143,10 @@ export default function ClassroomAdmin(props){
                     </div>
                 </div>
             </div>
+                ) : (
+                <div>
+                </div>
+                )}
         </div>
     )
 }

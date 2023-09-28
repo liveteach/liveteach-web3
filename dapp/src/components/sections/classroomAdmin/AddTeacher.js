@@ -9,18 +9,23 @@ export function AddTeacher(props){
 
     const {walletAddress,teacherClassrooms} = useSelector((state) => state.teacher);
     const {classrooms} = useSelector((state) => state.classroomAdmin)
+    const {roles} = useSelector((state) => state.adminUser)
+    const render = roles.includes("classroomAdmin")
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getClassrooms().then(result => {
-            if(result.length > 0){
-               dispatch(setClassrooms(result))
-            }
-        })
+        if(render) {
+            getClassrooms().then(result => {
+                if (result.length > 0) {
+                    dispatch(setClassrooms(result))
+                }
+            })
+        }
     },[])
 
     return (
         <div className="ui container">
+            { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
                 <div className="ui container">
                     <div className="dcl tabs">
@@ -81,6 +86,11 @@ export function AddTeacher(props){
                     </Grid>
                 </Grid>
             </div>
+            ) : (
+                <div>
+                    <p>you are not permitted to view this page</p>
+                </div>
+            )}
         </div>
     )
 }
