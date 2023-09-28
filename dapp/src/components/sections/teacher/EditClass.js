@@ -1,10 +1,12 @@
 import {Grid, TextField,Button} from "@mui/material";
-import {useSelector} from "react-redux";
-import {useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {deleteClassConfig, updateClassConfig} from "../../../utils/interact";
+import {setNewClassUrl, setNewClassReference} from "../../../store/teacherState";
 
 export function EditClass(props){
 
-    const { selectedClass } = useSelector((state) => state.teacher)
+    const { selectedClass, newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const dispatch = useDispatch()
 
     return (
         <div className="ui container">
@@ -17,7 +19,22 @@ export function EditClass(props){
                         <div className="dcl tabs-right">
                             <Button
                                 onClick={() => {
-                                    console.log("Clicky")
+                                    console.log(selectedClass.id,selectedClass.classReference, selectedClass.contentUrl)
+                                    let id = parseInt(selectedClass.id)
+                                    updateClassConfig(id,selectedClass.classReference, selectedClass.contentUrl).then(result =>{
+                                        console.log(result)
+                                    })
+                                }}
+                                className="ui small primary button"
+                            >update</Button>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <Button
+                                onClick={() => {
+                                    let id = parseInt(selectedClass.id)
+                                    deleteClassConfig(id).then(result => {
+                                        console.log(result)
+                                    })
                                 }}
                                 className="ui small primary button"
                             >Delete</Button>
@@ -28,22 +45,30 @@ export function EditClass(props){
                     <Grid item xs={8}>
                         <div className={"inputFields"}>
                             <h4>Class Config Reference</h4>
+                            <p>Current: <span style={{color: 'grey'}}>{selectedClass.classReference}</span></p>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-
+                                value={newClassReference}
+                                onChange={(e) => {
+                                        dispatch(setNewClassReference(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>
                     <Grid item xs={8}>
                         <div className={"inputFields"}>
                             <h4>Class Configuration</h4>
+                            <p>Current: <span style={{color: 'grey'}}>{selectedClass.contentUrl}</span></p>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-
+                                value={newClassUrl}
+                                onChange={(e) => {
+                                    dispatch(setNewClassUrl(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>

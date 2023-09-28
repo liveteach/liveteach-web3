@@ -1,10 +1,12 @@
-import {Grid, TextField} from "@mui/material";
-import LoadingButton from '@mui/lab/LoadingButton';
-import {useState} from "react";
+import {Grid, TextField, Button} from "@mui/material";
+import {useDispatch, useSelector} from "react-redux";
+import {setNewClassReference, setNewClassUrl} from "../../../store/teacherState";
+import { createClassConfig } from "../../../utils/interact";
 
 export function AddClass(props){
 
-    const [loading,setLoading] = useState(false);
+    const { newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const dispatch = useDispatch()
 
     return (
         <div className="ui container">
@@ -12,22 +14,17 @@ export function AddClass(props){
                 <div className="ui container">
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
-                            <h4>Edit Class</h4>
+                            <h4>Add Class</h4>
                         </div>
                         <div className="dcl tabs-right">
-                            <LoadingButton
-                                loading={loading}
-                                loadingPosition="middle"
-
+                            <Button
                                 onClick={() => {
-                                    console.log("Clicky")
-                                    setLoading(true)
-                                    setTimeout(() => {
-                                        setLoading(false)
-                                    },5000)
+                                    createClassConfig(newClassReference, newClassUrl).then(result => {
+                                        console.log(result)
+                                    })
                                 }}
                                 className="ui small primary button"
-                            ><span>Save</span></LoadingButton>
+                            ><span>Add</span></Button>
                         </div>
                     </div>
                 </div>
@@ -39,7 +36,10 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-
+                                value={newClassReference}
+                                onChange={(e) => {
+                                    dispatch(setNewClassReference(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>
@@ -50,7 +50,10 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-
+                                value={newClassUrl}
+                                onChange={(e) => {
+                                    dispatch(setNewClassUrl(e.target.value))
+                                }}
                             />
                         </div>
                     </Grid>
