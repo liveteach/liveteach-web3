@@ -1,11 +1,11 @@
-import {Divider} from "decentraland-ui";
 import {Button} from "@mui/material";
 import {useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 
 export default function Teacher(props){
 
-    const {classNames, descriptions, classrooms} = useSelector((state) => state.teacher)
+    const {classNames, descriptions, teacherClassroom} = useSelector((state) => state.teacher)
+
     return(
         <div className="ui container">
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">
@@ -47,7 +47,7 @@ export default function Teacher(props){
                                                 {descriptions[index]}
                                             </td>
                                             <td>
-                                                {classrooms[index]}
+                                                {teacherClassroom}
                                             </td>
                                             <td>
                                                 <Link to="/teacher/edit">

@@ -1,6 +1,23 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
+import { getClassrooms, createTeacher} from "../../../utils/interact";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect} from "react";
+import {setClassrooms} from "../../../store/classroomAdminState";
+import {setWalletAddress,setTeacherClassrooms} from "../../../store/teacherState";
 
 export function AddTeacher(props){
+
+    const {walletAddress,teacherClassrooms} = useSelector((state) => state.teacher);
+    const {classrooms} = useSelector((state) => state.classroomAdmin)
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        getClassrooms().then(result => {
+            if(result.length > 0){
+               dispatch(setClassrooms(result))
+            }
+        })
+    },[])
 
     return (
         <div className="ui container">
@@ -9,6 +26,16 @@ export function AddTeacher(props){
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
                             <h4>Add Teacher</h4>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <button
+                                onClick={() => {
+                                    createTeacher(walletAddress,teacherClassrooms).then(result => {
+                                        console.log(result)
+                                    })
+                                }}
+                                className="ui small primary button"
+                            >Add</button>
                         </div>
                     </div>
                 </div>
@@ -19,6 +46,10 @@ export function AddTeacher(props){
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
+                                value={walletAddress}
+                                onChange={(e) => {
+                                    dispatch(setWalletAddress(e.target.value));
+                                }}
                                 color="error"
                             />
                         </div>
@@ -26,15 +57,29 @@ export function AddTeacher(props){
                     <Grid item xs={4}>
                         <div className={"inputFields"}>
                             <h4>Class</h4>
-                            <Select className="selectMenu" fullWidth={true}>
-                                <MenuItem className="selectItem">Class 1</MenuItem>
-                                <MenuItem className="selectItem">Class 2</MenuItem>
-                                <MenuItem className="selectItem">Class 3</MenuItem>
+                            <Select
+                                className="selectMenu"
+                                fullWidth={true}
+                                id="selectMenuAddTeacher"
+                                multiple
+                                value={teacherClassrooms}
+                                onChange={(e) => {
+                                    dispatch(setTeacherClassrooms(e.target.value))
+                                }}
+                            >
+                                {
+                                    classrooms.map(item => {
+                                        return <MenuItem
+                                                className="selectItem"
+                                                value={item.id}
+                                                key={`${item.name + item.id}`}
+                                            >{item.name}</MenuItem>
+                                    })
+                                }
                             </Select>
                         </div>
                     </Grid>
                 </Grid>
-
             </div>
         </div>
     )
