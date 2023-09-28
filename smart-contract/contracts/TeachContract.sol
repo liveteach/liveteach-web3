@@ -88,8 +88,26 @@ contract TeachContract is AccessControl {
         mapping(uint256 => ClassConfig) classConfig;
     }
 
+    struct RoleResult {
+        bool student;
+        bool teacher;
+        bool classroomAdmin;
+        bool landOperator;
+    }
+
     RegisteredIds private registeredIds;
     IdsToObjects private idsToObjects;
+
+    // PUBLIC UTILITY
+    function getRoles() public view returns (RoleResult memory) {
+        return
+            RoleResult({
+                student: hasRole(STUDENT, msg.sender),
+                teacher: hasRole(TEACHER, msg.sender),
+                classroomAdmin: hasRole(CLASSROOM_ADMIN, msg.sender),
+                landOperator: hasRole(LAND_OPERATOR, msg.sender)
+            });
+    }
 
     // OWNER ONLY METHODS
 
