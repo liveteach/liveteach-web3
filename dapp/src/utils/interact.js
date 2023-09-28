@@ -259,32 +259,77 @@ export const getTeachers = async () => {
     .call({ from: window.ethereum.selectedAddress });
   return result;
 }
-export const getTeacher = async (id) => {
+export const getTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   const result = await window.contract.methods
-    .getTeacher(id)
+    .getTeacher(walletAddress)
     .call({ from: window.ethereum.selectedAddress });
   return result;
 }
 // update
-export const updateTeacher = async (id, classroomIds) => {
+export const updateTeacher = async (walletAddress, classroomIds) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.updateTeacher,
-    [id, classroomIds]);
+    [walletAddress, classroomIds]);
 }
 // delete
-export const deleteTeacher = async (id) => {
+export const deleteTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.deleteTeacher,
+    [walletAddress]);
+}
+
+// ClassConfigs
+// create
+export const createClassConfig = async (classReference, contentUrl) => {
+  // onlyRole(TEACHER)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.createClassConfig,
+    [classReference, contentUrl]);
+}
+// read
+export const getClassConfigs = async () => {
+  // onlyRole(TEACHER)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassConfigs()
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+export const getClassConfig = async (id) => {
+  // onlyRole(TEACHER)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getClassConfig(id)
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+// update
+export const updateClassConfig = async (id, classReference, contentUrl) => {
+  // onlyRole(TEACHER)
+
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  return callGasTransaction(window.contract.methods.updateClassConfig,
+    [id, classReference, contentUrl]);
+}
+// delete
+export const deleteClassConfig = async (id) => {
+  // onlyRole(TEACHER)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.deleteTeacher,
     [id]);
 }
-
+////
 async function callGasTransaction(func, params) {
   const transactionParameters = {
     to: contractAddress,
@@ -308,4 +353,3 @@ async function callGasTransaction(func, params) {
     }
   }
 }
-
