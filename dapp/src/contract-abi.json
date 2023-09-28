@@ -622,6 +622,41 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getRoles",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "student",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "teacher",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "classroomAdmin",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "landOperator",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TeachContract.RoleResult",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",

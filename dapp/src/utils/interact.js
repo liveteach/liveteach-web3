@@ -330,6 +330,20 @@ export const deleteClassConfig = async (id) => {
     [id]);
 }
 ////
+export const getUserRoles = async () => {
+  //PUBLIC
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getRoles()
+    .call({ from: window.ethereum.selectedAddress });
+  let rtn = [];
+  for (const [role, held] of Object.entries(result)) {
+    if (held && isNaN(role))
+      rtn.push(role);
+  }
+  return rtn;
+}
+////
 async function callGasTransaction(func, params) {
   const transactionParameters = {
     to: contractAddress,
