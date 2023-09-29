@@ -5,8 +5,8 @@ import {Link} from "react-router-dom";
 import Logo from "./partials/Logo";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
-import {setAuth, setAvatar, setName, setWalletAddress, setAvatarLoaded} from "../../store/adminUser";
-import { getCurrentWalletConnected} from "../../utils/interact";
+import {setAuth, setAvatar, setName, setWalletAddress, setAvatarLoaded, setRoles} from "../../store/adminUser";
+import {getCurrentWalletConnected, getUserRoles} from "../../utils/interact";
 import {checkConnectedWalletAddress} from "../../utils/AuthCheck";
 
 const propTypes = {
@@ -22,7 +22,7 @@ const Header = ({
                   ...props
                 }) => {
 
-  const { avatar,name,auth, avatarLoaded } = useSelector((state) => state.adminUser);
+  const { avatar,name,auth, avatarLoaded, roles } = useSelector((state) => state.adminUser);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null)
@@ -55,6 +55,34 @@ const Header = ({
     })
   },[avatarLoaded])
 
+  useEffect(() => {
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.on('accountsChanged', function (accounts) {
+        if (accounts.length > 0) {
+          const newAccount = accounts[0];
+          dispatch(setAuth(checkConnectedWalletAddress().auth));
+          getCurrentWalletConnected().then( result => {
+            getUserRoles().then(result => {
+              console.log(result)
+              dispatch(setRoles(result))
+            })
+            getProfile(result.address).then(() => dispatch(setAvatarLoaded(true)));
+            dispatch(setWalletAddress(result.address))
+          })
+        } else {
+          console.log('User disconnected their MetaMask account');
+        }
+      });
+    } else {
+      console.log('MetaMask is not installed or not available');
+    }
+    return () => {
+      if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.removeAllListeners('accountsChanged');
+      }
+    };
+  }, []);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -69,6 +97,8 @@ const Header = ({
         dispatch(setAvatar(result.data.avatars[0].avatar.snapshots.face256));
         dispatch(setName(result.data.avatars[0].name));
       } catch (error) {
+        dispatch(setAvatar(""));
+        dispatch(setName(""));
         console.error("Error:", error);
       }
     }}

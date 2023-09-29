@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {useEffect} from "react";
 import {getClassConfigs} from "../../../utils/interact";
 import {setClassConfigs,setSelectedClass} from "../../../store/teacherState";
+import {NoAdmittance} from "../NoAdmittance";
 
 export default function Teacher(props){
 
@@ -85,9 +86,7 @@ export default function Teacher(props){
                 <Button>Show All</Button> | <Button>Show Active</Button> | <Button>Show inactive</Button>
             </div>
                 ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
         </div>
     )

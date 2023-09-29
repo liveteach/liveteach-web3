@@ -5,6 +5,7 @@ import {setClassroomAdmins, setNewAdminWallet, setNewLandIds} from "../../../sto
 import {Button, Modal} from "@mui/material";
 import React from 'react'
 import {TextField, Typography} from "@material-ui/core";
+import {NoAdmittance} from "../NoAdmittance";
 
 const style = {
     position: 'absolute',
@@ -104,9 +105,7 @@ export function LandOperator(props){
                 </div>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
             <Modal
                 open={open}

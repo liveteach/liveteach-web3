@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setClassName, setClassLandIds} from "../../../store/classroomAdminState";
 import { MuiChipsInput} from "mui-chips-input";
 import {createClassroom} from '../../../utils/interact';
+import {NoAdmittance} from "../NoAdmittance";
 
 export function AddClassroom(props){
 
@@ -58,6 +59,13 @@ export function AddClassroom(props){
         return arr
     }
 
+    function getGuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16)
+        })
+    }
+
     return(
         <div className="ui container">
             {render ? (
@@ -100,13 +108,12 @@ export function AddClassroom(props){
                         className="textInput"
                         color="error"
                         disabled
+                        value={getGuid()}
                     />
                 </div>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
             { render ? (
             <div className="ui container">

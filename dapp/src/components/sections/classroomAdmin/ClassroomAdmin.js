@@ -4,6 +4,7 @@ import {Button} from "@mui/material";
 import {useEffect} from "react";
 import { getClassrooms, deleteClassroom, getTeachers, deleteTeacher } from "../../../utils/interact";
 import {setClassrooms, setTeachers} from "../../../store/classroomAdminState";
+import {NoAdmittance} from "../NoAdmittance";
 
 export default function ClassroomAdmin(props){
 
@@ -84,9 +85,7 @@ export default function ClassroomAdmin(props){
                 </div>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
             { render ? (
             <div className="ListingsTableContainer_listingsTableContainer__h1r2j ">

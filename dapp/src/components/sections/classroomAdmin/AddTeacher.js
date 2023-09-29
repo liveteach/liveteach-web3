@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
 import {setClassrooms} from "../../../store/classroomAdminState";
 import {setWalletAddress,setTeacherClassrooms} from "../../../store/teacherState";
+import {NoAdmittance} from "../NoAdmittance";
 
 export function AddTeacher(props){
 
@@ -87,9 +88,7 @@ export function AddTeacher(props){
                 </Grid>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
         </div>
     )

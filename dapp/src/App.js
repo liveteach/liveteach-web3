@@ -35,13 +35,12 @@ const App = () => {
   const location = useLocation();
   const currentURL = location.pathname;
 
-  const {isPrivate,auth, roles} = useSelector((state) => state.adminUser)
+  const {auth} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
 
   useEffect(() => {
     document.body.classList.add("is-loaded");
-
-      dispatch(setAuth(checkConnectedWalletAddress().auth));
+    dispatch(setAuth(checkConnectedWalletAddress().auth));
   }, []);
 
   useEffect(() => {
@@ -56,12 +55,13 @@ const App = () => {
         }
   }, [auth]);
 
-  useEffect( () => {
-      getUserRoles().then(result => {
-          console.log(result)
-          dispatch(setRoles(result))
-      })
-  },[auth])
+      useEffect( () => {
+          getUserRoles().then(result => {
+              console.log(result)
+              dispatch(setRoles(result))
+          })
+      },[auth])
+
 
   return (
       <Switch>

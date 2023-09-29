@@ -57,7 +57,7 @@ export default function DocsNav(){
                             </div>
                         </Link>
 
-                        <Link to="/docs/admin/page1">
+                        <Link to="/docs/admin/classrooms">
                             <div className="dcl tab active tabColor">
                                 Classroom Administrators
                                 {activeTab === 'admin' && <div className="active-bar" id="admin"></div>}

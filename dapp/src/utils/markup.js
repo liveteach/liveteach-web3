@@ -1,17 +1,16 @@
 import pageOne from "../components/markdown/test.md";
-import pageTwo from "../components/markdown/newTest.md";
-import pageThree from "../components/markdown/thirdTest.md";
+import classroomAdminClassrooms from "../components/markdown/classroomAdmin/classroomAdminClassrooms.md";
+import classroomAdminTeachers  from "../components/markdown/classroomAdmin/classroomAdminTeachers.md";
+import pageTwo from "../components/markdown/thirdTest.md";
 import devMenuData from '../resource/devMenuData.json';
 import teacherMenuData from '../resource/teacherMenuData.json';
 import adminMenuData from '../resource/adminMenuData.json';
 import ownerMenuData from '../resource/ownerMenuData.json';
-
 import {DOCS} from "../components/sections/DOCS";
 
 export const devMarkup = {
     page1: pageOne,
-    page2: pageTwo,
-    page3: pageThree
+    page2: pageTwo
 };
 
 export const devDocs = (props) => {
@@ -49,8 +48,8 @@ export const ownerDocs = (props) => {
 };
 
 export const adminMarkup = {
-    page1: pageOne,
-    page2: pageTwo
+    classrooms: classroomAdminClassrooms,
+    teachers: classroomAdminTeachers
 };
 
 export const adminDocs = (props) => {

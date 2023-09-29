@@ -2,6 +2,7 @@ import {Grid, TextField,Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {deleteClassConfig, updateClassConfig} from "../../../utils/interact";
 import {setNewClassUrl, setNewClassReference} from "../../../store/teacherState";
+import {NoAdmittance} from "../NoAdmittance";
 
 export function EditClass(props){
 
@@ -78,9 +79,7 @@ export function EditClass(props){
                 </Grid>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
         </div>
    )
