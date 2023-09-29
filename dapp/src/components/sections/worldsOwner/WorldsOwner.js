@@ -1,9 +1,10 @@
 import {useSelector} from "react-redux";
+import {NoAdmittance} from "../NoAdmittance";
 
 export function WorldsOwner(props){
 
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("worldsOwner")
+    const render = roles.includes("worldsOwner") || roles.includes("classroomAdmin")
 
     return (
         <div className="ui container">
@@ -58,9 +59,7 @@ export function WorldsOwner(props){
                 </div>
             </div>
             ) : (
-                <div>
-                    <p>you are not permitted to view this page</p>
-                </div>
+                <NoAdmittance/>
             )}
         </div>
     )

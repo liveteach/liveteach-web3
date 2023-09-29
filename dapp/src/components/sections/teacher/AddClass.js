@@ -2,12 +2,13 @@ import {Grid, TextField, Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {setNewClassReference, setNewClassUrl} from "../../../store/teacherState";
 import { createClassConfig } from "../../../utils/interact";
+import {NoAdmittance} from "../NoAdmittance";
 
 export function AddClass(props){
 
     const { newClassReference, newClassUrl } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("teacher")
+    const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
 
     return (
@@ -63,9 +64,7 @@ export function AddClass(props){
                 </Grid>
             </div>
             ) : (
-            <div>
-                <p>you are not permitted to view this page</p>
-            </div>
+                <NoAdmittance/>
             )}
         </div>
     )

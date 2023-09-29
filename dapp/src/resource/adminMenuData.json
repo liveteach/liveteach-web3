@@ -1,22 +1,16 @@
 [
   {
-    "heading": "Main menu",
+    "heading": "Classroom Admin",
     "menuItems": [
       {
         "id": 11,
-        "label": "page1",
-        "link": "/docs/admin/page1"
+        "label": "Add Classrooms",
+        "link": "/docs/admin/classrooms"
       },
       {
-        "id": 13,
-        "label": "Page Two Dropdown",
-        "subMenu": [
-          {
-            "id": 131,
-            "label": "page2",
-            "link": "/docs/admin/page2"
-          }
-        ]
+        "id": 12,
+        "label": "Add Teachers",
+        "link": "/docs/admin/teachers"
       }
     ]
   }
