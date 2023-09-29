@@ -1,7 +1,7 @@
 ## Setting Up Teachers For A Classroom
 
 Adding teachers to a classroom once the classroom has been created can be achieved by accessing the Classroom Admin Screen
-(accessible if your wallet you are connecting with is setup as an administrator), Click the "ADD" button on the top right
+(accessible if the wallet you are connecting with is set up as an administrator), Click the "ADD" button on the top right
 of the Teachers table:
 
 ![](https://i.ibb.co/cTyqnDc/classroom-Admin-Screen.png)

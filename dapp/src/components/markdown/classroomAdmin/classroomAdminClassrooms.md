@@ -18,7 +18,7 @@ map and will generate a map tile confirming the position, for example if we sele
 
 ![](https://i.ibb.co/zxGrJFh/map-Screen-One.png)
 
-This input excepts multiple coords for the class and centres the image on the most logical centre coord. If you add a
+This input excepts multiple co-ordinates for the class and centres the image on the most logical centre coord. If you add a
 co-ordinate by mistake simply click the "x" on the chip of the incorrect co-ordinate and that will be removed updating the 
 image.
 
