@@ -5,7 +5,7 @@ import { NoAdmittance } from "../NoAdmittance";
 export default function Student(props){
 
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("student")
+    const render = roles.includes("student") || roles.includes("classroomAdmin")
 
     return(
         <div className="ui container">

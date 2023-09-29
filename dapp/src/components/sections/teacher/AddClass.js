@@ -8,7 +8,7 @@ export function AddClass(props){
 
     const { newClassReference, newClassUrl } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("teacher")
+    const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
 
     return (

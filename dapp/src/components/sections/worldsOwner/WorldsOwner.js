@@ -4,7 +4,7 @@ import {NoAdmittance} from "../NoAdmittance";
 export function WorldsOwner(props){
 
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("worldsOwner")
+    const render = roles.includes("worldsOwner") || roles.includes("classroomAdmin")
 
     return (
         <div className="ui container">

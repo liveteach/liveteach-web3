@@ -23,7 +23,7 @@ export function LandOperator(props){
 
     const {classroomAdmins, newAdminWallet, newLandIds} = useSelector((state) => state.landOperator)
     const {roles} = useSelector((state) => state.adminUser)
-    const render = roles.includes("landOperator")
+    const render = roles.includes("landOperator") || roles.includes("classroomAdmin")
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
