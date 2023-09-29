@@ -16,7 +16,7 @@ export default function Teacher(props){
 
     useEffect(() => {
         console.log(roles)
-        if(render){
+        if(roles.includes("teacher")){
             getClassConfigs().then(result => {
                 dispatch(setClassConfigs(result))
             })
