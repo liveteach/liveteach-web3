@@ -47,16 +47,13 @@ export function AddClassroom(props){
         return logicalCenter;
     }
 
-    function createArrayCoordsToInt(coords){
+    function createArrayCoordsToInt(coords) {
         let arr = [];
-        console.log(coords)
-        for(let i = 0; i < coords.length; i++){
-            console.log(coords[i])
-            let coordArr = coords[i].split(",");
-            let parsedCoords = coordArr.map(coord => parseInt(coord, 10));
-            arr.push(parsedCoords);
+        for (let i = 0; i < coords.length; i++) {
+            let coordArr = coords[i].split(",").map(coord => parseInt(coord, 10));
+            arr.push(coordArr);
         }
-        return arr
+        return arr;
     }
 
     function getGuid() {
