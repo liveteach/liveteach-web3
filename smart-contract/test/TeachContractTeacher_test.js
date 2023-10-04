@@ -11,6 +11,9 @@ describe("TeachContractTeacher", function () {
     owner = accounts[0];
     otherUser = accounts[1];
     otherUser2 = accounts[2];
+    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    let landContractAddress = await landContract.target;
+    teachContract.connect(owner).setLANDRegistry(landContractAddress);
   })
 
   // create
@@ -39,11 +42,11 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
 
     await expect(teachContract.connect(otherUser2).createTeacher(randomWallet, [1]))
-      .to.be.revertedWith("Provided classroom id not valid.");
+      .to.be.revertedWith("Provided id invalid.");
     await expect(teachContract.connect(otherUser).getTeacher(randomWallet))
-      .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
     await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
-      .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
     let teachers = await teachContract.connect(otherUser).getTeachers();
     assert.equal(0, teachers.length);
     teachers = await teachContract.connect(otherUser2).getTeachers();
@@ -124,7 +127,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
-      .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 
   // // update
@@ -177,7 +180,7 @@ describe("TeachContractTeacher", function () {
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
     await expect(teachContract.connect(otherUser2).updateTeacher(randomWallet, [1, 2]))
-      .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 
   it("Classroom admin cannot update a teacher's classrooms to classrooms that doesn't belong to them", async function () {
@@ -194,7 +197,7 @@ describe("TeachContractTeacher", function () {
     assert.equal(randomWallet, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
     await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [5]))
-      .to.be.revertedWith("Provided classroom id not valid.");
+      .to.be.revertedWith("Provided id invalid.");
   });
 
   it("Classroom admin cannot update a teacher's classrooms to classrooms that don't exist", async function () {
@@ -212,7 +215,7 @@ describe("TeachContractTeacher", function () {
     assert.equal([1n].toString(), teacher.classroomIds.toString());
 
     await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [99]))
-      .to.be.revertedWith("Provided classroom id not valid.");
+      .to.be.revertedWith("Provided id invalid.");
 
   });
   // // delete
@@ -256,6 +259,6 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
-      .to.be.revertedWith("This teacher does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 });
