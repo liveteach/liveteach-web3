@@ -15,16 +15,13 @@ export function DOCS(props){
 
     const { markdown, activePage } = useSelector((state) => state.docs)
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                setLoading(true)
                 const response = await fetch(props.markup[activePage]);
                 const text = await response.text();
                 dispatch(setMarkdown(text));
-                setLoading(false)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -52,7 +49,7 @@ export function DOCS(props){
 
     return(
         <>
-        <Header authenticated />
+        <Header />
             <DocsNav />
                 <main>
                     <div className="ui container">
@@ -96,11 +93,7 @@ export function DOCS(props){
                                 </aside>
                             </Grid>
                             <Grid item xs={9}>
-                                {
-                                    !loading && (
-                                        <MarkdownPage content={markdown}/>
-                                    )
-                                }
+                                <MarkdownPage content={markdown}/>
                             </Grid>
                         </Grid>
                     </div>
