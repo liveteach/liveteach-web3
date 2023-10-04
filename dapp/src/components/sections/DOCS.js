@@ -1,6 +1,6 @@
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -12,20 +12,22 @@ import DocsNav from "../layout/DocsNav";
 export function DOCS(props){
 
     let params = useParams();
-
     const { markdown, activePage } = useSelector((state) => state.docs)
     const dispatch = useDispatch();
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await fetch(props.markup[activePage]);
-                const text = await response.text();
-                dispatch(setMarkdown(text));
-            } catch (error) {
-                console.error('Error fetching data:', error);
+        console.log("Page Params: " + params.page)
+        handlePageSwitch(params.page)
+            async function fetchData() {
+                try {
+                    console.log("Active Page: " + activePage)
+                    const response = await fetch(props.markup[activePage]);
+                    const text = await response.text();
+                    dispatch(setMarkdown(text));
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
             }
-        }
 
         fetchData();
     }, [activePage])
