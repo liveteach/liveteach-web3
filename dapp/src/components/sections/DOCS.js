@@ -2,7 +2,7 @@ import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
 import React, {useEffect} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
-import {Link, useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import { setMarkdown, setActivePage } from "../../store/docsState";
 import Header from "../layout/Header";
