@@ -15,7 +15,9 @@ describe("TeachContractClassConfig", function () {
     classroomAdmin = accounts[1];
     teacher = accounts[2];
     nonRegisteredUser = accounts[3];
-
+    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    let landContractAddress = await landContract.target;
+    teachContract.connect(owner).setLANDRegistry(landContractAddress);
     await teachContract.connect(owner).createClassroomAdmin(classroomAdmin, [1, 2, 3, 4]);
     await teachContract.connect(classroomAdmin).createClassroomLandIds("Test Classroom 1", [1]);
     await teachContract.connect(classroomAdmin).createTeacher(teacher, [1]);

@@ -7,6 +7,7 @@ describe("TeachContractClassConfig", function () {
   let teacher2;
   let nonRegisteredUser;
   let teachContract;
+  let landContract
 
   let randomWallet = "0xAA14f5F645273Aa6411995Bf8F02557B7C74a154";
   this.beforeEach(async function () {
@@ -17,6 +18,11 @@ describe("TeachContractClassConfig", function () {
     teacher1 = accounts[2];
     teacher2 = accounts[3];
     nonRegisteredUser = accounts[4];
+
+    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    let landContractAddress = await landContract.target;
+    teachContract.connect(owner).setLANDRegistry(landContractAddress);
+
     await teachContract.connect(owner).createClassroomAdmin(classroomAdmin, [1, 2, 3, 4]);
     await teachContract.connect(classroomAdmin).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
     await teachContract.connect(classroomAdmin).createTeacher(teacher1, [1]);
@@ -69,7 +75,7 @@ describe("TeachContractClassConfig", function () {
   it("Teacher should not be able to get data about a single one of another teachers ClassConfigs", async function () {
     await teachContract.connect(teacher1).createClassConfig("T1_L1", "https://websitet1l1.json");
     await expect(teachContract.connect(teacher2).getClassConfig(1))
-      .to.be.revertedWith("This class config does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
   // update
   it("Teacher should be able to update their ClassConfig", async function () {
@@ -88,7 +94,7 @@ describe("TeachContractClassConfig", function () {
     await teachContract.connect(teacher1).createClassConfig("T1_L2", "https://websitet1l2.json");
 
     await expect(teachContract.connect(teacher1).updateClassConfig(5, "UPDATED_REF", "https://updatedurl.json"))
-      .to.be.revertedWith("This class config does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
 
   });
   it("Teacher should not be able to update another teachers ClassConfig", async function () {
@@ -96,7 +102,7 @@ describe("TeachContractClassConfig", function () {
     await teachContract.connect(teacher1).createClassConfig("T1_L2", "https://websitet1l2.json");
 
     await expect(teachContract.connect(teacher2).updateClassConfig(1, "UPDATED_REF", "https://updatedurl.json"))
-      .to.be.revertedWith("This class config does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
   //delete
   it("Teacher should be able to delete their ClassConfig", async function () {
@@ -116,13 +122,13 @@ describe("TeachContractClassConfig", function () {
     await teachContract.connect(teacher1).createClassConfig("T1_L2", "https://websitet1l2.json");
 
     await expect(teachContract.connect(teacher1).deleteClassConfig(5))
-      .to.be.revertedWith("This class config does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
   it("Teacher should not be able to delete another teachers ClassConfig", async function () {
     await teachContract.connect(teacher1).createClassConfig("T1_L1", "https://websitet1l1.json");
     await teachContract.connect(teacher1).createClassConfig("T1_L2", "https://websitet1l2.json");
 
     await expect(teachContract.connect(teacher2).deleteClassConfig(1))
-      .to.be.revertedWith("This class config does not exist or you do not have access to it.");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 });

@@ -29,7 +29,9 @@ describe("TeachContractDeleteCascade", function () {
     T7 = accounts[10];
     T8 = accounts[11];
     T10 = accounts[13];
-
+    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    let landContractAddress = await landContract.target;
+    teachContract.connect(owner).setLANDRegistry(landContractAddress);
     await teachContract.connect(owner).createClassroomAdmin(CA0, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(CA1, [5, 6, 7]);
     await teachContract.connect(CA0).createClassroomLandIds("CR0", [1]);
