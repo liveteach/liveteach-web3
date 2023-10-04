@@ -26,7 +26,6 @@ import {AddClass} from "./components/sections/teacher/AddClass";
 import {WorldsOwner} from "./components/sections/worldsOwner/WorldsOwner";
 import {DocsInitialPage} from "./components/sections/DocsInitialPage";
 import {adminDocs, devDocs, ownerDocs, teacherDocs} from "./utils/markup";
-import {EditClass} from "./components/sections/teacher/EditClass";
 import {getUserRoles} from "./utils/interact";
 
 const App = () => {
@@ -55,12 +54,14 @@ const App = () => {
         }
   }, [auth]);
 
-      useEffect( () => {
-          getUserRoles().then(result => {
-              console.log(result)
-              dispatch(setRoles(result))
-          })
-      },[auth])
+  useEffect( () => {
+      if(auth){
+      getUserRoles().then(result => {
+          console.log(result)
+          dispatch(setRoles(result))
+      })
+      }
+  },[auth])
 
 
   return (
@@ -102,12 +103,12 @@ const App = () => {
               component={AddClass}
               layout={LayoutDefault}
           />
-          <AppRoute
-              exact
-              path="/teacher/edit"
-              component={EditClass}
-              layout={LayoutDefault}
-          />
+          {/*<AppRoute*/}
+          {/*    exact*/}
+          {/*    path="/teacher/edit"*/}
+          {/*    component={EditClass}*/}
+          {/*    layout={LayoutDefault}*/}
+          {/*/>*/}
         {/* private Routes */}
 
           <AppRoute
