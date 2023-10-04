@@ -1,15 +1,53 @@
 import {Grid, TextField, Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
-import {setNewClassReference, setNewClassUrl} from "../../../store/teacherState";
-import { createClassConfig } from "../../../utils/interact";
+import {setNewClassReference, setNewClassDescription} from "../../../store/teacherState";
 import {NoAdmittance} from "../NoAdmittance";
 
 export function AddClass(props){
 
-    const { newClassReference, newClassUrl } = useSelector((state) => state.teacher)
+    const { newClassReference, newClassDescription } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
+
+    const classTemplate = {
+        "content": {
+            "id": "",
+            "name": newClassReference,
+            "description": newClassDescription,
+            "images": [
+                {
+                    "src": "",
+                    "caption": ""
+                }
+            ],
+            "videos": [
+                {
+                    "src": "",
+                    "caption": ""
+                }
+            ],
+            "models": [
+                {
+                    "key": ""
+                }
+            ]
+        }
+        };
+
+    const handleDownload = () => {
+        const jsonData = JSON.stringify(classTemplate, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template.json';
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="ui container">
@@ -18,24 +56,22 @@ export function AddClass(props){
                 <div className="ui container">
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
-                            <h4>Add Class</h4>
+                            <h4>Setup Class</h4>
                         </div>
                         <div className="dcl tabs-right">
                             <Button
                                 onClick={() => {
-                                    createClassConfig(newClassReference, newClassUrl).then(result => {
-                                        console.log(result)
-                                    })
+                                    handleDownload()
                                 }}
                                 className="ui small primary button"
-                            ><span>Add</span></Button>
+                            ><span>download json</span></Button>
                         </div>
                     </div>
                 </div>
                 <Grid container>
-                    <Grid item xs={8}>
+                    <Grid item xs={12}>
                         <div className={"inputFields"}>
-                            <h4>Class Config Reference</h4>
+                            <h4>Name</h4>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
@@ -47,16 +83,16 @@ export function AddClass(props){
                             />
                         </div>
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={12}>
                         <div className={"inputFields"}>
-                            <h4>Class Configuration</h4>
+                            <h4>Description</h4>
                             <TextField
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={newClassUrl}
+                                value={newClassDescription}
                                 onChange={(e) => {
-                                    dispatch(setNewClassUrl(e.target.value))
+                                    dispatch(setNewClassDescription(e.target.value))
                                 }}
                             />
                         </div>

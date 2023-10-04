@@ -13,7 +13,7 @@ export const teacherStateSlice = createSlice({
             teacherId: ""
         },
         newClassReference: "",
-        newClassUrl: ""
+        newClassDescription: ""
     },
     reducers: {
         setWalletAddress: (state, action)=> {
@@ -31,8 +31,8 @@ export const teacherStateSlice = createSlice({
         setNewClassReference: (state, action) => {
             state.newClassReference = action.payload
         },
-        setNewClassUrl: (state,action) => {
-            state.newClassUrl = action.payload
+        setNewClassDescription: (state,action) => {
+            state.newClassDescription = action.payload
         }
     }
 });
@@ -42,6 +42,6 @@ export const { setWalletAddress,
     setSelectedClass,
     setClassConfigs,
     setNewClassReference,
-    setNewClassUrl} = teacherStateSlice.actions;
+    setNewClassDescription} = teacherStateSlice.actions;
 
 export default teacherStateSlice.reducer;
