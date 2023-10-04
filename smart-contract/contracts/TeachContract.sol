@@ -22,14 +22,9 @@ contract TeachContract is AccessControl {
 
     // id generators, start at one so we can determine unassigned.
     uint256 private latestClassroomId = 1;
-    uint256 private latestClassConfigId = 1;
 
     function getNewClassroomId() private returns (uint256) {
         return latestClassroomId++;
-    }
-
-    function getNewClassConfigId() private returns (uint256) {
-        return latestClassConfigId++;
     }
 
     // structs
@@ -60,14 +55,6 @@ contract TeachContract is AccessControl {
         address walletAddress;
         uint256[] classroomIds;
         address classroomAdminId;
-        uint256[] classConfigIds;
-    }
-
-    struct ClassConfig {
-        uint256 id;
-        address teacherId;
-        string classReference;
-        string contentUrl;
     }
 
     struct RegisteredIds {
@@ -81,8 +68,7 @@ contract TeachContract is AccessControl {
         mapping(uint256 => bool) landsRegisteredToClassroomBool;
         address[] teacher;
         mapping(address => bool) teacherBool;
-        uint256[] classConfig;
-        mapping(uint256 => bool) classConfigBool;
+
     }
 
     // id to object mappings
@@ -91,7 +77,6 @@ contract TeachContract is AccessControl {
         mapping(address => ClassroomAdmin) classroomAdmin;
         mapping(uint256 => Classroom) classroom;
         mapping(address => Teacher) teacher;
-        mapping(uint256 => ClassConfig) classConfig;
     }
 
     struct RoleResult {
@@ -418,67 +403,6 @@ contract TeachContract is AccessControl {
         unregisterTeacher(id);
     }
 
-    // CLASS CONFIG
-
-    // create
-    function createClassConfig(
-        string memory _classReference,
-        string memory _contentUrl
-    ) public onlyRole(TEACHER) {
-        Teacher memory teacher = idsToObjects.teacher[msg.sender];
-        registerClassConfig(
-            getNewClassConfigId(),
-            teacher,
-            _classReference,
-            _contentUrl
-        );
-    }
-
-    // read
-    function getClassConfigs()
-        public
-        view
-        onlyRole(TEACHER)
-        returns (ClassConfig[] memory)
-    {
-        uint256[] memory classConfigIds = idsToObjects
-            .teacher[msg.sender]
-            .classConfigIds;
-        ClassConfig[] memory rtn = new ClassConfig[](classConfigIds.length);
-        for (uint256 i = 0; i < classConfigIds.length; i++) {
-            rtn[i] = idsToObjects.classConfig[classConfigIds[i]];
-        }
-        return rtn;
-    }
-
-    function getClassConfig(
-        uint256 id
-    ) public view onlyRole(TEACHER) returns (ClassConfig memory) {
-        // class config should be registered to the calling teacher
-        require(teacherOwnsClassConfig(msg.sender, id), ERR_OBJECT_ACCESS);
-        return idsToObjects.classConfig[id];
-    }
-
-    // update
-    function updateClassConfig(
-        uint256 id,
-        string memory _classReference,
-        string memory _contentUrl
-    ) public onlyRole(TEACHER) {
-        // class config should be registered to the calling teacher
-        require(teacherOwnsClassConfig(msg.sender, id), ERR_OBJECT_ACCESS);
-        unregisterClassConfig(id);
-        Teacher memory teacher = idsToObjects.teacher[msg.sender];
-        registerClassConfig(id, teacher, _classReference, _contentUrl);
-    }
-
-    // delete
-    function deleteClassConfig(uint256 id) public onlyRole(TEACHER) {
-        // class config should be registered to the calling teacher
-        require(teacherOwnsClassConfig(msg.sender, id), ERR_OBJECT_ACCESS);
-        unregisterClassConfig(id);
-    }
-
     // private
     // land
     function areAnyLandIdsAssignedToClassroomAdmin(
@@ -516,21 +440,6 @@ contract TeachContract is AccessControl {
         address _teacherId
     ) private view returns (bool) {
         return idsToObjects.teacher[_teacherId].classroomAdminId == walletId;
-    }
-
-    function teacherOwnsClassConfig(
-        address teacherId,
-        uint256 classConfigId
-    ) private view returns (bool) {
-        uint256[] memory ownedClassConfigs = idsToObjects
-            .teacher[teacherId]
-            .classConfigIds;
-        for (uint256 i = 0; i < ownedClassConfigs.length; i++) {
-            if (classConfigId == ownedClassConfigs[i]) {
-                return true;
-            }
-        }
-        return false;
     }
 
     function checkLandIdsSuitableToBeAssignedToClassroom(
@@ -735,12 +644,10 @@ contract TeachContract is AccessControl {
         uint256[] memory _classroomIds,
         address classroomAdminWallet
     ) private {
-        uint256[] memory emptyUintList;
         idsToObjects.teacher[_walletAddress] = Teacher({
             walletAddress: _walletAddress,
             classroomIds: _classroomIds,
-            classroomAdminId: classroomAdminWallet,
-            classConfigIds: emptyUintList
+            classroomAdminId: classroomAdminWallet
         });
         registeredIds.teacher.push(_walletAddress);
         registeredIds.teacherBool[_walletAddress] = true;
@@ -772,35 +679,6 @@ contract TeachContract is AccessControl {
         );
         delete idsToObjects.teacher[_id];
         revokeRole(TEACHER, teacher.walletAddress);
-    }
-
-    function registerClassConfig(
-        uint256 _id,
-        Teacher memory teacher,
-        string memory _classReference,
-        string memory _contentUrl
-    ) private {
-        idsToObjects.classConfig[_id] = ClassConfig({
-            id: _id,
-            teacherId: teacher.walletAddress,
-            classReference: _classReference,
-            contentUrl: _contentUrl
-        });
-        registeredIds.classConfig.push(_id);
-        registeredIds.classConfigBool[_id] = true;
-        // associate with teacher
-        idsToObjects.teacher[teacher.walletAddress].classConfigIds.push(_id);
-    }
-
-    function unregisterClassConfig(uint256 _id) private {
-        ClassConfig memory classConfig = idsToObjects.classConfig[_id];
-        removeUintFromArrayMaintainOrder(registeredIds.classConfig, _id);
-        delete registeredIds.classConfigBool[_id];
-        removeUintFromArrayMaintainOrder(
-            idsToObjects.teacher[classConfig.teacherId].classConfigIds,
-            _id
-        );
-        delete idsToObjects.classConfig[_id];
     }
 
     function _updateTeacher(address id, uint256[] memory classroomIds) private {
