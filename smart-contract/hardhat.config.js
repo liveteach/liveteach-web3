@@ -14,6 +14,15 @@ module.exports = {
             enabled: true,
           },
         }
+      },
+      {
+        version: "0.4.24",
+        settings: {
+          optimizer: {
+            enabled: true,
+            "runs": 10
+          },
+        }
       }]
   },
   paths: {
