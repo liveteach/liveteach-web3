@@ -16,8 +16,6 @@ export function DOCS(props){
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("Page Params: " + params.page)
-        handlePageSwitch(params.page)
             async function fetchData() {
                 try {
                     console.log("Active Page: " + activePage)
@@ -30,7 +28,7 @@ export function DOCS(props){
             }
 
         fetchData();
-    }, [activePage])
+    })
 
     useEffect(() => {
         dispatch(setActivePage(params.page))
