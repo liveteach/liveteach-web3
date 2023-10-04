@@ -1,6 +1,6 @@
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -15,11 +15,22 @@ export function DOCS(props){
 
     const { markdown, activePage } = useSelector((state) => state.docs)
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch(props.markup[activePage]).then(r => r.text()).then(text => {
-            dispatch(setMarkdown(text))
-        })
+        async function fetchData() {
+            try {
+                setLoading(true)
+                const response = await fetch(props.markup[activePage]);
+                const text = await response.text();
+                dispatch(setMarkdown(text));
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchData();
     }, [activePage])
 
     useEffect(() => {
@@ -85,7 +96,11 @@ export function DOCS(props){
                                 </aside>
                             </Grid>
                             <Grid item xs={9}>
-                                <MarkdownPage content={markdown}/>
+                                {
+                                    !loading && (
+                                        <MarkdownPage content={markdown}/>
+                                    )
+                                }
                             </Grid>
                         </Grid>
                     </div>
