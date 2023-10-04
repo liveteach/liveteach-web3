@@ -1,6 +1,6 @@
 const { assert, expect } = require("chai");
 
-describe("TeachContractClassConfig", function () {
+describe("TeachContractRoles", function () {
   let owner;
   let classroomAdmin;
   let teacher;
@@ -19,7 +19,7 @@ describe("TeachContractClassConfig", function () {
     let landContractAddress = await landContract.target;
     teachContract.connect(owner).setLANDRegistry(landContractAddress);
     await teachContract.connect(owner).createClassroomAdmin(classroomAdmin, [1, 2, 3, 4]);
-    await teachContract.connect(classroomAdmin).createClassroomLandIds("Test Classroom 1", [1]);
+    await teachContract.connect(classroomAdmin).createClassroomLandIds("Test Classroom 1", [1], getGuid());
     await teachContract.connect(classroomAdmin).createTeacher(teacher, [1]);
   })
 
@@ -57,3 +57,10 @@ describe("TeachContractClassConfig", function () {
   });
 
 });
+
+function getGuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}

@@ -13,13 +13,13 @@ describe("TeachContractTeacher", function () {
     otherUser2 = accounts[2];
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
-    teachContract.connect(owner).setLANDRegistry(landContractAddress);
+    await teachContract.connect(owner).setLANDRegistry(landContractAddress);
   })
 
   // create
   it("Classroom admin can create teacher", async function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
     let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
@@ -39,7 +39,7 @@ describe("TeachContractTeacher", function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
 
     await expect(teachContract.connect(otherUser2).createTeacher(randomWallet, [1]))
       .to.be.revertedWith("Provided id invalid.");
@@ -57,7 +57,7 @@ describe("TeachContractTeacher", function () {
   it("Classroom admin can get data about all their teachers", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
@@ -74,7 +74,7 @@ describe("TeachContractTeacher", function () {
   it("Non classroom admin cannot get data about a classroom admins teachers", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
@@ -89,7 +89,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     let result = await teachContract.connect(otherUser2).getTeachers();
     assert.equal(0, result.length);
@@ -97,7 +97,7 @@ describe("TeachContractTeacher", function () {
 
   it("Classroom admin can get data about a single one of their teachers", async function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
@@ -109,7 +109,7 @@ describe("TeachContractTeacher", function () {
   it("Non classroom admin cannot get data about a classroom admins single teacher", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await teachContract.connect(otherUser).createTeacher(otherUser2.address, [1]);
 
@@ -124,7 +124,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
@@ -134,8 +134,8 @@ describe("TeachContractTeacher", function () {
   it("Classroom admin can update a teacher's classrooms", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
@@ -154,8 +154,8 @@ describe("TeachContractTeacher", function () {
   it("Non classroom admin cannot update a teacher's classrooms", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
@@ -171,8 +171,8 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
@@ -188,8 +188,8 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
-    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
+    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
@@ -205,8 +205,8 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
-    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
+    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
 
@@ -222,7 +222,7 @@ describe("TeachContractTeacher", function () {
   it("Classroom admin can delete their own teachers", async function () {
 
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
@@ -239,7 +239,7 @@ describe("TeachContractTeacher", function () {
 
   it("Non classroom admin cannot delete teachers", async function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
 
@@ -253,7 +253,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(otherUser2, [5, 6]);
 
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
 
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
@@ -262,3 +262,10 @@ describe("TeachContractTeacher", function () {
       .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 });
+
+function getGuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
