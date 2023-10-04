@@ -16,16 +16,18 @@ export function DOCS(props){
     const dispatch = useDispatch();
 
     useEffect(() => {
+        console.log("Page Params: " + params.page)
         handlePageSwitch(params.page)
-        async function fetchData() {
-            try {
-                const response = await fetch(props.markup[activePage]);
-                const text = await response.text();
-                dispatch(setMarkdown(text));
-            } catch (error) {
-                console.error('Error fetching data:', error);
+            async function fetchData() {
+                try {
+                    console.log("Active Page: " + activePage)
+                    const response = await fetch(props.markup[activePage]);
+                    const text = await response.text();
+                    dispatch(setMarkdown(text));
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
             }
-        }
 
         fetchData();
     }, [activePage])
