@@ -1,10 +1,18 @@
-require("@nomicfoundation/hardhat-toolbox");
-
-const { API_URL, PRIVATE_KEY, CONTRACT_ADDRESS, API_KEY } = process.env;
-
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
 
+
+require("@nomicfoundation/hardhat-toolbox");
+require('dotenv').config();
+const { API_URL, PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
+
+module.exports = {
+  networks: {
+    hardhat: {},
+    goerli: {
+      url: API_URL,
+      accounts: [`0x${PRIVATE_KEY}`],
+    }
+  },
   solidity: {
     compilers: [
       {
@@ -24,6 +32,11 @@ module.exports = {
           },
         }
       }]
+  },
+  etherscan: {
+    apiKey: {
+      goerli: ETHERSCAN_API_KEY
+    }
   },
   paths: {
     sources: "./contracts",
