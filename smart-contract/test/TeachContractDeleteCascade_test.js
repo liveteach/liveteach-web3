@@ -31,13 +31,13 @@ describe("TeachContractDeleteCascade", function () {
     T10 = accounts[13];
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
-    teachContract.connect(owner).setLANDRegistry(landContractAddress);
+    await teachContract.connect(owner).setLANDRegistry(landContractAddress);
     await teachContract.connect(owner).createClassroomAdmin(CA0, [1, 2, 3, 4]);
     await teachContract.connect(owner).createClassroomAdmin(CA1, [5, 6, 7]);
-    await teachContract.connect(CA0).createClassroomLandIds("CR0", [1]);
-    await teachContract.connect(CA0).createClassroomLandIds("CR1", [2]);
-    await teachContract.connect(CA0).createClassroomLandIds("CR2", [3]);
-    await teachContract.connect(CA1).createClassroomLandIds("CR3", [5, 6]);
+    await teachContract.connect(CA0).createClassroomLandIds("CR0", [1], getGuid());
+    await teachContract.connect(CA0).createClassroomLandIds("CR1", [2], getGuid());
+    await teachContract.connect(CA0).createClassroomLandIds("CR2", [3], getGuid());
+    await teachContract.connect(CA1).createClassroomLandIds("CR3", [5, 6], getGuid());
 
     await teachContract.connect(CA0).createTeacher(T0, [1]);
     await teachContract.connect(CA0).createTeacher(T1, [1]);
@@ -206,4 +206,11 @@ function assertTeacherLooksRight(teacher, expectedWallet, expectedClassroomIdsLe
   assert.equal(expectedWallet.address, teacher.walletAddress);
   assert.equal(expectedClassroomIdsLength, teacher.classroomIds.length);
   assert.equal(expectedClassroomAdmin.address, teacher.classroomAdminId);
+}
+
+function getGuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
 }

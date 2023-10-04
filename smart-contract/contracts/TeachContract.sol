@@ -49,6 +49,7 @@ contract TeachContract is AccessControl {
         int[][] landCoordinates; // not persisted
         address classroomAdminId;
         address[] teacherIds;
+        string guid;
     }
 
     struct Teacher {
@@ -68,7 +69,6 @@ contract TeachContract is AccessControl {
         mapping(uint256 => bool) landsRegisteredToClassroomBool;
         address[] teacher;
         mapping(address => bool) teacherBool;
-
     }
 
     // id to object mappings
@@ -264,18 +264,26 @@ contract TeachContract is AccessControl {
 
     function createClassroomLandIds(
         string memory _name,
-        uint256[] memory _landIds
+        uint256[] memory _landIds,
+        string memory guid
     ) public onlyRole(CLASSROOM_ADMIN) {
         require(
             checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, _landIds),
             ERR_OBJECT_EXISTS
         );
-        registerClassroom(getNewClassroomId(), _name, _landIds, msg.sender);
+        registerClassroom(
+            getNewClassroomId(),
+            _name,
+            _landIds,
+            msg.sender,
+            guid
+        );
     }
 
     function createClassroomCoordinates(
         string memory _name,
-        int[][] memory coordinatePairs
+        int[][] memory coordinatePairs,
+        string memory guid
     ) public onlyRole(CLASSROOM_ADMIN) {
         uint256[] memory landIds = new uint256[](coordinatePairs.length);
         for (uint256 i = 0; i < coordinatePairs.length; i++) {
@@ -284,7 +292,7 @@ contract TeachContract is AccessControl {
                 coordinatePairs[i][1]
             );
         }
-        createClassroomLandIds(_name, landIds);
+        createClassroomLandIds(_name, landIds, guid);
     }
 
     // read
@@ -327,8 +335,16 @@ contract TeachContract is AccessControl {
             checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, landIds),
             ERR_OBJECT_EXISTS
         );
+        Classroom memory originalClassroom = idsToObjects.classroom[id];
+
         unregisterClassroom(id);
-        registerClassroom(id, name, landIds, msg.sender);
+        registerClassroom(
+            id,
+            name,
+            landIds,
+            msg.sender,
+            originalClassroom.guid
+        );
     }
 
     // delete
@@ -401,6 +417,40 @@ contract TeachContract is AccessControl {
     function deleteTeacher(address id) public onlyRole(CLASSROOM_ADMIN) {
         requireWalletOwnsTeacher(msg.sender, id);
         unregisterTeacher(id);
+    }
+
+    // SCENE
+    function getClassroomGuid(
+        int x,
+        int y
+    ) public view onlyRole(TEACHER) returns (string memory) {
+        // does the teacher have access to this classroom from the supplied coordinates?
+        Teacher memory teacher = idsToObjects.teacher[msg.sender];
+        uint256 callingLandId = landRegistry.encodeTokenId(x, y);
+        bool teacherCanUseLand = false;
+        string memory _classroomGuid;
+        for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
+            Classroom memory currentClassroom = idsToObjects.classroom[
+                teacher.classroomIds[i]
+            ];
+            for (uint256 j = 0; j < currentClassroom.landIds.length; j++) {
+                uint256 currentLandId = currentClassroom.landIds[j];
+                if (callingLandId == currentLandId) {
+                    teacherCanUseLand = true;
+                    _classroomGuid = currentClassroom.guid;
+                    break;
+                }
+            }
+            if (teacherCanUseLand) {
+                break;
+            }
+        }
+        require(
+            teacherCanUseLand,
+            "You are not authorised to use this classroom."
+        );
+
+        return _classroomGuid;
     }
 
     // private
@@ -574,7 +624,8 @@ contract TeachContract is AccessControl {
         uint256 _id,
         string memory _name,
         uint256[] memory _landIds,
-        address _classroomAdminId
+        address _classroomAdminId,
+        string memory _guid
     ) private {
         address[] memory emptyAddressList;
         int[][] memory emptyIntList;
@@ -585,7 +636,8 @@ contract TeachContract is AccessControl {
             landIds: _landIds,
             landCoordinates: emptyIntList,
             classroomAdminId: _classroomAdminId,
-            teacherIds: emptyAddressList
+            teacherIds: emptyAddressList,
+            guid: _guid
         });
         registeredIds.classroom.push(_id);
         registeredIds.classroomBool[_id] = true;
@@ -748,4 +800,13 @@ contract TeachContract is AccessControl {
         }
         return size > 0;
     }
+
+    // function decodeLandId(uint256 id) public view returns (int, int) {
+    //     return landRegistry.decodeTokenId(id);
+    // }
+
+    // function encodeLandId(int x, int y) public view returns (uint256) {
+    //     uint256 result = landRegistry.encodeTokenId(x, y);
+    //     return result;
+    // }
 }

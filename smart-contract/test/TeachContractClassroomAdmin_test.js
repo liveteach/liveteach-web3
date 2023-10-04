@@ -15,7 +15,7 @@ describe("TeachContractClassroomAdmin", function () {
     user2 = accounts[2];
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
-    teachContract.connect(owner).setLANDRegistry(landContractAddress);
+    await teachContract.connect(owner).setLANDRegistry(landContractAddress);
   })
 
   // classroom admin
@@ -112,3 +112,10 @@ describe("TeachContractClassroomAdmin", function () {
   });
 
 });
+
+function getGuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
