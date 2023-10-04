@@ -36,7 +36,7 @@ export default function Teacher(props){
                             <Link to="/teacher/add">
                                 <button
                                     className="ui small primary button"
-                                >Add</button>
+                                >Setup new class</button>
                             </Link>
                         </div>
                     </div>
@@ -50,7 +50,7 @@ export default function Teacher(props){
                             <tr>
                                 <th>URL</th>
                                 <th>Class Reference</th>
-                                <th></th>
+                                {/*<th></th>*/}
                             </tr>
 
                             {
@@ -63,18 +63,18 @@ export default function Teacher(props){
                                             <td>
                                                 {item.classReference}
                                             </td>
-                                            <td>
-                                                <Link to="/teacher/edit">
-                                                    <Button
-                                                        className="ui small basic button"
-                                                        size="small"
-                                                        variant="contained"
-                                                        onClick={() => {
-                                                            dispatch(setSelectedClass(item))
-                                                        }}
-                                                    >Edit</Button>
-                                                </Link>
-                                            </td>
+                                            {/*<td>*/}
+                                            {/*    <Link to="/teacher/edit">*/}
+                                            {/*        <Button*/}
+                                            {/*            className="ui small basic button"*/}
+                                            {/*            size="small"*/}
+                                            {/*            variant="contained"*/}
+                                            {/*            onClick={() => {*/}
+                                            {/*                dispatch(setSelectedClass(item))*/}
+                                            {/*            }}*/}
+                                            {/*        >Edit</Button>*/}
+                                            {/*    </Link>*/}
+                                            {/*</td>*/}
                                         </tr>
                                     );
                                 })
