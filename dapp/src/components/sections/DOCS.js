@@ -1,8 +1,8 @@
 import {Grid} from "@mui/material";
 import {MarkdownPage} from "./partials/MarkdownPage";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import { setMarkdown, setActivePage } from "../../store/docsState";
 import Header from "../layout/Header";
@@ -12,11 +12,11 @@ import DocsNav from "../layout/DocsNav";
 export function DOCS(props){
 
     let params = useParams();
-
     const { markdown, activePage } = useSelector((state) => state.docs)
     const dispatch = useDispatch();
 
     useEffect(() => {
+        handlePageSwitch(params.page)
         async function fetchData() {
             try {
                 const response = await fetch(props.markup[activePage]);
