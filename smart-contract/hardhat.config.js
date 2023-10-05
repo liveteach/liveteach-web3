@@ -1,8 +1,11 @@
-/** @type import('hardhat/config').HardhatUserConfig */
-
-
+/**
+ * @type import('hardhat/config').HardhatUserConfig
+ */
 require("@nomicfoundation/hardhat-toolbox");
 require('dotenv').config();
+require('@openzeppelin/hardhat-upgrades');
+require("@nomicfoundation/hardhat-verify");
+
 const { API_URL, PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
 
 module.exports = {
