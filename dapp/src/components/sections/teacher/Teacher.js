@@ -2,8 +2,7 @@ import {Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 import {useEffect} from "react";
-import {getClassConfigs} from "../../../utils/interact";
-import {setClassConfigs,setSelectedClass} from "../../../store/teacherState";
+
 import {NoAdmittance} from "../NoAdmittance";
 
 export default function Teacher(props){
@@ -17,9 +16,7 @@ export default function Teacher(props){
     useEffect(() => {
         console.log(roles)
         if(roles.includes("teacher")){
-            getClassConfigs().then(result => {
-                dispatch(setClassConfigs(result))
-            })
+
         }
     },[])
 

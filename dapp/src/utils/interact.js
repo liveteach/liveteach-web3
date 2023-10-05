@@ -285,50 +285,7 @@ export const deleteTeacher = async (walletAddress) => {
     [walletAddress]);
 }
 
-// ClassConfigs
-// create
-export const createClassConfig = async (classReference, contentUrl) => {
-  // onlyRole(TEACHER)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.createClassConfig,
-    [classReference, contentUrl]);
-}
-// read
-export const getClassConfigs = async () => {
-  // onlyRole(TEACHER)
-
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const result = await window.contract.methods
-    .getClassConfigs()
-    .call({ from: window.ethereum.selectedAddress });
-  return result;
-}
-export const getClassConfig = async (id) => {
-  // onlyRole(TEACHER)
-
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  const result = await window.contract.methods
-    .getClassConfig(id)
-    .call({ from: window.ethereum.selectedAddress });
-  return result;
-}
-// update
-export const updateClassConfig = async (id, classReference, contentUrl) => {
-  // onlyRole(TEACHER)
-
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.updateClassConfig,
-    [id, classReference, contentUrl]);
-}
-// delete
-export const deleteClassConfig = async (id) => {
-  // onlyRole(TEACHER)
-
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-  return callGasTransaction(window.contract.methods.deleteClassConfig,
-    [id]);
-}
 ////
 export const getUserRoles = async () => {
   //PUBLIC
