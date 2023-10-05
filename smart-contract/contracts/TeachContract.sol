@@ -1,10 +1,11 @@
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 
 interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
-
     function decodeTokenId(uint value) external pure returns (int, int);
 }
 
@@ -13,16 +14,18 @@ bytes32 constant TEACHER = keccak256("TEACHER");
 bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN");
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
-contract TeachContract is AccessControl {
-    constructor() {
+
+contract TeachContract is AccessControl, Initializable {
+    uint256 private latestClassroomId;
+
+    function initialize() public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
         grantRole(CLASSROOM_ADMIN, msg.sender); // TODO: remove this and update tests when we add LAND_OPERATOR
+        latestClassroomId = 1;
     }
 
     // id generators, start at one so we can determine unassigned.
-    uint256 private latestClassroomId = 1;
-
     function getNewClassroomId() private returns (uint256) {
         return latestClassroomId++;
     }

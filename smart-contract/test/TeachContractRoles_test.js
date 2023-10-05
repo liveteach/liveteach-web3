@@ -7,11 +7,11 @@ describe("TeachContractRoles", function () {
   let nonRegisteredUser;
   let teachContract;
 
-  let randomWallet = "0xAA14f5F645273Aa6411995Bf8F02557B7C74a154";
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
     let accounts = await ethers.getSigners();
     owner = accounts[0];
+    await teachContract.connect(owner).initialize();
     classroomAdmin = accounts[1];
     teacher = accounts[2];
     nonRegisteredUser = accounts[3];
