@@ -51,7 +51,6 @@ describe("TeachContractDeleteCascade", function () {
     await teachContract.connect(CA0).createTeacher(T8, [3]);
 
     await teachContract.connect(CA1).createTeacher(T10, [4]);
-
   })
 
   /*
@@ -200,12 +199,41 @@ describe("TeachContractDeleteCascade", function () {
     let resT10 = result[0];
     assertTeacherLooksRight(resT10, T10, 1, CA1);
   });
+
+  it("Deleting a teacher doesn't leave a gap in getTeacher/s", async function () {
+    let result = await teachContract.connect(CA0).getTeachers();
+    assert.equal(8, result.length);
+    await teachContract.connect(CA0).deleteTeacher(T0.address);
+    result = await teachContract.connect(CA0).getTeachers();
+    assert.equal(7, result.length);
+    await expect(teachContract.connect(CA0).getTeacher(T0.address))
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
+
+  });
+
+  it("Deleting a teacher that belongs to two classrooms only removes them from the deleting classroom admin's classrooms", async function () {
+    // should only delete in the context of a classroom admin
+    await teachContract.connect(CA1).createTeacher(T0.address, [4]);
+
+    let result = await teachContract.connect(CA0).getTeachers();
+    assert.equal(8, result.length);
+    result = await teachContract.connect(CA1).getTeachers();
+    assert.equal(2, result.length);
+
+    await teachContract.connect(CA0).deleteTeacher(T0.address);
+
+    result = await teachContract.connect(CA0).getTeachers();
+    assert.equal(7, result.length);
+    result = await teachContract.connect(CA1).getTeachers();
+    assert.equal(2, result.length);
+
+  });
 });
 
 function assertTeacherLooksRight(teacher, expectedWallet, expectedClassroomIdsLength, expectedClassroomAdmin) {
   assert.equal(expectedWallet.address, teacher.walletAddress);
   assert.equal(expectedClassroomIdsLength, teacher.classroomIds.length);
-  assert.equal(expectedClassroomAdmin.address, teacher.classroomAdminId);
+  assert.equal(expectedClassroomAdmin.address, teacher.classroomAdminIds[0]);
 }
 
 function getGuid() {

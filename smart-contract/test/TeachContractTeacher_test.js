@@ -234,7 +234,7 @@ describe("TeachContractTeacher", function () {
     let teacher = result[0];
     assert.equal(otherUser2.address, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    assert.equal(otherUser.address, teacher.classroomAdminId);
+    assert.equal(otherUser.address, teacher.classroomAdminIds[0]);
   });
 
   it("Non classroom admin cannot delete teachers", async function () {
