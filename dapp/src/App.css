@@ -57,6 +57,10 @@
     margin: 50px 0;
     width: 50%;
 }
+.jsonFields{
+    margin: 10px 0;
+    width: 50%;
+}
 .textInput{
     background-color: white;
     border-radius: 5px;
