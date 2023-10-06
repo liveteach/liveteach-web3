@@ -7,7 +7,7 @@ import {AddFields} from "./additionalComponents/AddFields";
 
 export function AddClass(props){
 
-    const { newClassReference, newClassDescription } = useSelector((state) => state.teacher)
+    const { newClassReference, newClassDescription, selectedClass } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
@@ -28,7 +28,8 @@ export function AddClass(props){
 
     const classTemplate = {
         "content": {
-            "id": "",
+            "id": selectedClass.id,
+            "guid": selectedClass.guid,
             "name": newClassReference,
             "description": newClassDescription,
             "images": fields,
@@ -79,7 +80,8 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={newClassReference}
+                                value={selectedClass.name}
+                                disabled={true}
                                 onChange={(e) => {
                                     dispatch(setNewClassReference(e.target.value))
                                 }}

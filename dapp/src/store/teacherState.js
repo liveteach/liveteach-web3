@@ -5,12 +5,12 @@ export const teacherStateSlice = createSlice({
     initialState: {
         walletAddress: "",
         classConfigs: [{classReference: "", contentUrl: "", id: "", teacherId: ""}],
-        teacherClassrooms: [2],
+        classIds:[],
+        teacherClassrooms: [],
         selectedClass: {
-            classReference: "",
-            contentUrl: "",
+            name: "",
             id: 0,
-            teacherId: ""
+            guid: ""
         },
         newClassReference: "",
         newClassDescription: ""
@@ -25,8 +25,8 @@ export const teacherStateSlice = createSlice({
         setSelectedClass: (state, action) => {
             state.selectedClass = action.payload
         },
-        setClassConfigs: (state,action)=> {
-            state.classConfigs = action.payload
+        setClassIds: (state,action)=> {
+            state.classIds = action.payload
         },
         setNewClassReference: (state, action) => {
             state.newClassReference = action.payload
@@ -40,7 +40,7 @@ export const teacherStateSlice = createSlice({
 export const { setWalletAddress,
     setTeacherClassrooms,
     setSelectedClass,
-    setClassConfigs,
+    setClassIds,
     setNewClassReference,
     setNewClassDescription} = teacherStateSlice.actions;
 

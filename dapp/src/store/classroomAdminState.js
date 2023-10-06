@@ -7,7 +7,8 @@ export const classroomAdminStateSlice = createSlice({
         className: "",
         classLandIds: [],
         teachers: [{id: 0, walletAddress:"0x12345", classRoomIds:[1,2,3,4],classroomAdminId:"0x12345"}],
-        imgEndpoint: ""
+        imgEndpoint: "",
+        guid: ""
     },
     reducers: {
         setClassrooms: (state, action) => {
@@ -24,10 +25,13 @@ export const classroomAdminStateSlice = createSlice({
         },
         setImgEndpoint: ( state, action) => {
             state.imgEndpoint = action.payload
+        },
+        setGuid: (state, action) => {
+            state.guid = action.payload
         }
     }
 });
 
-export const { setClassrooms, setClassName, setClassLandIds, setTeachers, setImgEndpoint } = classroomAdminStateSlice.actions;
+export const { setClassrooms, setClassName, setClassLandIds, setTeachers, setImgEndpoint, setGuid } = classroomAdminStateSlice.actions;
 
 export default classroomAdminStateSlice.reducer;
