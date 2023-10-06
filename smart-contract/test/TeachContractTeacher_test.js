@@ -11,6 +11,7 @@ describe("TeachContractTeacher", function () {
     owner = accounts[0];
     otherUser = accounts[1];
     otherUser2 = accounts[2];
+    await teachContract.connect(owner).initialize();
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
@@ -234,7 +235,7 @@ describe("TeachContractTeacher", function () {
     let teacher = result[0];
     assert.equal(otherUser2.address, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
-    assert.equal(otherUser.address, teacher.classroomAdminId);
+    assert.equal(otherUser.address, teacher.classroomAdminIds[0]);
   });
 
   it("Non classroom admin cannot delete teachers", async function () {

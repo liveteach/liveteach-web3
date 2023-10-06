@@ -14,7 +14,6 @@ describe("TeachContractLandRegistryInteractions", function () {
     let accounts = await ethers.getSigners();
     owner = accounts[0];
 
-
   })
 
   it("Test data looks right", async function () {

@@ -1,0 +1,407 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xDe7D4565FBBD0CEafCD0514B8d617987Ee5Fa749",
+    "txHash": "0x7119629df4817b16553c41b6401ab93efa86c7bbd3052beabcf0d1cee91dabb4"
+  },
+  "proxies": [
+    {
+      "address": "0x27e639347488a003a16AFf267911E56eB6c99845",
+      "txHash": "0xf6a8deb5fb1a1562bb0a85830fb9995227dd64644426d3194da1455a719516c1",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "ee86c9f4624be306ff7aec84925f699e7b9ff26faab15ff7d57414925c1a2005": {
+      "address": "0x1Ac8210C1259903D35B98e301D35B0289018bc32",
+      "txHash": "0x08fbdd549ae8e140cd431a15a60ec1fb4a337494308c7ec414363da304169b90",
+      "layout": {
+        "solcVersion": "0.8.12",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)518_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin\\contracts\\access\\AccessControl.sol:56"
+          },
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "1",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "latestClassroomId",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "TeachContract",
+            "src": "contracts\\TeachContract.sol:19"
+          },
+          {
+            "label": "registeredIds",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_struct(RegisteredIds)2317_storage",
+            "contract": "TeachContract",
+            "src": "contracts\\TeachContract.sol:101"
+          },
+          {
+            "label": "idsToObjects",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_struct(IdsToObjects)2338_storage",
+            "contract": "TeachContract",
+            "src": "contracts\\TeachContract.sol:102"
+          },
+          {
+            "label": "landRegistry",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_contract(ILANDRegistry)2168",
+            "contract": "TeachContract",
+            "src": "contracts\\TeachContract.sol:104"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_array(t_int256)dyn_storage)dyn_storage": {
+            "label": "int256[][]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_int256)dyn_storage": {
+            "label": "int256[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ILANDRegistry)2168": {
+            "label": "contract ILANDRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_int256": {
+            "label": "int256",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(ClassroomAdmin)2253_storage)": {
+            "label": "mapping(address => struct TeachContract.ClassroomAdmin)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Teacher)2281_storage)": {
+            "label": "mapping(address => struct TeachContract.Teacher)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)518_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Classroom)2272_storage)": {
+            "label": "mapping(uint256 => struct TeachContract.Classroom)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Land)2237_storage)": {
+            "label": "mapping(uint256 => struct TeachContract.Land)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Classroom)2272_storage": {
+            "label": "struct TeachContract.Classroom",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "landIds",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "landCoordinates",
+                "type": "t_array(t_array(t_int256)dyn_storage)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "classroomAdminId",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "teacherIds",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "guid",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_struct(ClassroomAdmin)2253_storage": {
+            "label": "struct TeachContract.ClassroomAdmin",
+            "members": [
+              {
+                "label": "walletAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "landIds",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "landCoordinates",
+                "type": "t_array(t_array(t_int256)dyn_storage)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "classroomIds",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "teacherIds",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(IdsToObjects)2338_storage": {
+            "label": "struct TeachContract.IdsToObjects",
+            "members": [
+              {
+                "label": "land",
+                "type": "t_mapping(t_uint256,t_struct(Land)2237_storage)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "classroomAdmin",
+                "type": "t_mapping(t_address,t_struct(ClassroomAdmin)2253_storage)",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "classroom",
+                "type": "t_mapping(t_uint256,t_struct(Classroom)2272_storage)",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "teacher",
+                "type": "t_mapping(t_address,t_struct(Teacher)2281_storage)",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Land)2237_storage": {
+            "label": "struct TeachContract.Land",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "classroomAdminId",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "classroomId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(RegisteredIds)2317_storage": {
+            "label": "struct TeachContract.RegisteredIds",
+            "members": [
+              {
+                "label": "landsRegisteredToClassroomAdmin",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "landsRegisteredToClassroomAdminBool",
+                "type": "t_mapping(t_uint256,t_bool)",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "classroomAdmin",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "classroomAdminBool",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "classroom",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "classroomBool",
+                "type": "t_mapping(t_uint256,t_bool)",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "landsRegisteredToClassroom",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "landsRegisteredToClassroomBool",
+                "type": "t_mapping(t_uint256,t_bool)",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "teacher",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "teacherBool",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "9"
+              }
+            ],
+            "numberOfBytes": "320"
+          },
+          "t_struct(RoleData)518_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Teacher)2281_storage": {
+            "label": "struct TeachContract.Teacher",
+            "members": [
+              {
+                "label": "walletAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "classroomIds",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "classroomAdminIds",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    }
+  }
+}

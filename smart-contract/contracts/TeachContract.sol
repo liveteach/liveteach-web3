@@ -1,10 +1,11 @@
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 
 interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
-
     function decodeTokenId(uint value) external pure returns (int, int);
 }
 
@@ -13,16 +14,18 @@ bytes32 constant TEACHER = keccak256("TEACHER");
 bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN");
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
-contract TeachContract is AccessControl {
-    constructor() {
+
+contract TeachContract is AccessControl, Initializable {
+    uint256 private latestClassroomId;
+
+    function initialize() public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
         grantRole(CLASSROOM_ADMIN, msg.sender); // TODO: remove this and update tests when we add LAND_OPERATOR
+        latestClassroomId = 1;
     }
 
     // id generators, start at one so we can determine unassigned.
-    uint256 private latestClassroomId = 1;
-
     function getNewClassroomId() private returns (uint256) {
         return latestClassroomId++;
     }
@@ -55,7 +58,7 @@ contract TeachContract is AccessControl {
     struct Teacher {
         address walletAddress;
         uint256[] classroomIds;
-        address classroomAdminId;
+        address[] classroomAdminIds;
     }
 
     struct RegisteredIds {
@@ -369,7 +372,7 @@ contract TeachContract is AccessControl {
             ),
             ERR_OBJECT_EXISTS
         );
-        registerTeacher(walletAddress, classroomIds, msg.sender);
+        registerTeacher(walletAddress, classroomIds);
     }
 
     // read
@@ -489,7 +492,15 @@ contract TeachContract is AccessControl {
         address walletId,
         address _teacherId
     ) private view returns (bool) {
-        return idsToObjects.teacher[_teacherId].classroomAdminId == walletId;
+        address[] memory classroomAdminIds = idsToObjects
+            .teacher[_teacherId]
+            .classroomAdminIds;
+        for (uint256 i = 0; i < classroomAdminIds.length; i++) {
+            if (walletId == classroomAdminIds[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function checkLandIdsSuitableToBeAssignedToClassroom(
@@ -693,51 +704,68 @@ contract TeachContract is AccessControl {
 
     function registerTeacher(
         address _walletAddress,
-        uint256[] memory _classroomIds,
-        address classroomAdminWallet
+        uint256[] memory _classroomIds
     ) private {
-        idsToObjects.teacher[_walletAddress] = Teacher({
-            walletAddress: _walletAddress,
-            classroomIds: _classroomIds,
-            classroomAdminId: classroomAdminWallet
-        });
-        registeredIds.teacher.push(_walletAddress);
-        registeredIds.teacherBool[_walletAddress] = true;
+        // they could already be registered by another classroom admin
+        // in which case we need to update them
+        if (registeredIds.teacherBool[_walletAddress]) {
+            // they are already registered with another CA
+            idsToObjects.teacher[_walletAddress].classroomAdminIds.push(
+                msg.sender
+            );
+        } else {
+            address[] memory classroomAdminsWallets = new address[](1);
+            classroomAdminsWallets[0] = msg.sender;
+            idsToObjects.teacher[_walletAddress] = Teacher({
+                walletAddress: _walletAddress,
+                classroomIds: _classroomIds,
+                classroomAdminIds: classroomAdminsWallets
+            });
+            registeredIds.teacher.push(_walletAddress);
+            registeredIds.teacherBool[_walletAddress] = true;
+            grantRole(TEACHER, _walletAddress);
+        }
         // associate with classrooms
         for (uint256 i = 0; i < _classroomIds.length; i++) {
             idsToObjects.classroom[_classroomIds[i]].teacherIds.push(
                 _walletAddress
             );
         }
-        idsToObjects.classroomAdmin[classroomAdminWallet].teacherIds.push(
-            _walletAddress
-        );
-        grantRole(TEACHER, _walletAddress);
+        idsToObjects.classroomAdmin[msg.sender].teacherIds.push(_walletAddress);
     }
 
     function unregisterTeacher(address _id) private {
         Teacher memory teacher = idsToObjects.teacher[_id];
-        removeAddressFromArrayMaintainOrder(registeredIds.teacher, _id);
-        delete registeredIds.teacherBool[_id];
-        for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
-            removeAddressFromArrayMaintainOrder(
-                idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
-                _id
-            );
-        }
+        uint256 classroomAdminCount = teacher.classroomAdminIds.length;
+
         removeAddressFromArrayMaintainOrder(
-            idsToObjects.classroomAdmin[teacher.classroomAdminId].teacherIds,
+            idsToObjects.classroomAdmin[msg.sender].teacherIds,
             _id
         );
-        delete idsToObjects.teacher[_id];
-        revokeRole(TEACHER, teacher.walletAddress);
+        removeAddressFromArrayMaintainOrder(
+            idsToObjects.teacher[_id].classroomAdminIds,
+            msg.sender
+        );
+
+        if (classroomAdminCount == 1) {
+            removeAddressFromArrayMaintainOrder(registeredIds.teacher, _id);
+            delete registeredIds.teacherBool[_id];
+            for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
+                removeAddressFromArrayMaintainOrder(
+                    idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
+                    _id
+                );
+            }
+            delete idsToObjects.teacher[_id];
+            revokeRole(TEACHER, teacher.walletAddress);
+        }
     }
 
     function _updateTeacher(address id, uint256[] memory classroomIds) private {
         address walletAddress = idsToObjects.teacher[id].walletAddress;
 
         unregisterTeacher(id);
-        registerTeacher(walletAddress, classroomIds, msg.sender);
+        registerTeacher(walletAddress, classroomIds);
     }
 
     // utility

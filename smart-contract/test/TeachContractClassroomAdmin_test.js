@@ -13,6 +13,7 @@ describe("TeachContractClassroomAdmin", function () {
     owner = accounts[0];
     user1 = accounts[1];
     user2 = accounts[2];
+    await teachContract.connect(owner).initialize();
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
