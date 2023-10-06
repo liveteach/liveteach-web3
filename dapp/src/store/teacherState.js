@@ -8,6 +8,7 @@ export const teacherStateSlice = createSlice({
         classIds:[],
         teacherClassrooms: [],
         selectedClass: {
+            name: "",
             id: 0,
             guid: ""
         },

@@ -80,7 +80,8 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={newClassReference}
+                                value={selectedClass.name}
+                                disabled={true}
                                 onChange={(e) => {
                                     dispatch(setNewClassReference(e.target.value))
                                 }}
