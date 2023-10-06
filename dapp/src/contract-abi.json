@@ -1,8 +1,16 @@
 [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -94,6 +102,58 @@
   },
   {
     "inputs": [],
+    "name": "ERR_ACCESS_DENIED",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ERR_OBJECT_ACCESS",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ERR_OBJECT_EXISTS",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ERR_ROLE_ASSIGNED",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "allClassrooms",
     "outputs": [
       {
@@ -127,6 +187,11 @@
             "internalType": "address[]",
             "name": "teacherIds",
             "type": "address[]"
+          },
+          {
+            "internalType": "string",
+            "name": "guid",
+            "type": "string"
           }
         ],
         "internalType": "struct TeachContract.Classroom[]",
@@ -184,14 +249,9 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "address",
-            "name": "classroomAdminId",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "classConfigIds",
-            "type": "uint256[]"
+            "internalType": "address[]",
+            "name": "classroomAdminIds",
+            "type": "address[]"
           }
         ],
         "internalType": "struct TeachContract.Teacher[]",
@@ -200,24 +260,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_classReference",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_contentUrl",
-        "type": "string"
-      }
-    ],
-    "name": "createClassConfig",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -249,6 +291,11 @@
         "internalType": "int256[][]",
         "name": "coordinatePairs",
         "type": "int256[][]"
+      },
+      {
+        "internalType": "string",
+        "name": "guid",
+        "type": "string"
       }
     ],
     "name": "createClassroomCoordinates",
@@ -267,6 +314,11 @@
         "internalType": "uint256[]",
         "name": "_landIds",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "string",
+        "name": "guid",
+        "type": "string"
       }
     ],
     "name": "createClassroomLandIds",
@@ -288,19 +340,6 @@
       }
     ],
     "name": "createTeacher",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "deleteClassConfig",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -352,82 +391,6 @@
         "type": "uint256"
       }
     ],
-    "name": "getClassConfig",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "teacherId",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "classReference",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "contentUrl",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct TeachContract.ClassConfig",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getClassConfigs",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "teacherId",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "classReference",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "contentUrl",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct TeachContract.ClassConfig[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
     "name": "getClassroom",
     "outputs": [
       {
@@ -461,6 +424,11 @@
             "internalType": "address[]",
             "name": "teacherIds",
             "type": "address[]"
+          },
+          {
+            "internalType": "string",
+            "name": "guid",
+            "type": "string"
           }
         ],
         "internalType": "struct TeachContract.Classroom",
@@ -558,6 +526,30 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "x",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "y",
+        "type": "int256"
+      }
+    ],
+    "name": "getClassroomGuid",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getClassrooms",
     "outputs": [
@@ -592,6 +584,11 @@
             "internalType": "address[]",
             "name": "teacherIds",
             "type": "address[]"
+          },
+          {
+            "internalType": "string",
+            "name": "guid",
+            "type": "string"
           }
         ],
         "internalType": "struct TeachContract.Classroom[]",
@@ -679,14 +676,9 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "address",
-            "name": "classroomAdminId",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "classConfigIds",
-            "type": "uint256[]"
+            "internalType": "address[]",
+            "name": "classroomAdminIds",
+            "type": "address[]"
           }
         ],
         "internalType": "struct TeachContract.Teacher",
@@ -714,14 +706,9 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "address",
-            "name": "classroomAdminId",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "classConfigIds",
-            "type": "uint256[]"
+            "internalType": "address[]",
+            "name": "classroomAdminIds",
+            "type": "address[]"
           }
         ],
         "internalType": "struct TeachContract.Teacher[]",
@@ -775,6 +762,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -788,6 +782,19 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "landRegistry",
+    "outputs": [
+      {
+        "internalType": "contract ILANDRegistry",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -832,6 +839,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_registry",
+        "type": "address"
+      }
+    ],
+    "name": "setLANDRegistry",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"
@@ -846,29 +866,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_classReference",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_contentUrl",
-        "type": "string"
-      }
-    ],
-    "name": "updateClassConfig",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
