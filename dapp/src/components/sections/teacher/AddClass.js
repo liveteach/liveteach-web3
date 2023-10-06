@@ -1,7 +1,9 @@
-import {Grid, TextField, Button} from "@mui/material";
+import {Grid, TextField, Button, ButtonGroup} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {setNewClassReference, setNewClassDescription} from "../../../store/teacherState";
 import {NoAdmittance} from "../NoAdmittance";
+import {useState} from "react";
+import {AddFields} from "./additionalComponents/AddFields";
 
 export function AddClass(props){
 
@@ -9,29 +11,29 @@ export function AddClass(props){
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
+    const imgVidObjectStructure = { src: "", caption: "" };
+    const modelObjectStructure = { key: "" }
+
+    const [fields,setFields] = useState([{
+        src: "",
+        caption: ""
+    }]);
+    const [videoFields,setVideoFields] = useState([{
+        src: "",
+        caption: ""
+    }]);
+    const [model, setModel] = useState([{
+        key:""
+    }])
 
     const classTemplate = {
         "content": {
             "id": "",
             "name": newClassReference,
             "description": newClassDescription,
-            "images": [
-                {
-                    "src": "",
-                    "caption": ""
-                }
-            ],
-            "videos": [
-                {
-                    "src": "",
-                    "caption": ""
-                }
-            ],
-            "models": [
-                {
-                    "key": ""
-                }
-            ]
+            "images": fields,
+            "videos": videoFields,
+            "models": model
         }
         };
 
@@ -42,12 +44,13 @@ export function AddClass(props){
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'template.json';
+        a.download = 'new_class.json';
 
         a.click();
 
         URL.revokeObjectURL(url);
     };
+
 
     return (
         <div className="ui container">
@@ -97,6 +100,24 @@ export function AddClass(props){
                             />
                         </div>
                     </Grid>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h3>Images</h3>
+                        </div>
+                    </div>
+                    <AddFields fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h3>Videos</h3>
+                        </div>
+                    </div>
+                    <AddFields fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h3>Models</h3>
+                        </div>
+                    </div>
+                    <AddFields fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
                 </Grid>
             </div>
             ) : (
