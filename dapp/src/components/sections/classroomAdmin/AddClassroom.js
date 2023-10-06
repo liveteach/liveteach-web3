@@ -1,6 +1,6 @@
 import {Grid, TextField} from "@mui/material";
 import {useEffect} from "react";
-import {setImgEndpoint} from "../../../store/classroomAdminState";
+import {setGuid, setImgEndpoint} from "../../../store/classroomAdminState";
 import {useDispatch, useSelector} from "react-redux";
 import {setClassName, setClassLandIds} from "../../../store/classroomAdminState";
 import { MuiChipsInput} from "mui-chips-input";
@@ -9,7 +9,7 @@ import {NoAdmittance} from "../NoAdmittance";
 
 export function AddClassroom(props){
 
-    const {className, classLandIds, imgEndpoint} = useSelector((state) => state.classroomAdmin)
+    const {className, classLandIds, imgEndpoint, guid} = useSelector((state) => state.classroomAdmin)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("classroomAdmin")
     const dispatch = useDispatch()
@@ -18,6 +18,10 @@ export function AddClassroom(props){
     const handleChange = (newChips) => {
         dispatch(setClassLandIds(newChips))
     }
+
+    useEffect(() => {
+        dispatch(setGuid(getGuid()))
+    },[])
 
     useEffect(() => {
         const parsedParcels = classLandIds.join(';')
@@ -77,7 +81,7 @@ export function AddClassroom(props){
                                     onClick={() => {
                                         let landIds = createArrayCoordsToInt(classLandIds);
                                         console.log(landIds)
-                                        createClassroom(className,landIds).then(result => {
+                                        createClassroom(className,landIds, guid).then(result => {
                                             console.log(result)
                                         })
                                     }}
@@ -105,7 +109,7 @@ export function AddClassroom(props){
                         className="textInput"
                         color="error"
                         disabled
-                        value={getGuid()}
+                        value={guid}
                     />
                 </div>
             </div>

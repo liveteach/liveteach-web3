@@ -187,7 +187,7 @@ export const createClassroomLandIds = async (name, landIds) => {
   return callGasTransaction(window.contract.methods.createClassroom,
     [name, landIds]);
 };
-export const createClassroom = async (name, coordinatePairs) => {
+export const createClassroom = async (name, coordinatePairs, guid) => {
   /*
   coordinatePairs - a 2d signed integer array of x,y values 
   representing land coordinates
@@ -201,7 +201,7 @@ export const createClassroom = async (name, coordinatePairs) => {
   // onlyRole(CLASSROOM_ADMIN)
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.createClassroomCoordinates,
-    [name, coordinatePairs]);
+    [name, coordinatePairs, guid]);
 };
 // read
 export const getClassrooms = async () => {

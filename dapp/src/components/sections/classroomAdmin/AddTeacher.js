@@ -36,10 +36,10 @@ export function AddTeacher(props){
                         <div className="dcl tabs-right">
                             <button
                                 onClick={() => {
-                                    createTeacher(walletAddress,teacherClassrooms).then(result => {
-                                        console.log(result)
-                                    })
-                                }}
+                                createTeacher(walletAddress,teacherClassrooms).then(result => {
+                                    console.log(result)
+                                })
+                            }}
                                 className="ui small primary button"
                             >Add</button>
                         </div>

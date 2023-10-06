@@ -122,7 +122,7 @@ export default function ClassroomAdmin(props){
                                                 {item.walletAddress}
                                             </td>
                                             <td>
-                                                {item.classRoomIds}
+                                                {item.classroomIds}
                                             </td>
                                             <td>
                                                 <Button

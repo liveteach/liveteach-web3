@@ -1,22 +1,41 @@
 import {Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 import {NoAdmittance} from "../NoAdmittance";
+import {getClassroom, getTeacher} from "../../../utils/interact";
+import {setClassIds, setSelectedClass} from "../../../store/teacherState";
+import {setGuid} from "../../../store/classroomAdminState";
 
 export default function Teacher(props){
 
-    const {classConfigs} = useSelector((state) => state.teacher)
-    const {roles} = useSelector((state) => state.adminUser)
+    const {classIds} = useSelector((state) => state.teacher)
+    const {roles,walletAddress} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
+    const [classData, setClassData] = useState([{id:0, guid:"", name:"", landIds:[]}]);
 
+    useEffect(() => {
+        const fetchClassData = async () => {
+            const promises = classIds.map(async (classId) => {
+                return await getClassroom(classId);
+            });
+
+            const classDataResults = await Promise.all(promises);
+            setClassData(classDataResults);
+        };
+
+        fetchClassData();
+    }, [classIds]);
 
     useEffect(() => {
         console.log(roles)
         if(roles.includes("teacher")){
-
+            getTeacher(walletAddress).then(result => {
+                console.log(result)
+                dispatch(setClassIds(result.classroomIds))
+            })
         }
     },[])
 
@@ -29,13 +48,6 @@ export default function Teacher(props){
                         <div className="dcl tabs-left">
                             <h4>Classes</h4>
                         </div>
-                        <div className="dcl tabs-right">
-                            <Link to="/teacher/add">
-                                <button
-                                    className="ui small primary button"
-                                >Setup new class</button>
-                            </Link>
-                        </div>
                     </div>
                 </div>
                 <div className="tableContainer">
@@ -45,35 +57,38 @@ export default function Teacher(props){
 
                             <tbody>
                             <tr>
-                                <th>URL</th>
-                                <th>Class Reference</th>
-                                {/*<th></th>*/}
+                                <th>Name</th>
+                                <th>Guid</th>
+                                <th>Land ids</th>
+                                <th>Setup</th>
                             </tr>
 
                             {
-                                classConfigs.map((item, index) => {
-                                    return (
-                                        <tr key={`Contributor_${index}`}>
-                                            <td>
-                                                <a href={item.contentUrl}>{item.contentUrl}</a>
-                                            </td>
-                                            <td>
-                                                {item.classReference}
-                                            </td>
-                                            {/*<td>*/}
-                                            {/*    <Link to="/teacher/edit">*/}
-                                            {/*        <Button*/}
-                                            {/*            className="ui small basic button"*/}
-                                            {/*            size="small"*/}
-                                            {/*            variant="contained"*/}
-                                            {/*            onClick={() => {*/}
-                                            {/*                dispatch(setSelectedClass(item))*/}
-                                            {/*            }}*/}
-                                            {/*        >Edit</Button>*/}
-                                            {/*    </Link>*/}
-                                            {/*</td>*/}
-                                        </tr>
-                                    );
+                                classData.map((item, index) => {
+                                        return (
+                                            <tr key={`Contributor_${item}`}>
+                                                <td>
+                                                    {item.name}
+                                                </td>
+                                                <td>
+                                                    {item.guid}
+                                                </td>
+                                                <td>
+                                                    {item.landIds}
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={"/teacher/add"}
+                                                    ><button
+                                                        className="ui small primary button"
+                                                        onClick={() => {
+                                                            let ids = {id: item.id, guid: item.guid}
+                                                            dispatch(setSelectedClass(ids))
+                                                        }}
+                                                    >Setup</button></Link>
+                                                </td>
+                                            </tr>
+                                        );
                                 })
                             }
                             </tbody>
