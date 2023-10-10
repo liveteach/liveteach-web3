@@ -2,11 +2,11 @@
 const { ethers, upgrades } = require("hardhat");
 
 async function main() {
-  // const BoxV2 = await ethers.getContractFactory("Box");
-  // const box = await upgrades.upgradeProxy("0xEC408dd9910F35e06d5138Fcd2eeE963CCb55Cb3", BoxV2);
-  // console.log("Box deployed to:", await box.getAddress());
-  // console.log(box);
-  console.log("Not implemented");
+  const teachContractFactory = await ethers.getContractFactory("TeachContract");
+  const teachContract = await upgrades.upgradeProxy("0x62657bdB46C8508db48aB8d36E636F9B83e723E3",
+    teachContractFactory);
+  console.log("teachContract deployed to:", await teachContract.getAddress());
+  console.log(teachContract);
 }
 
 main();

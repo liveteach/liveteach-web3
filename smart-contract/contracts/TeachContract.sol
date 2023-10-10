@@ -3,25 +3,29 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 pragma solidity ^0.8.12;
 
-
 interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
+
     function decodeTokenId(uint value) external pure returns (int, int);
 }
 
 bytes32 constant STUDENT = keccak256("STUDENT");
-bytes32 constant TEACHER = keccak256("TEACHER");
-bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN");
+bytes32 constant TEACHER = keccak256("TEACHER"); // 534b5b9fe29299d99ea2855da6940643d68ed225db268dc8d86c1f38df5de794
+bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN"); // 8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
-
 
 contract TeachContract is AccessControl, Initializable {
     uint256 private latestClassroomId;
 
     function initialize() public initializer {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        /* set sender (shared wallet) to be landoperator */
+        /* for test only */
+        _grantRole(LAND_OPERATOR, msg.sender);
+        _grantRole(CLASSROOM_ADMIN, msg.sender);
+
         _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
-        grantRole(CLASSROOM_ADMIN, msg.sender); // TODO: remove this and update tests when we add LAND_OPERATOR
+
         latestClassroomId = 1;
     }
 
@@ -316,12 +320,26 @@ contract TeachContract is AccessControl, Initializable {
         return rtn;
     }
 
-    function getClassroom(
-        uint256 id
-    ) public view onlyRole(CLASSROOM_ADMIN) returns (Classroom memory) {
+    function getClassroom(uint256 id) public view returns (Classroom memory) {
         // check you're entitled to view this classroom
-        require(walletOwnsClassroom(msg.sender, id), ERR_OBJECT_ACCESS);
+        // either the owning classroom admin
+        // or a teacher assigned to this classroom
+
+        require(registeredIds.classroomBool[id], ERR_OBJECT_ACCESS);
         Classroom memory rtn = idsToObjects.classroom[id];
+        bool entitledToViewClassroom = false;
+
+        if (hasRole(TEACHER, msg.sender)) {
+            for (uint256 i = 0; i < rtn.teacherIds.length; i++) {
+                if (msg.sender == rtn.teacherIds[i]) {
+                    entitledToViewClassroom = true;
+                    break;
+                }
+            }
+        } else if (hasRole(CLASSROOM_ADMIN, msg.sender)) {
+            entitledToViewClassroom = walletOwnsClassroom(msg.sender, id);
+        }
+        require(entitledToViewClassroom, ERR_OBJECT_ACCESS);
         rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
         return rtn;
     }
@@ -394,9 +412,22 @@ contract TeachContract is AccessControl, Initializable {
 
     function getTeacher(
         address id
-    ) public view onlyRole(CLASSROOM_ADMIN) returns (Teacher memory) {
-        requireWalletOwnsTeacher(msg.sender, id);
-        return idsToObjects.teacher[id];
+    ) public view returns (Teacher memory) {
+
+
+        require(registeredIds.teacherBool[id], ERR_OBJECT_ACCESS);
+        Teacher memory rtn = idsToObjects.teacher[id];
+        bool entitledToViewTeacher = false;
+
+        if (hasRole(TEACHER, msg.sender)) {
+            if(msg.sender == id) {
+                entitledToViewTeacher = true;
+            }
+        } else if (hasRole(CLASSROOM_ADMIN, msg.sender)) {
+            entitledToViewTeacher = walletOwnsTeacher(msg.sender, id);
+        }
+        require(entitledToViewTeacher, ERR_OBJECT_ACCESS);
+        return rtn;
     }
 
     // update
@@ -492,15 +523,11 @@ contract TeachContract is AccessControl, Initializable {
         address walletId,
         address _teacherId
     ) private view returns (bool) {
-        address[] memory classroomAdminIds = idsToObjects
-            .teacher[_teacherId]
-            .classroomAdminIds;
-        for (uint256 i = 0; i < classroomAdminIds.length; i++) {
-            if (walletId == classroomAdminIds[i]) {
-                return true;
-            }
-        }
-        return false;
+        return
+            arrayContainsAddress(
+                idsToObjects.teacher[_teacherId].classroomAdminIds,
+                walletId
+            );
     }
 
     function checkLandIdsSuitableToBeAssignedToClassroom(
@@ -793,6 +820,30 @@ contract TeachContract is AccessControl, Initializable {
                 break;
             }
         }
+    }
+
+    // function arrayContainsUint(
+    //     uint256[] memory arr,
+    //     uint256 val
+    // ) private pure returns (bool) {
+    //     for (uint256 i = 0; i < arr.length; i++) {
+    //         if (arr[i] == val) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
+
+    function arrayContainsAddress(
+        address[] memory arr,
+        address val
+    ) private pure returns (bool) {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (arr[i] == val) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function removeClassroomFromArrayMaintainOrder(

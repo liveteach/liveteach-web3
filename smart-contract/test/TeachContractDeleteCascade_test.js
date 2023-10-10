@@ -163,6 +163,7 @@ describe("TeachContractDeleteCascade", function () {
     assert.equal(1, result.length);
     let resT10 = result[0];
     assertTeacherLooksRight(resT10, T10, 1, CA1);
+
   });
 
   it("Deleting a classroom admin deletes it's classrooms", async function () {
