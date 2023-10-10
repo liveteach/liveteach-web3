@@ -158,7 +158,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1], getGuid());
     await expect(teachContract.connect(otherUser2).getClassroom(0))
-      .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
+      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
 
   it("Classroom admin cannot get data about another classroom admin's single classroom", async function () {

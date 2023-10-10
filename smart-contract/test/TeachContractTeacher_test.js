@@ -11,6 +11,7 @@ describe("TeachContractTeacher", function () {
     owner = accounts[0];
     otherUser = accounts[1];
     otherUser2 = accounts[2];
+    otherUser3 = accounts[3];
     await teachContract.connect(owner).initialize();
     let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
@@ -21,10 +22,10 @@ describe("TeachContractTeacher", function () {
   it("Classroom admin can create teacher", async function () {
     await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
+    await teachContract.connect(otherUser).createTeacher(otherUser3, [1]);
 
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
+    let teacher = await teachContract.connect(otherUser).getTeacher(otherUser3);
+    assert.equal(otherUser3.address, teacher.walletAddress);
     assert.equal([1n].toString(), teacher.classroomIds.toString());
   });
 
@@ -116,8 +117,23 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith(
-        "AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b"
+        "Object doesn't exist or you don't have access to it."
       );
+  });
+
+  
+  it("Teacher can get data themselves", async function () {
+
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
+    await teachContract.connect(otherUser).createTeacher(otherUser3, [1]);
+
+    let teacher = await teachContract.connect(otherUser3).getTeacher(otherUser3.address);
+
+    assert.equal(otherUser3.address, teacher.walletAddress);
+    assert.equal([1n].toString(), teacher.classroomIds.toString());
+    assert.equal([otherUser.address].toString(), teacher.classroomAdminIds.toString());
+
   });
 
   it("Classroom admin cannot get data about another classroom admin's single teacher", async function () {
@@ -129,6 +145,20 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
     await expect(teachContract.connect(otherUser2).getTeacher(randomWallet))
       .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
+  });
+
+  it("Teacher can get data about a single one of their classrooms", async function () {
+
+    let guid = getGuid();
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
+
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], guid);
+    await teachContract.connect(otherUser).createTeacher(otherUser3, [1]);
+    let classroom = await teachContract.connect(otherUser3).getClassroom(1);
+    assert.equal("Test Classroom", classroom.name);
+    assert.equal([1n].toString(), classroom.landIds);
+    assert.equal([[0,1]].toString(), classroom.landCoordinates);
+    assert.equal([otherUser3.address].toString(), classroom.teacherIds);
   });
 
   // // update
@@ -262,6 +292,17 @@ describe("TeachContractTeacher", function () {
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
       .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
   });
+
+  it("Teacher can get their classroom guid", async function () {
+    let guid =  getGuid();
+    await teachContract.connect(owner).createClassroomAdmin(otherUser, [115792089237316195423570985008687907834554454484988948548971980599165878009857n]);
+    await teachContract.connect(otherUser).createClassroomCoordinates("Test Classroom", [[-55,1]], guid);
+    await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
+    let response = await teachContract.connect(otherUser2).getClassroomGuid(-55,1);
+    assert.equal(guid, response);
+
+  });
+
 });
 
 function getGuid() {

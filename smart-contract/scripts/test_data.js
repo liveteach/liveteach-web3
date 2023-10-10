@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat");
 
-const DEPLOYED_ADDRESS = '0x73a573619aa80bcaD007a1092aA2Ec7c1B1e1835'
+const DEPLOYED_ADDRESS = '0x62657bdB46C8508db48aB8d36E636F9B83e723E3'
 
 const LAND_REGISTRY_ADDRESS = '0xe3488406B7ec0242aeF527C5D91751d024b007fB'
 const CLASSROOM_ADMIN_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
@@ -31,6 +31,7 @@ async function main() {
     const contractFactory = await ethers.getContractFactory("TeachContract");
     contract = contractFactory.attach(DEPLOYED_ADDRESS)
 
+    await deleteClassroomAdmin(CLASSROOM_ADMIN_WALLET);
     await setLandRegistry();
     await createClassroomAdmin();
     await createClassroomLandIds("Shaun's Classroom 1", TEACHER_1_LAND_IDS, CLASSROOM_1_GUID)
@@ -39,10 +40,30 @@ async function main() {
     await createTeacher(TEACHER_1_WALLET, [1]);
     await createTeacher(TEACHER_2_WALLET, [2]);
 
+    // try {
+    //     const tx = await contract.getClassroomGuid(-55,1)
+    //     console.log(tx)
+    //     const txReceipt = tx.wait()
+    //     console.log(txReceipt)
+    // } catch (e) {
+    //     throw (e)
+    // }
+
 
 }
 
 main();
+
+async function deleteClassroomAdmin(wallet) {
+    try {
+        const tx = await contract.deleteClassroomAdmin(wallet)
+        console.log(tx)
+        const txReceipt = tx.wait()
+        console.log(txReceipt)
+    } catch (e) {
+        throw (e)
+    }
+}
 
 async function setLandRegistry() {
     try {
