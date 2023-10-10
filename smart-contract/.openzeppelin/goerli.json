@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0xDe7D4565FBBD0CEafCD0514B8d617987Ee5Fa749",
-    "txHash": "0x7119629df4817b16553c41b6401ab93efa86c7bbd3052beabcf0d1cee91dabb4"
+    "address": "0xCFeE8e52643B4716E5066B0A33F88f51cc51Ef9C",
+    "txHash": "0x4c49932ea317c8c6dec47c762028a309675d70e36c30f272a45f7091e4200df7"
   },
   "proxies": [
     {
-      "address": "0x27e639347488a003a16AFf267911E56eB6c99845",
-      "txHash": "0xf6a8deb5fb1a1562bb0a85830fb9995227dd64644426d3194da1455a719516c1",
+      "address": "0x73a573619aa80bcaD007a1092aA2Ec7c1B1e1835",
+      "txHash": "0x1a7feeb2256b8bb4be60b9edcd5580cba651ef598f33be677ebbad5c32259cfe",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "ee86c9f4624be306ff7aec84925f699e7b9ff26faab15ff7d57414925c1a2005": {
-      "address": "0x1Ac8210C1259903D35B98e301D35B0289018bc32",
-      "txHash": "0x08fbdd549ae8e140cd431a15a60ec1fb4a337494308c7ec414363da304169b90",
+    "b1af70f172dfb93cb7bb5f939db2b4c64040acc745b4179ae21cbd3fb8616d41": {
+      "address": "0x119684fC038DF1c16c754F2A8cdb41bc37ba6F98",
+      "txHash": "0x9f7a5a357810bfc400d24982f4b0d3d6863ab15f2042a779612b95c2e7ed0f1f",
       "layout": {
         "solcVersion": "0.8.12",
         "storage": [
@@ -57,7 +57,7 @@
             "slot": "3",
             "type": "t_struct(RegisteredIds)2317_storage",
             "contract": "TeachContract",
-            "src": "contracts\\TeachContract.sol:101"
+            "src": "contracts\\TeachContract.sol:106"
           },
           {
             "label": "idsToObjects",
@@ -65,7 +65,7 @@
             "slot": "13",
             "type": "t_struct(IdsToObjects)2338_storage",
             "contract": "TeachContract",
-            "src": "contracts\\TeachContract.sol:102"
+            "src": "contracts\\TeachContract.sol:107"
           },
           {
             "label": "landRegistry",
@@ -73,7 +73,7 @@
             "slot": "17",
             "type": "t_contract(ILANDRegistry)2168",
             "contract": "TeachContract",
-            "src": "contracts\\TeachContract.sol:104"
+            "src": "contracts\\TeachContract.sol:109"
           }
         ],
         "types": {

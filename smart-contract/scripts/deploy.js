@@ -7,7 +7,7 @@ async function main() {
   let contractAddress = await teachContract.getAddress();
   console.log("Teach Contract deployed to: ", contractAddress);
   console.log("To verify run:");
-  console.log("npx hardhat verify --network goerli " + contractAddress);
+  console.log("npx hardhat verify " + contractAddress + " --network goerli");
 }
 
 main();

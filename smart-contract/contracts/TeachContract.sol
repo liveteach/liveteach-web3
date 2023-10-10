@@ -19,9 +19,14 @@ contract TeachContract is AccessControl, Initializable {
     uint256 private latestClassroomId;
 
     function initialize() public initializer {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        /* set sender (shared wallet) to be landoperator */
+        /* for test only */
+        _grantRole(LAND_OPERATOR, msg.sender);
+        // _grantRole(CLASSROOM_ADMIN, msg.sender);
+
         _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
-        grantRole(CLASSROOM_ADMIN, msg.sender); // TODO: remove this and update tests when we add LAND_OPERATOR
+
         latestClassroomId = 1;
     }
 
