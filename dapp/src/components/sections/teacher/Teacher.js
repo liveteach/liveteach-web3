@@ -59,7 +59,6 @@ export default function Teacher(props){
                             <tr>
                                 <th>Name</th>
                                 <th>Guid</th>
-                                <th>Land ids</th>
                                 <th>Setup</th>
                             </tr>
 
@@ -72,9 +71,6 @@ export default function Teacher(props){
                                                 </td>
                                                 <td>
                                                     {item.guid}
-                                                </td>
-                                                <td>
-                                                    {item.landIds}
                                                 </td>
                                                 <td>
                                                     <Link
