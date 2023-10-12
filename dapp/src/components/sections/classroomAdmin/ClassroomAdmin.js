@@ -53,7 +53,8 @@ export default function ClassroomAdmin(props){
                             <tbody>
                             <tr>
                                 <th>Classroom Name</th>
-                                <th>ClassId</th>
+                                <th>Classroom Id</th>
+                                <th>Classroom GUID</th>
                                 <th></th>
                             </tr>
 
@@ -66,6 +67,9 @@ export default function ClassroomAdmin(props){
                                             </td>
                                             <td>
                                                 {item.id}
+                                            </td>
+                                            <td>
+                                                {item.guid}
                                             </td>
                                             <td>
                                                 <Button
