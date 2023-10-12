@@ -65,6 +65,14 @@ export function AddClass(props){
                         <div className="dcl tabs-right">
                             <Button
                                 onClick={() => {
+
+                                }}
+                                className="ui small primary button"
+                            >Publish</Button>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <Button
+                                onClick={() => {
                                     handleDownload()
                                 }}
                                 className="ui small primary button"
