@@ -301,6 +301,33 @@ export const getUserRoles = async () => {
   return rtn;
 }
 ////
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getReceipt(txHash) {
+  try {
+    const receipt = await window.ethereum.request({
+      "method": "eth_getTransactionReceipt",
+      "params": [
+        txHash
+      ]
+    });
+    if (receipt !== null) {
+      return {
+        "success": true,
+        "receipt": receipt
+      };
+    }
+  }
+  catch (error) {
+    return {
+      success: false,
+      reason: error
+    };
+  }
+}
+
 async function callGasTransaction(func, params) {
   const transactionParameters = {
     to: contractAddress,
@@ -313,11 +340,18 @@ async function callGasTransaction(func, params) {
         method: 'eth_sendTransaction',
         params: [transactionParameters],
       });
-    return {
-      success: true,
-      status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash
+
+    let receipt;
+    while (!receipt) {
+      receipt = await getReceipt(txHash);
+      console.log("pending", receipt)
+      await timeout(1000);
     }
+    console.log(receipt);
+    return receipt;
+
   } catch (error) {
+    console.log(error);
     return {
       success: false,
       status: "😥 Something went wrong: " + error.message
