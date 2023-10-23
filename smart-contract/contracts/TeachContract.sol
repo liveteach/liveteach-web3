@@ -7,6 +7,16 @@ interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
 
     function decodeTokenId(uint value) external pure returns (int, int);
+
+    function isApprovedForAll(
+        address assetHolder,
+        address operator
+    ) external view returns (bool);
+
+    function isAuthorized(
+        address operator,
+        uint256 assetId
+    ) external view returns (bool);
 }
 
 bytes32 constant STUDENT = keccak256("STUDENT");
@@ -24,6 +34,7 @@ contract TeachContract is AccessControl, Initializable {
         _grantRole(LAND_OPERATOR, msg.sender);
         _grantRole(CLASSROOM_ADMIN, msg.sender);
 
+        _setRoleAdmin(CLASSROOM_ADMIN, LAND_OPERATOR);
         _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
 
         latestClassroomId = 1;
@@ -108,8 +119,8 @@ contract TeachContract is AccessControl, Initializable {
     ILANDRegistry public landRegistry;
 
     function setLANDRegistry(
-        address _registry // onlyRole(LAND_OPERATOR) TODO: development only.
-    ) public {
+        address _registry
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_isContract(_registry), "LAND registry not a contract");
         landRegistry = ILANDRegistry(_registry);
     }
@@ -173,12 +184,30 @@ contract TeachContract is AccessControl, Initializable {
     // CLASSROOM ADMIN
     // create
 
+    function isCallerLandOperator(
+        uint256[] memory assetIds
+    ) private view returns (bool) {
+        for (uint256 i = 0; i < assetIds.length; i++) {
+            if (!landRegistry.isAuthorized(msg.sender, assetIds[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function createClassroomAdmin(
         address _walletAddress,
-        uint256[] memory _landIds // onlyRole(LAND_OPERATOR) TODO: development only.
+        uint256[] memory _landIds
     ) public {
+        require(
+            isCallerLandOperator(_landIds),
+            "You don't have access to this land"
+        );
+        if (!hasRole(LAND_OPERATOR, msg.sender)) {
+            _grantRole(LAND_OPERATOR, msg.sender);
+        }
+        // check caller is entitled to land TODO
         require(!hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ROLE_ASSIGNED);
-
         require(
             !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
             ERR_OBJECT_EXISTS
@@ -189,24 +218,14 @@ contract TeachContract is AccessControl, Initializable {
     // read
     function isClassroomAdmin(
         address _walletAddress
-    )
-        public
-        view
-        returns (
-            // onlyRole(LAND_OPERATOR) TODO: development only.
-            bool
-        )
-    {
+    ) public view returns (bool) {
         return hasRole(CLASSROOM_ADMIN, _walletAddress);
     }
 
     function getClassroomAdmins()
         public
         view
-        returns (
-            // onlyRole(LAND_OPERATOR) TODO: development only.
-            ClassroomAdmin[] memory
-        )
+        returns (ClassroomAdmin[] memory)
     {
         address[] memory registeredClassroomAdminIds = registeredIds
             .classroomAdmin;
@@ -224,14 +243,7 @@ contract TeachContract is AccessControl, Initializable {
 
     function getClassroomAdmin(
         address _walletAddress
-    )
-        public
-        view
-        returns (
-            // onlyRole(LAND_OPERATOR) TODO: development only.
-            ClassroomAdmin memory
-        )
-    {
+    ) public view returns (ClassroomAdmin memory) {
         require(isClassroomAdmin(_walletAddress), "Classroom admin not found.");
         ClassroomAdmin memory rtn = idsToObjects.classroomAdmin[_walletAddress];
         rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
@@ -244,8 +256,9 @@ contract TeachContract is AccessControl, Initializable {
         address _walletAddress,
         uint256[] memory _landIds // onlyRole(LAND_OPERATOR) TODO: development only.
     ) public {
-        require(hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ACCESS_DENIED);
+        // check caller is entitled to land TODO
 
+        require(hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ACCESS_DENIED);
         require(
             !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
             ERR_OBJECT_EXISTS
@@ -260,8 +273,8 @@ contract TeachContract is AccessControl, Initializable {
     // delete
 
     function deleteClassroomAdmin(address _walletAddress) public {
+        // check caller is entitled to land TODO
         require(hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ACCESS_DENIED);
-
         // remove existing mappings
         unregisterClassroomAdmin(_walletAddress);
     }
@@ -410,17 +423,13 @@ contract TeachContract is AccessControl, Initializable {
         return rtn;
     }
 
-    function getTeacher(
-        address id
-    ) public view returns (Teacher memory) {
-
-
+    function getTeacher(address id) public view returns (Teacher memory) {
         require(registeredIds.teacherBool[id], ERR_OBJECT_ACCESS);
         Teacher memory rtn = idsToObjects.teacher[id];
         bool entitledToViewTeacher = false;
 
         if (hasRole(TEACHER, msg.sender)) {
-            if(msg.sender == id) {
+            if (msg.sender == id) {
                 entitledToViewTeacher = true;
             }
         } else if (hasRole(CLASSROOM_ADMIN, msg.sender)) {

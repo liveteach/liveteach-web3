@@ -323,7 +323,7 @@ async function getReceipt(txHash) {
   catch (error) {
     return {
       success: false,
-      reason: error
+      status: "😥 Something went wrong: " + error.message
     };
   }
 }
