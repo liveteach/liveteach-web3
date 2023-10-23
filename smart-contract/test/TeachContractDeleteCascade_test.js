@@ -14,6 +14,8 @@ describe("TeachContractDeleteCascade", function () {
   let T8;
   let T10;
   let teachContract;
+  let landContract 
+
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
     let accounts = await ethers.getSigners();
@@ -29,13 +31,20 @@ describe("TeachContractDeleteCascade", function () {
     T7 = accounts[10];
     T8 = accounts[11];
     T10 = accounts[13];
-    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    operator = accounts[14];
+    landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
     await teachContract.connect(owner).initialize();
-
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
-    await teachContract.connect(owner).createClassroomAdmin(CA0, [1, 2, 3, 4]);
-    await teachContract.connect(owner).createClassroomAdmin(CA1, [5, 6, 7]);
+
+    await landContract.connect(owner).assignMultipleParcels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 1], owner);
+    for (let i = 1; i < 22; i++) {
+      await landContract.connect(owner).approve(operator, i);
+    }
+    await landContract.connect(owner).approve(operator, 340282366920938463463374607431768211457n);
+
+    await teachContract.connect(operator).createClassroomAdmin(CA0, [1, 2, 3, 4]);
+    await teachContract.connect(operator).createClassroomAdmin(CA1, [5, 6, 7]);
     await teachContract.connect(CA0).createClassroomLandIds("CR0", [1], getGuid());
     await teachContract.connect(CA0).createClassroomLandIds("CR1", [2], getGuid());
     await teachContract.connect(CA0).createClassroomLandIds("CR2", [3], getGuid());

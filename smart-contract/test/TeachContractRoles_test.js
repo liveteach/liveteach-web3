@@ -6,6 +6,7 @@ describe("TeachContractRoles", function () {
   let teacher;
   let nonRegisteredUser;
   let teachContract;
+  let landContract;
 
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
@@ -15,12 +16,22 @@ describe("TeachContractRoles", function () {
     classroomAdmin = accounts[1];
     teacher = accounts[2];
     nonRegisteredUser = accounts[3];
-    let landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
+    operator = accounts[4];
+
+    landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
     teachContract.connect(owner).setLANDRegistry(landContractAddress);
-    await teachContract.connect(owner).createClassroomAdmin(classroomAdmin, [1, 2, 3, 4]);
+
+    await landContract.connect(owner).assignMultipleParcels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 1], owner);
+    for (let i = 1; i < 22; i++) {
+      await landContract.connect(owner).approve(operator, i);
+    }
+    await landContract.connect(owner).approve(operator, 340282366920938463463374607431768211457n);
+
+    await teachContract.connect(operator).createClassroomAdmin(classroomAdmin, [1, 2, 3, 4]);
     await teachContract.connect(classroomAdmin).createClassroomLandIds("Test Classroom 1", [1], getGuid());
     await teachContract.connect(classroomAdmin).createTeacher(teacher, [1]);
+
   })
 
   // it("Registered land operator should be able to get correct roles", async function () {
