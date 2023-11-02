@@ -81,12 +81,15 @@ export function LandOperator(props){
                                                 {item["walletAddress"]}
                                             </td>
                                             <td>
-                                                {item["landIds"].map((landId, index) => (
-                                                    <React.Fragment key={landId}>
-                                                        {landId}
-                                                        {index < item["landIds"].length - 1 ? ', ' : ''}
-                                                    </React.Fragment>
-                                                ))}
+                                                {item["landCoordinates"] && Array.isArray(item["landCoordinates"]) ? (
+                                                    <div>
+                                                        {item["landCoordinates"]
+                                                            .map((coords) => `(${coords[0]},${coords[1]})`)
+                                                            .join("  ")}
+                                                    </div>
+                                                ) : (
+                                                    <div>Coordinates not available</div>
+                                                )}
                                             </td>
                                             <td>
                                                 <Button onClick={()=> {
