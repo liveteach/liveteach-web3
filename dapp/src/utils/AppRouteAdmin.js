@@ -25,7 +25,7 @@ const AppRouteAdmin = ({
         );
     } else if (!isPrivate || authCheck.auth) {
         return(
-            <Redirect to="/student"/>
+            <Redirect to="/teacher"/>
         )
 
     } else {

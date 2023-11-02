@@ -42,12 +42,12 @@ export default function PageNav({
             <div className="dcl tabs">
                 <div className="ui container">
                     <div className="dcl tabs-left">
-                        <Link  to={"/student"} >
-                            <div className="dcl tab active tabColor">
-                                Student
-                                {activeTab === 'student' && <div className="active-bar" id="student"></div>}
-                            </div>
-                        </Link>
+                        {/*<Link  to={"/student"} >*/}
+                        {/*    <div className="dcl tab active tabColor">*/}
+                        {/*        Student*/}
+                        {/*        {activeTab === 'student' && <div className="active-bar" id="student"></div>}*/}
+                        {/*    </div>*/}
+                        {/*</Link>*/}
                         <Link  to={"/teacher"} >
                             <div className="dcl tab active tabColor">
                                 Teacher

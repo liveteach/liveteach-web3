@@ -44,7 +44,7 @@ const App = () => {
 
   useEffect(() => {
         if (auth) {
-          history.push("/student");
+          history.push("/teacher");
         } else {
             if(currentURL.includes('/docs/')){
                 history.push(currentURL)
@@ -83,12 +83,12 @@ const App = () => {
 
         {/*common routes*/}
 
-        <AppRoute
-            exact
-            path="/student"
-            component={Student}
-            layout={LayoutDefault}
-        />
+        {/*<AppRoute*/}
+        {/*    exact*/}
+        {/*    path="/student"*/}
+        {/*    component={Student}*/}
+        {/*    layout={LayoutDefault}*/}
+        {/*/>*/}
 
         <AppRoute
             exact
