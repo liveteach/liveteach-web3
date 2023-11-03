@@ -133,3 +133,31 @@
     border-bottom: 3px solid #ff2d55;
     z-index: 10;
 }
+
+.coordinates-container {
+    position: relative;
+}
+
+.coordinate-item {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.coordinate-item:hover .tooltip {
+    visibility: visible;
+}
