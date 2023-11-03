@@ -8,7 +8,9 @@ export const classroomAdminStateSlice = createSlice({
         classLandIds: [],
         teachers: [{id: 0, walletAddress:"0x12345", classRoomIds:[1,2,3,4],classroomAdminId:"0x12345"}],
         imgEndpoint: "",
-        guid: ""
+        guid: "",
+        pendingClassrooms: [{name: "", status: ""}],
+        pendingTeachers: [{name: "", status: ""}]
     },
     reducers: {
         setClassrooms: (state, action) => {
@@ -28,10 +30,16 @@ export const classroomAdminStateSlice = createSlice({
         },
         setGuid: (state, action) => {
             state.guid = action.payload
+        },
+        setPendingClassrooms: (state, action) => {
+            state.pendingClassrooms = action.payload
+        },
+        setPendingTeachers: (state, action) => {
+            state.pendingTeachers = action.payload
         }
     }
 });
 
-export const { setClassrooms, setClassName, setClassLandIds, setTeachers, setImgEndpoint, setGuid } = classroomAdminStateSlice.actions;
+export const { setClassrooms, setClassName, setClassLandIds, setTeachers, setImgEndpoint, setGuid, setPendingTeachers, setPendingClassrooms } = classroomAdminStateSlice.actions;
 
 export default classroomAdminStateSlice.reducer;

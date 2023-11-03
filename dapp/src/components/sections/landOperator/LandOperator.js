@@ -1,7 +1,11 @@
 import {useDispatch, useSelector} from "react-redux";
-import {createClassroomAdmin, getClassroomAdmins, removeClassroomAdmin} from "../../../utils/interact";
+import {
+    createClassroomAdmin,
+    getClassroomAdmins,
+    removeClassroomAdmin
+} from "../../../utils/interact";
 import {useEffect, useState} from "react";
-import {setClassroomAdmins, setNewAdminWallet, setNewLandIds} from "../../../store/landOperatorState";
+import {setClassroomAdmins, setNewLandIds, setPending, setNewAdminWallet} from "../../../store/landOperatorState";
 import {Button, Modal} from "@mui/material";
 import React from 'react'
 import {TextField, Typography} from "@material-ui/core";
@@ -21,7 +25,7 @@ const style = {
 
 export function LandOperator(props){
 
-    const {classroomAdmins, newAdminWallet, newLandIds} = useSelector((state) => state.landOperator)
+    const {classroomAdmins, newAdminWallet, newLandIds, pending} = useSelector((state) => state.landOperator)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("landOperator") || roles.includes("classroomAdmin")
     const dispatch = useDispatch();
@@ -79,13 +83,22 @@ export function LandOperator(props){
                                         <tr key={`Contributor_${index}`}>
                                             <td>
                                                 {item["walletAddress"]}
+                                                <span style={{color:'green', display: 'none'}} id={`adminRemove${index}`}>Pending..</span>
                                             </td>
                                             <td>
                                                 {item["landCoordinates"] && Array.isArray(item["landCoordinates"]) ? (
-                                                    <div>
+                                                    <div className="coordinates-container">
                                                         {item["landCoordinates"]
-                                                            .map((coords) => `(${coords[0]},${coords[1]})`)
-                                                            .join("  ")}
+                                                            .map((coords, index) => (
+                                                                <span key={index} className="coordinate-item">
+                                                                    {index < 2 ? `(${coords[0]},${coords[1]})` : ''}
+                                                                    {index === 1 && item["landCoordinates"].length > 2 && (
+                                                                        <span className="tooltip">
+                                                                            {item["landCoordinates"].map((coords, i) => `(${coords[0]},${coords[1]})`).join("  ")}
+                                                                        </span>
+                                                                    )}
+                                                                </span>
+                                                            ))}..
                                                     </div>
                                                 ) : (
                                                     <div>Coordinates not available</div>
@@ -93,13 +106,35 @@ export function LandOperator(props){
                                             </td>
                                             <td>
                                                 <Button onClick={()=> {
+                                                    let text = document.getElementById(`adminRemove${index}`);
+                                                    text.style.display = 'block'
                                                     removeClassroomAdmin(item["walletAddress"]).then(result => {
-                                                        console.log(result)
+                                                        text.style.display = 'none'
+                                                        getClassroomAdmins().then(result => {
+                                                            dispatch(setClassroomAdmins(result))
+                                                        })
                                                     })
+
                                                 }}>Remove</Button>
                                             </td>
                                         </tr>
                                     );
+                                })
+                            }
+                            {
+                                pending.map((item, index) => {
+                                    if (item.name !== '' && item.status !== '') {
+                                        return (
+                                            <tr key={'operator_pending_' + index}>
+                                                <td>{item.name}</td>
+                                                <td>
+                                                    <span style={{ color: 'green' }}>{item.status}</span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    } else {
+                                        return null;
+                                    }
                                 })
                             }
                             </tbody>
@@ -150,8 +185,19 @@ export function LandOperator(props){
                                 className="ui small primary button"
                                 onClick={() => {
                                     let idArray = handleSplit(newLandIds)
+                                    dispatch(setPending([{name: newAdminWallet, status: "Pending.."}]))
                                     createClassroomAdmin(newAdminWallet, idArray).then(result =>{
                                         console.log(result)
+                                        let status = result.success ? "Success" : "Error"
+                                        dispatch(setPending([{name: newAdminWallet, status:status}]))
+
+                                        setTimeout(() => {
+                                            dispatch(setPending([{name: "", status:""}]))
+                                            getClassroomAdmins().then(result => {
+                                                console.log(result)
+                                                dispatch(setClassroomAdmins(result))
+                                            })
+                                        }, 1000)
                                     })
                                 }}
                             >

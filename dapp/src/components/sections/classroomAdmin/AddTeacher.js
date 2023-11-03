@@ -1,8 +1,8 @@
 import {Grid, MenuItem, Select, TextField} from "@mui/material";
-import { getClassrooms, createTeacher} from "../../../utils/interact";
+import {getClassrooms, createTeacher, getTeachers} from "../../../utils/interact";
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
-import {setClassrooms} from "../../../store/classroomAdminState";
+import {setClassrooms, setPendingTeachers, setTeachers} from "../../../store/classroomAdminState";
 import {setWalletAddress,setTeacherClassrooms} from "../../../store/teacherState";
 import {NoAdmittance} from "../NoAdmittance";
 
@@ -36,9 +36,19 @@ export function AddTeacher(props){
                         <div className="dcl tabs-right">
                             <button
                                 onClick={() => {
-                                createTeacher(walletAddress,teacherClassrooms).then(result => {
-                                    console.log(result)
-                                })
+                                    dispatch(setPendingTeachers([{name: walletAddress, status: "Pending.."}]))
+                                    createTeacher(walletAddress,teacherClassrooms).then(result => {
+
+                                        let status = result.success ? "Success" : "Error"
+                                        dispatch(setPendingTeachers([{name: walletAddress, status:status}]))
+
+                                        setTimeout(() => {
+                                            dispatch(setPendingTeachers([{name: "", status:""}]))
+                                            getTeachers().then(result => {
+                                                dispatch(setTeachers(result))
+                                            })
+                                        }, 1000)
+                                    })
                             }}
                                 className="ui small primary button"
                             >Add</button>
