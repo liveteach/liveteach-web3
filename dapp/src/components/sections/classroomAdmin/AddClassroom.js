@@ -1,10 +1,10 @@
 import {Grid, TextField} from "@mui/material";
 import {useEffect} from "react";
-import {setGuid, setImgEndpoint} from "../../../store/classroomAdminState";
+import {setClassrooms, setGuid, setImgEndpoint} from "../../../store/classroomAdminState";
 import {useDispatch, useSelector} from "react-redux";
-import {setClassName, setClassLandIds} from "../../../store/classroomAdminState";
+import {setClassName, setClassLandIds, setPendingClassrooms} from "../../../store/classroomAdminState";
 import { MuiChipsInput} from "mui-chips-input";
-import {createClassroom} from '../../../utils/interact';
+import {createClassroom, getClassrooms} from '../../../utils/interact';
 import {NoAdmittance} from "../NoAdmittance";
 
 export function AddClassroom(props){
@@ -80,9 +80,20 @@ export function AddClassroom(props){
                                 <button
                                     onClick={() => {
                                         let landIds = createArrayCoordsToInt(classLandIds);
-                                        console.log(landIds)
+                                        dispatch(setPendingClassrooms([{name: className, status: "Pending.."}]))
+
                                         createClassroom(className,landIds, guid).then(result => {
-                                            console.log(result)
+
+                                            let status = result.success ? "Success" : "Error"
+                                            dispatch(setPendingClassrooms([{name: className, status:status}]))
+
+                                            setTimeout(() => {
+                                                dispatch(setPendingClassrooms([{name: "", status:""}]))
+                                                getClassrooms().then(result => {
+                                                    dispatch(setClassrooms(result))
+                                                })
+                                            }, 1000)
+
                                         })
                                     }}
                                     className="ui small primary button"
