@@ -5,7 +5,8 @@ export const landOperatorStateSlice = createSlice({
     initialState: {
         classroomAdmins: [{landIds:["1","2","3"], walletAddress:"test"}],
         newAdminWallet: "",
-        newLandIds: ""
+        newLandIds: "",
+        pending: [{name: "", status: ""}]
     },
     reducers: {
         setClassroomAdmins: (state, action) => {
@@ -16,10 +17,13 @@ export const landOperatorStateSlice = createSlice({
         }),
         setNewLandIds: (state, action) => {
             state.newLandIds = action.payload
+        },
+        setPending: (state, action) => {
+            state.pending = action.payload
         }
     }
 });
 
-export const { setClassroomAdmins, setNewAdminWallet, setNewLandIds} = landOperatorStateSlice.actions;
+export const { setClassroomAdmins, setNewAdminWallet, setNewLandIds, setPending} = landOperatorStateSlice.actions;
 
 export default landOperatorStateSlice.reducer;
