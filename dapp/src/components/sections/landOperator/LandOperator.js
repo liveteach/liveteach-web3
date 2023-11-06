@@ -48,7 +48,7 @@ export function LandOperator(props){
     useEffect(() => {
         const parsedParcels = newLandIds.join(';')
         const logicalCentre = logicalCentreCoord(newLandIds);
-        dispatch(setImgEndpoint(baseUrl + "center=" + logicalCentre + "&size=3&selected=" + parsedParcels))
+        dispatch(setImgEndpoint(baseUrl + "center=" + logicalCentre + "&size=10&selected=" + parsedParcels))
     },[newLandIds])
 
 
@@ -184,15 +184,6 @@ export function LandOperator(props){
                             />
                         </div>
                         <div style={{width: '80%', margin:'20px auto'}}  className="inputFields">
-                            {/*<TextField*/}
-                            {/*    fullWidth={true}*/}
-                            {/*    label="Land Ids"*/}
-                            {/*    className="textInput"*/}
-                            {/*    value={newLandIds}*/}
-                            {/*    onChange={(e) => {*/}
-                            {/*        dispatch(setNewLandIds(e.target.value))*/}
-                            {/*    }}*/}
-                            {/*/>*/}
                             <Grid item xs={6}>
                                 <h4>LAND Parcels</h4>
                                 <div style={{backgroundColor: 'white', color: 'black'}}>
