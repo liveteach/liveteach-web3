@@ -187,7 +187,7 @@ export const createClassroomLandIds = async (name, landIds) => {
   return callGasTransaction(window.contract.methods.createClassroom,
     [name, landIds]);
 };
-export const createClassroom = async (name, coordinatePairs, guid) => {
+export const createClassroom = async (name, coordinatePairs, guid, url, history) => {
   /*
   coordinatePairs - a 2d signed integer array of x,y values 
   representing land coordinates
@@ -201,7 +201,7 @@ export const createClassroom = async (name, coordinatePairs, guid) => {
   // onlyRole(CLASSROOM_ADMIN)
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.createClassroomCoordinates,
-    [name, coordinatePairs, guid]);
+    [name, coordinatePairs, guid], url, history);
 };
 // read
 export const getClassrooms = async () => {
@@ -242,12 +242,12 @@ export const deleteClassroom = async (id) => {
 
 // Teachers
 // create
-export const createTeacher = async (walletAddress, classroomIds) => {
+export const createTeacher = async (walletAddress, classroomIds, url, history) => {
   // onlyRole(CLASSROOM_ADMIN)
 
   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
   return callGasTransaction(window.contract.methods.createTeacher,
-    [walletAddress, classroomIds]);
+    [walletAddress, classroomIds], url, history);
 }
 // read
 export const getTeachers = async () => {
@@ -328,7 +328,7 @@ async function getReceipt(txHash) {
   }
 }
 
-async function callGasTransaction(func, params) {
+async function callGasTransaction(func, params, redirectUrl = null, history  = null) {
   const transactionParameters = {
     to: contractAddress,
     from: window.ethereum.selectedAddress,
@@ -340,7 +340,10 @@ async function callGasTransaction(func, params) {
         method: 'eth_sendTransaction',
         params: [transactionParameters],
       });
-
+    if (redirectUrl) {
+      console.log("Redirect to:", redirectUrl);
+      history.push(redirectUrl);
+    }
     let receipt;
     while (!receipt) {
       receipt = await getReceipt(txHash);
