@@ -122,8 +122,22 @@ export const calculateMetamaskValueFromEthereum = (ethereumAmount) => {
   return bnValue.toString(16);
 };
 
+export const getLandIdsFromCoordinates = async (coordinatePairs) => {
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  const result = await window.contract.methods
+    .getLandIdsFromCoordinates(coordinatePairs)
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+};
+
 // classroom admin 
 // create
+
+export const createClassroomAdminCoordinates = async (walletAddress, coordinatePairs) => {
+  // should only be callable by LAND_OPERATOR, currently callable by anyone
+  const landIds = await getLandIdsFromCoordinates(coordinatePairs);
+  return createClassroomAdmin(walletAddress, landIds);
+};
 
 export const createClassroomAdmin = async (walletAddress, landIds) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone

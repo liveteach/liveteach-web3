@@ -1,16 +1,8 @@
 [
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "version",
-        "type": "uint8"
-      }
-    ],
-    "name": "Initialized",
-    "type": "event"
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "anonymous": false,
@@ -157,46 +149,9 @@
     "name": "allClassrooms",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "landIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "int256[][]",
-            "name": "landCoordinates",
-            "type": "int256[][]"
-          },
-          {
-            "internalType": "address",
-            "name": "classroomAdminId",
-            "type": "address"
-          },
-          {
-            "internalType": "address[]",
-            "name": "teacherIds",
-            "type": "address[]"
-          },
-          {
-            "internalType": "string",
-            "name": "guid",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct TeachContract.Classroom[]",
+        "internalType": "uint256[]",
         "name": "",
-        "type": "tuple[]"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -207,26 +162,9 @@
     "name": "allLands",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "classroomAdminId",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "classroomId",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TeachContract.Land[]",
+        "internalType": "uint256[]",
         "name": "",
-        "type": "tuple[]"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -237,26 +175,9 @@
     "name": "allTeachers",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "walletAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "classroomIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "classroomAdminIds",
-            "type": "address[]"
-          }
-        ],
-        "internalType": "struct TeachContract.Teacher[]",
+        "internalType": "address[]",
         "name": "",
-        "type": "tuple[]"
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -602,6 +523,44 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "landIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getCoordinatesFromLandIds",
+    "outputs": [
+      {
+        "internalType": "int256[][]",
+        "name": "",
+        "type": "int256[][]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256[][]",
+        "name": "coordinatePairs",
+        "type": "int256[][]"
+      }
+    ],
+    "name": "getLandIdsFromCoordinates",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -759,13 +718,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
