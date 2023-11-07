@@ -1,15 +1,17 @@
 import {useDispatch, useSelector} from "react-redux";
 import {
-    createClassroomAdmin,
+    createClassroomAdmin, createClassroomAdminCoordinates,
     getClassroomAdmins,
     removeClassroomAdmin
 } from "../../../utils/interact";
 import {useEffect, useState} from "react";
-import {setClassroomAdmins, setNewLandIds, setPending, setNewAdminWallet} from "../../../store/landOperatorState";
-import {Button, Modal} from "@mui/material";
+import {setClassroomAdmins, setNewLandIds, setPending, setNewAdminWallet, setImgEndpoint} from "../../../store/landOperatorState";
+import {Button, Grid, Modal} from "@mui/material";
 import React from 'react'
 import {TextField, Typography} from "@material-ui/core";
 import {NoAdmittance} from "../NoAdmittance";
+import { logicalCentreCoord } from "../../../utils/utilityFunctions";
+import {MuiChipsInput} from "mui-chips-input";
 
 const style = {
     position: 'absolute',
@@ -25,13 +27,14 @@ const style = {
 
 export function LandOperator(props){
 
-    const {classroomAdmins, newAdminWallet, newLandIds, pending} = useSelector((state) => state.landOperator)
+    const {classroomAdmins, newAdminWallet, newLandIds, pending, imgEndpoint} = useSelector((state) => state.landOperator)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("landOperator") || roles.includes("classroomAdmin")
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const baseUrl = "https://api.decentraland.org/v2/map.png?"
 
     useEffect( ()=> {
         if(render) {
@@ -42,10 +45,24 @@ export function LandOperator(props){
         }
     },[])
 
-    function handleSplit(ids){
-        let arr = ids.split(",");
-        arr = arr.map(item => parseInt(item.trim().replace(/\n/g, '')));
+    useEffect(() => {
+        const parsedParcels = newLandIds.join(';')
+        const logicalCentre = logicalCentreCoord(newLandIds);
+        dispatch(setImgEndpoint(baseUrl + "center=" + logicalCentre + "&size=10&selected=" + parsedParcels))
+    },[newLandIds])
+
+
+    function createArrayCoordsToInt(coords) {
+        let arr = [];
+        for (let i = 0; i < coords.length; i++) {
+            let coordArr = coords[i].split(",").map(coord => parseInt(coord, 10));
+            arr.push(coordArr);
+        }
         return arr;
+    }
+
+    const handleChange = (newChips) => {
+        dispatch(setNewLandIds(newChips))
     }
 
     return (
@@ -170,23 +187,25 @@ export function LandOperator(props){
                             />
                         </div>
                         <div style={{width: '80%', margin:'20px auto'}}  className="inputFields">
-                            <TextField
-                                fullWidth={true}
-                                label="Land Ids"
-                                className="textInput"
-                                value={newLandIds}
-                                onChange={(e) => {
-                                    dispatch(setNewLandIds(e.target.value))
-                                }}
-                            />
+                            <Grid item xs={6}>
+                                <h4>LAND Parcels</h4>
+                                <div style={{backgroundColor: 'white', color: 'black'}}>
+                                    <MuiChipsInput value={newLandIds} onChange={handleChange} fullWidth={true}/>
+                                </div>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <img src={imgEndpoint} style={{width: '100%', marginTop: '20px'}}/>
+                            </Grid>
                         </div>
                         <div style={{margin: '15px'}}>
                             <Button
                                 className="ui small primary button"
                                 onClick={() => {
-                                    let idArray = handleSplit(newLandIds)
+                                    let idArray = createArrayCoordsToInt(newLandIds)
                                     dispatch(setPending([{name: newAdminWallet, status: "Pending.."}]))
-                                    createClassroomAdmin(newAdminWallet, idArray).then(result =>{
+                                    setOpen(false)
+                                    console.log(idArray)
+                                    createClassroomAdminCoordinates(newAdminWallet, idArray).then(result =>{
                                         console.log(result)
                                         let status = result.success ? "Success" : "Error"
                                         dispatch(setPending([{name: newAdminWallet, status:status}]))
