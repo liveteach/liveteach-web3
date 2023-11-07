@@ -31,7 +31,6 @@ describe("TeachContractLandRegistryInteractions", function () {
     operator = accounts[2];
     nonOperator = accounts[3];
 
-    await teachContract.connect(contractOwner).initialize();
     await teachContract.connect(contractOwner).setLANDRegistry(landRegistryContract);
 
     // set up a land

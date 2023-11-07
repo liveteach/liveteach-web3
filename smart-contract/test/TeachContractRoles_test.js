@@ -12,7 +12,6 @@ describe("TeachContractRoles", function () {
     teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
     let accounts = await ethers.getSigners();
     owner = accounts[0];
-    await teachContract.connect(owner).initialize();
     classroomAdmin = accounts[1];
     teacher = accounts[2];
     nonRegisteredUser = accounts[3];

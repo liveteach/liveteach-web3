@@ -5,6 +5,7 @@ import {useEffect} from "react";
 import {setClassrooms, setPendingTeachers, setTeachers} from "../../../store/classroomAdminState";
 import {setWalletAddress,setTeacherClassrooms} from "../../../store/teacherState";
 import {NoAdmittance} from "../NoAdmittance";
+import {useHistory} from "react-router-dom";
 
 export function AddTeacher(props){
 
@@ -13,6 +14,7 @@ export function AddTeacher(props){
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("classroomAdmin")
     const dispatch = useDispatch();
+    const history = useHistory()
 
     useEffect(() => {
         if(render) {
@@ -37,7 +39,7 @@ export function AddTeacher(props){
                             <button
                                 onClick={() => {
                                     dispatch(setPendingTeachers([{name: walletAddress, status: "Pending.."}]))
-                                    createTeacher(walletAddress,teacherClassrooms).then(result => {
+                                    createTeacher(walletAddress,teacherClassrooms, "/classroomadmin", history).then(result => {
 
                                         let status = result.success ? "Success" : "Error"
                                         dispatch(setPendingTeachers([{name: walletAddress, status:status}]))

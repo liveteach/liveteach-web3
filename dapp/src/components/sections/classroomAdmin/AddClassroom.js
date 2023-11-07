@@ -7,6 +7,7 @@ import { MuiChipsInput} from "mui-chips-input";
 import {createClassroom, getClassrooms} from '../../../utils/interact';
 import {NoAdmittance} from "../NoAdmittance";
 import { logicalCentreCoord } from "../../../utils/utilityFunctions";
+import {useHistory} from "react-router-dom";
 
 export function AddClassroom(props){
 
@@ -15,6 +16,7 @@ export function AddClassroom(props){
     const render = roles.includes("classroomAdmin")
     const dispatch = useDispatch()
     const baseUrl = "https://api.decentraland.org/v2/map.png?"
+    const history = useHistory();
 
     const handleChange = (newChips) => {
         dispatch(setClassLandIds(newChips))
@@ -62,7 +64,7 @@ export function AddClassroom(props){
                                         let landIds = createArrayCoordsToInt(classLandIds);
                                         dispatch(setPendingClassrooms([{name: className, status: "Pending.."}]))
 
-                                        createClassroom(className,landIds, guid).then(result => {
+                                        createClassroom(className,landIds, guid, "/classroomadmin", history).then(result => {
 
                                             let status = result.success ? "Success" : "Error"
                                             dispatch(setPendingClassrooms([{name: className, status:status}]))
