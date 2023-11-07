@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {
-    createClassroomAdmin,
+    createClassroomAdmin, createClassroomAdminCoordinates,
     getClassroomAdmins,
     removeClassroomAdmin
 } from "../../../utils/interact";
@@ -52,9 +52,12 @@ export function LandOperator(props){
     },[newLandIds])
 
 
-    function handleSplit(ids){
-        let arr = ids.split(",");
-        arr = arr.map(item => parseInt(item.trim().replace(/\n/g, '')));
+    function createArrayCoordsToInt(coords) {
+        let arr = [];
+        for (let i = 0; i < coords.length; i++) {
+            let coordArr = coords[i].split(",").map(coord => parseInt(coord, 10));
+            arr.push(coordArr);
+        }
         return arr;
     }
 
@@ -198,9 +201,11 @@ export function LandOperator(props){
                             <Button
                                 className="ui small primary button"
                                 onClick={() => {
-                                    let idArray = handleSplit(newLandIds)
+                                    let idArray = createArrayCoordsToInt(newLandIds)
                                     dispatch(setPending([{name: newAdminWallet, status: "Pending.."}]))
-                                    createClassroomAdmin(newAdminWallet, idArray).then(result =>{
+                                    setOpen(false)
+                                    console.log(idArray)
+                                    createClassroomAdminCoordinates(newAdminWallet, idArray).then(result =>{
                                         console.log(result)
                                         let status = result.success ? "Success" : "Error"
                                         dispatch(setPending([{name: newAdminWallet, status:status}]))
