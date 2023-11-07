@@ -1,8 +1,13 @@
 const { ethers } = require("hardhat");
 
-const DEPLOYED_ADDRESS = '0x31Cd6F96EFf5256aFBe1F66E846D04016A35C615'
+const DEPLOYED_ADDRESS = '0xC3925838316B1E4f1B0D5c3114E6F61119028dB4'
 
-const LAND_REGISTRY_ADDRESS = '0xe3488406B7ec0242aeF527C5D91751d024b007fB'
+/*  LAND Registry I have deployed, I removed the only Authorized checks
+    I don't seem to be able to get round them in test. 
+*/
+const LAND_REGISTRY_ADDRESS = '0xe25b0D59E765AaBDb5C424D65A06c275AaA227Ef' 
+const LAND_OWNER_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
+const LAND_OPERATOR_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
 const CLASSROOM_ADMIN_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
 const TEACHER_1_WALLET = '0xA34CEbc5957c6a9A0240537FFeA51C94361179B8' // shaun
 const TEACHER_2_WALLET = '0x456a04125aEC71F06352EE4eA62A9499ACED6e74' // frankie
@@ -26,12 +31,16 @@ const CLASSROOM_1_GUID = '8cb23bef-b5b0-4461-8ddb-2813b5a802bd'
 const CLASSROOM_2_GUID = 'a801d461-f435-48d4-b63c-2b5b51741bc5'
 
 let contract;
+let landRegistryContract;
 
 async function main() {
     const contractFactory = await ethers.getContractFactory("TeachContract");
     contract = contractFactory.attach(DEPLOYED_ADDRESS)
 
-    await deleteClassroomAdmin(CLASSROOM_ADMIN_WALLET);
+    const landRegistryContractFactory = await ethers.getContractFactory("LANDRegistry");
+    landRegistryContract = landRegistryContractFactory.attach(LAND_REGISTRY_ADDRESS);
+    // await grantLandPermissions();
+    // await deleteClassroomAdmin(CLASSROOM_ADMIN_WALLET);
     await setLandRegistry();
     await createClassroomAdmin();
     await createClassroomLandIds("Shaun's Classroom 1", TEACHER_1_LAND_IDS, CLASSROOM_1_GUID)
@@ -53,6 +62,23 @@ async function main() {
 }
 
 main();
+
+async function grantLandPermissions() {
+    let allLandCoordinates = [[0, 0, 1, 1, 0, -55, -55, -55, -55, -55,], [0, 1, 1, 0, 2, 1, 2, 3, 4, 5]];
+    try {
+        let tx = await landRegistryContract.assignMultipleParcels(allLandCoordinates[0], allLandCoordinates[1], LAND_OWNER_WALLET)
+        console.log(tx)
+        let txReceipt = tx.wait()
+        console.log(txReceipt)
+
+        tx = await landRegistryContract.setApprovalForAll(LAND_OPERATOR_WALLET, true);
+        console.log(tx)
+        txReceipt = tx.wait()
+        console.log(txReceipt)
+    } catch (e) {
+        throw (e)
+    }
+}
 
 async function deleteClassroomAdmin(wallet) {
     try {

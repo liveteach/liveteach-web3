@@ -1,5 +1,4 @@
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 pragma solidity ^0.8.12;
 
@@ -24,10 +23,10 @@ bytes32 constant TEACHER = keccak256("TEACHER"); // 534b5b9fe29299d99ea2855da694
 bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN"); // 8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b
 bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
 
-contract TeachContract is AccessControl, Initializable {
+contract TeachContract is AccessControl {
     uint256 private latestClassroomId;
 
-    function initialize() public initializer {
+    constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         /* set sender (shared wallet) to be landoperator */
         /* for test only */
@@ -142,43 +141,27 @@ contract TeachContract is AccessControl, Initializable {
         public
         view
         onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (Land[] memory)
+        returns (uint256[] memory)
     {
-        uint256[] memory allLandIds = registeredIds
-            .landsRegisteredToClassroomAdmin;
-        Land[] memory rtn = new Land[](allLandIds.length);
-        for (uint256 i = 0; i < allLandIds.length; i++) {
-            rtn[i] = idsToObjects.land[allLandIds[i]];
-        }
-        return rtn;
+        return registeredIds.landsRegisteredToClassroomAdmin;
     }
 
     function allClassrooms()
         public
         view
         onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (Classroom[] memory)
+        returns (uint256[] memory)
     {
-        uint256[] memory allClassroomIds = registeredIds.classroom;
-        Classroom[] memory rtn = new Classroom[](allClassroomIds.length);
-        for (uint256 i = 0; i < allClassroomIds.length; i++) {
-            rtn[i] = idsToObjects.classroom[allClassroomIds[i]];
-        }
-        return rtn;
+        return registeredIds.classroom;
     }
 
     function allTeachers()
         public
         view
         onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (Teacher[] memory)
+        returns (address[] memory)
     {
-        address[] memory allTeacherIds = registeredIds.teacher;
-        Teacher[] memory rtn = new Teacher[](allTeacherIds.length);
-        for (uint256 i = 0; i < allTeacherIds.length; i++) {
-            rtn[i] = idsToObjects.teacher[allTeacherIds[i]];
-        }
-        return rtn;
+        return registeredIds.teacher;
     }
 
     // CLASSROOM ADMIN
@@ -870,7 +853,7 @@ contract TeachContract is AccessControl, Initializable {
 
     function getCoordinatesFromLandIds(
         uint256[] memory landIds
-    ) private view returns (int[][] memory) {
+    ) public view returns (int[][] memory) {
         int[][] memory rtn = new int[][](landIds.length);
         for (uint256 i = 0; i < landIds.length; i++) {
             (int x, int y) = landRegistry.decodeTokenId(landIds[i]);
@@ -881,6 +864,19 @@ contract TeachContract is AccessControl, Initializable {
         return rtn;
     }
 
+    function getLandIdsFromCoordinates(
+        int[][] memory coordinatePairs
+    ) public view returns (uint256[] memory) {
+        uint256[] memory landIds = new uint256[](coordinatePairs.length);
+        for (uint256 i = 0; i < coordinatePairs.length; i++) {
+            landIds[i] = landRegistry.encodeTokenId(
+                coordinatePairs[i][0],
+                coordinatePairs[i][1]
+            );
+        }
+        return landIds;
+    }
+
     function _isContract(address addr) internal view returns (bool) {
         uint size;
         assembly {
@@ -888,13 +884,4 @@ contract TeachContract is AccessControl, Initializable {
         }
         return size > 0;
     }
-
-    // function decodeLandId(uint256 id) public view returns (int, int) {
-    //     return landRegistry.decodeTokenId(id);
-    // }
-
-    // function encodeLandId(int x, int y) public view returns (uint256) {
-    //     uint256 result = landRegistry.encodeTokenId(x, y);
-    //     return result;
-    // }
 }
