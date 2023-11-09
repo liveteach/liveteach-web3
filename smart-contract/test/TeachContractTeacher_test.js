@@ -43,7 +43,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser).createTeacher(randomWallet, [1]))
       .to.be.revertedWith(
-        "You lack the appropriate role to call this function"
+        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -92,7 +92,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser2).getTeachers())
       .to.be.revertedWith(
-        "You lack the appropriate role to call this function"
+        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -197,7 +197,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
 
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
-      .to.be.revertedWith("You lack the appropriate role to call this function");
+      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
 
   });
 

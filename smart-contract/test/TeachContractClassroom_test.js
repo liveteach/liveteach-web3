@@ -42,7 +42,7 @@ describe("TeachContractClassroom", function () {
 
   it("Non classroom admin cannot create classroom", async function () {
     await expect(teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid()))
-      .to.be.revertedWith("You lack the appropriate role to call this function");
+      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
   });
 
   it("Classroom admin cannot create classroom with unregistered landIds", async function () {
@@ -91,11 +91,14 @@ describe("TeachContractClassroom", function () {
     }
   });
 
-  it("Land id can only exist in a single classroom create", async function () {
+  it("Land can exist in multiple classrooms create", async function () {
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1], getGuid());
-    await expect(teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [1], getGuid()))
-      .to.be.revertedWith("Provided id invalid.");
+    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [1], getGuid());
+    let result = await teachContract.connect(otherUser).getClassrooms();
+    assert.equal(2, result.length);
+    assert.equal(1, result[0].landIds[0]);
+    assert.equal(1, result[1].landIds[0]);
   });
 
   // // read
@@ -129,7 +132,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1], getGuid());
     await expect(teachContract.connect(otherUser2).getClassrooms())
-      .to.be.revertedWith("You lack the appropriate role to call this function");
+      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
   });
 
   it("Classroom admin cannot get data about another classroom admin's classrooms", async function () {
@@ -194,7 +197,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], getGuid());
     await expect(teachContract.connect(otherUser2).deleteClassroom(1))
-      .to.be.revertedWith("You lack the appropriate role to call this function");
+      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
     let allClassrooms = await teachContract.connect(otherUser).getClassrooms();
     assert.equal(1, allClassrooms.length);
     let result = await teachContract.connect(otherUser).getClassroom(1);
@@ -233,7 +236,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], guid);
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await expect(teachContract.connect(otherUser3).getClassroomGuid(0, 1))
-      .to.be.revertedWith("You lack the appropriate role to call this function");
+      .to.be.revertedWith("You lack the appropriate role to call this function: TEACHER");
   });
 
 

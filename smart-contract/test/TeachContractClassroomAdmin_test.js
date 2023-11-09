@@ -35,16 +35,17 @@ describe("TeachContractClassroomAdmin", function () {
     assert.equal(4, result.landCoordinates.length);
   });
 
-  it("Cannot create a classroom admin with already assigned land ids.", async function () {
+  it("Can create a classroom admin with already assigned land ids.", async function () {
     await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
-    await expect(teachContract.connect(operator).createClassroomAdmin(user2, [4, 5]))
-      .to.be.revertedWith("Provided id invalid.");
+    await teachContract.connect(operator).createClassroomAdmin(user2, [4, 5]);
+    let result = await teachContract.connect(owner).getClassroomAdmin(user2);
+    assert.equal(2, result.landCoordinates.length);
   });
 
   it("Cannot create a double classroom admin", async function () {
     await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
     await expect(teachContract.connect(operator).createClassroomAdmin(user1, [4, 5]))
-      .to.be.revertedWith("Provided wallet already has role.");
+      .to.be.revertedWith("Provided wallet already has role: CLASSROOM_ADMIN");
   });
 
   it("Can get all classroom admins", async function () {
