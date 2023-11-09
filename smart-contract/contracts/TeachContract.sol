@@ -1,5 +1,3 @@
-import "@openzeppelin/contracts/access/AccessControl.sol";
-
 pragma solidity ^0.8.12;
 
 interface ILANDRegistry {
@@ -18,24 +16,13 @@ interface ILANDRegistry {
     ) external view returns (bool);
 }
 
-bytes32 constant STUDENT = keccak256("STUDENT");
-bytes32 constant TEACHER = keccak256("TEACHER"); // 534b5b9fe29299d99ea2855da6940643d68ed225db268dc8d86c1f38df5de794
-bytes32 constant CLASSROOM_ADMIN = keccak256("CLASSROOM_ADMIN"); // 8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b
-bytes32 constant LAND_OPERATOR = keccak256("LAND_OPERATOR");
-
-contract TeachContract is AccessControl {
+contract TeachContract {
     uint256 private latestClassroomId;
 
+    address private owner;
+
     constructor() {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        /* set sender (shared wallet) to be landoperator */
-        /* for test only */
-        _grantRole(LAND_OPERATOR, msg.sender);
-        _grantRole(CLASSROOM_ADMIN, msg.sender);
-
-        _setRoleAdmin(CLASSROOM_ADMIN, LAND_OPERATOR);
-        _setRoleAdmin(TEACHER, CLASSROOM_ADMIN);
-
+        owner = msg.sender;
         latestClassroomId = 1;
     }
 
@@ -75,17 +62,23 @@ contract TeachContract is AccessControl {
         address[] classroomAdminIds;
     }
 
+    struct RoleDetail {
+        address[] addressArray;
+        mapping(address => bool) boolMapping;
+    }
+
+    struct RoleMap {
+        RoleDetail classroomAdmin;
+        RoleDetail teacher;
+    }
+
     struct RegisteredIds {
         uint256[] landsRegisteredToClassroomAdmin;
         mapping(uint256 => bool) landsRegisteredToClassroomAdminBool;
-        address[] classroomAdmin;
-        mapping(address => bool) classroomAdminBool;
         uint256[] classroom;
         mapping(uint256 => bool) classroomBool;
         uint256[] landsRegisteredToClassroom;
         mapping(uint256 => bool) landsRegisteredToClassroomBool;
-        address[] teacher;
-        mapping(address => bool) teacherBool;
     }
 
     // id to object mappings
@@ -97,10 +90,10 @@ contract TeachContract is AccessControl {
     }
 
     struct RoleResult {
-        bool student;
+        // bool student;
         bool teacher;
         bool classroomAdmin;
-        bool landOperator;
+        // bool landOperator;
     }
 
     // Error messages
@@ -113,13 +106,12 @@ contract TeachContract is AccessControl {
         "Provided wallet lacks appropriate role.";
 
     RegisteredIds private registeredIds;
+    RoleMap private roleMap;
     IdsToObjects private idsToObjects;
 
     ILANDRegistry public landRegistry;
 
-    function setLANDRegistry(
-        address _registry
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setLANDRegistry(address _registry) public onlyOwner {
         require(_isContract(_registry), "LAND registry not a contract");
         landRegistry = ILANDRegistry(_registry);
     }
@@ -128,40 +120,25 @@ contract TeachContract is AccessControl {
     function getRoles() public view returns (RoleResult memory) {
         return
             RoleResult({
-                student: hasRole(STUDENT, msg.sender),
-                teacher: hasRole(TEACHER, msg.sender),
-                classroomAdmin: hasRole(CLASSROOM_ADMIN, msg.sender),
-                landOperator: hasRole(LAND_OPERATOR, msg.sender)
+                // student: hasRole(STUDENT, msg.sender),
+                teacher: hasRole(roleMap.teacher, msg.sender),
+                classroomAdmin: hasRole(roleMap.classroomAdmin, msg.sender)
+                // landOperator: hasRole(LAND_OPERATOR, msg.sender)
             });
     }
 
     // OWNER ONLY METHODS
 
-    function allLands()
-        public
-        view
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (uint256[] memory)
-    {
+    function allLands() public view onlyOwner returns (uint256[] memory) {
         return registeredIds.landsRegisteredToClassroomAdmin;
     }
 
-    function allClassrooms()
-        public
-        view
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (uint256[] memory)
-    {
+    function allClassrooms() public view onlyOwner returns (uint256[] memory) {
         return registeredIds.classroom;
     }
 
-    function allTeachers()
-        public
-        view
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (address[] memory)
-    {
-        return registeredIds.teacher;
+    function allTeachers() public view onlyOwner returns (address[] memory) {
+        return roleMap.teacher.addressArray;
     }
 
     // CLASSROOM ADMIN
@@ -186,11 +163,11 @@ contract TeachContract is AccessControl {
             isCallerLandOperator(_landIds),
             "You don't have access to this land"
         );
-        if (!hasRole(LAND_OPERATOR, msg.sender)) {
-            _grantRole(LAND_OPERATOR, msg.sender);
-        }
         // check caller is entitled to land TODO
-        require(!hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ROLE_ASSIGNED);
+        require(
+            !hasRole(roleMap.classroomAdmin, _walletAddress),
+            ERR_ROLE_ASSIGNED
+        );
         require(
             !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
             ERR_OBJECT_EXISTS
@@ -202,7 +179,7 @@ contract TeachContract is AccessControl {
     function isClassroomAdmin(
         address _walletAddress
     ) public view returns (bool) {
-        return hasRole(CLASSROOM_ADMIN, _walletAddress);
+        return hasRole(roleMap.classroomAdmin, _walletAddress);
     }
 
     function getClassroomAdmins()
@@ -210,8 +187,9 @@ contract TeachContract is AccessControl {
         view
         returns (ClassroomAdmin[] memory)
     {
-        address[] memory registeredClassroomAdminIds = registeredIds
-            .classroomAdmin;
+        address[] memory registeredClassroomAdminIds = roleMap
+            .classroomAdmin
+            .addressArray;
         ClassroomAdmin[] memory rtn = new ClassroomAdmin[](
             registeredClassroomAdminIds.length
         );
@@ -233,31 +211,14 @@ contract TeachContract is AccessControl {
         return rtn;
     }
 
-    // update
-
-    function updateClassroomAdmin(
-        address _walletAddress,
-        uint256[] memory _landIds // onlyRole(LAND_OPERATOR) TODO: development only.
-    ) public {
-        // check caller is entitled to land TODO
-
-        require(hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ACCESS_DENIED);
-        require(
-            !areAnyLandIdsAssignedToClassroomAdmin(_landIds, _walletAddress),
-            ERR_OBJECT_EXISTS
-        );
-
-        // remove existing mappings
-        unregisterClassroomAdmin(_walletAddress);
-        // recreate with same wallet address
-        registerClassroomAdmin(_walletAddress, _landIds);
-    }
-
     // delete
 
     function deleteClassroomAdmin(address _walletAddress) public {
         // check caller is entitled to land TODO
-        require(hasRole(CLASSROOM_ADMIN, _walletAddress), ERR_ACCESS_DENIED);
+        require(
+            hasRole(roleMap.classroomAdmin, _walletAddress),
+            ERR_ACCESS_DENIED
+        );
         // remove existing mappings
         unregisterClassroomAdmin(_walletAddress);
     }
@@ -269,7 +230,7 @@ contract TeachContract is AccessControl {
         string memory _name,
         uint256[] memory _landIds,
         string memory guid
-    ) public onlyRole(CLASSROOM_ADMIN) {
+    ) public onlyRole(roleMap.classroomAdmin) {
         require(
             checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, _landIds),
             ERR_OBJECT_EXISTS
@@ -287,7 +248,7 @@ contract TeachContract is AccessControl {
         string memory _name,
         int[][] memory coordinatePairs,
         string memory guid
-    ) public onlyRole(CLASSROOM_ADMIN) {
+    ) public onlyRole(roleMap.classroomAdmin) {
         uint256[] memory landIds = new uint256[](coordinatePairs.length);
         for (uint256 i = 0; i < coordinatePairs.length; i++) {
             landIds[i] = landRegistry.encodeTokenId(
@@ -302,7 +263,7 @@ contract TeachContract is AccessControl {
     function getClassrooms()
         public
         view
-        onlyRole(CLASSROOM_ADMIN)
+        onlyRole(roleMap.classroomAdmin)
         returns (Classroom[] memory)
     {
         uint256[] memory classroomIds = idsToObjects
@@ -325,14 +286,14 @@ contract TeachContract is AccessControl {
         Classroom memory rtn = idsToObjects.classroom[id];
         bool entitledToViewClassroom = false;
 
-        if (hasRole(TEACHER, msg.sender)) {
+        if (hasRole(roleMap.teacher, msg.sender)) {
             for (uint256 i = 0; i < rtn.teacherIds.length; i++) {
                 if (msg.sender == rtn.teacherIds[i]) {
                     entitledToViewClassroom = true;
                     break;
                 }
             }
-        } else if (hasRole(CLASSROOM_ADMIN, msg.sender)) {
+        } else if (hasRole(roleMap.classroomAdmin, msg.sender)) {
             entitledToViewClassroom = walletOwnsClassroom(msg.sender, id);
         }
         require(entitledToViewClassroom, ERR_OBJECT_ACCESS);
@@ -340,32 +301,10 @@ contract TeachContract is AccessControl {
         return rtn;
     }
 
-    // update
-    function updateClassroom(
-        uint256 id,
-        string memory name,
-        uint256[] memory landIds
-    ) public onlyRole(CLASSROOM_ADMIN) {
-        // check you're entitled to this classroom
-        require(walletOwnsClassroom(msg.sender, id), ERR_OBJECT_ACCESS);
-        require(
-            checkLandIdsSuitableToBeAssignedToClassroom(msg.sender, landIds),
-            ERR_OBJECT_EXISTS
-        );
-        Classroom memory originalClassroom = idsToObjects.classroom[id];
-
-        unregisterClassroom(id);
-        registerClassroom(
-            id,
-            name,
-            landIds,
-            msg.sender,
-            originalClassroom.guid
-        );
-    }
-
     // delete
-    function deleteClassroom(uint256 id) public onlyRole(CLASSROOM_ADMIN) {
+    function deleteClassroom(
+        uint256 id
+    ) public onlyRole(roleMap.classroomAdmin) {
         // check you're entitled to this classroom
         require(walletOwnsClassroom(msg.sender, id), ERR_OBJECT_ACCESS);
         unregisterClassroom(id);
@@ -376,7 +315,7 @@ contract TeachContract is AccessControl {
     function createTeacher(
         address walletAddress,
         uint256[] memory classroomIds
-    ) public onlyRole(CLASSROOM_ADMIN) {
+    ) public onlyRole(roleMap.classroomAdmin) {
         // check classroom ids belong to this
         // classroom admin
         require(
@@ -393,7 +332,7 @@ contract TeachContract is AccessControl {
     function getTeachers()
         public
         view
-        onlyRole(CLASSROOM_ADMIN)
+        onlyRole(roleMap.classroomAdmin)
         returns (Teacher[] memory)
     {
         address[] memory teacherIds = idsToObjects
@@ -407,40 +346,23 @@ contract TeachContract is AccessControl {
     }
 
     function getTeacher(address id) public view returns (Teacher memory) {
-        require(registeredIds.teacherBool[id], ERR_OBJECT_ACCESS);
+        require(hasRole(roleMap.teacher, id), ERR_OBJECT_ACCESS);
         Teacher memory rtn = idsToObjects.teacher[id];
         bool entitledToViewTeacher = false;
 
-        if (hasRole(TEACHER, msg.sender)) {
+        if (hasRole(roleMap.teacher, msg.sender)) {
             if (msg.sender == id) {
                 entitledToViewTeacher = true;
             }
-        } else if (hasRole(CLASSROOM_ADMIN, msg.sender)) {
+        } else if (hasRole(roleMap.classroomAdmin, msg.sender)) {
             entitledToViewTeacher = walletOwnsTeacher(msg.sender, id);
         }
         require(entitledToViewTeacher, ERR_OBJECT_ACCESS);
         return rtn;
     }
 
-    // update
-    function updateTeacher(
-        address id,
-        uint256[] memory classroomIds
-    ) public onlyRole(CLASSROOM_ADMIN) {
-        requireWalletOwnsTeacher(msg.sender, id);
-        require(
-            checkClassroomIdsSuitableToBeAssignedToTeacher(
-                msg.sender,
-                classroomIds
-            ),
-            ERR_OBJECT_EXISTS
-        );
-
-        _updateTeacher(id, classroomIds);
-    }
-
     // delete
-    function deleteTeacher(address id) public onlyRole(CLASSROOM_ADMIN) {
+    function deleteTeacher(address id) public onlyRole(roleMap.classroomAdmin) {
         requireWalletOwnsTeacher(msg.sender, id);
         unregisterTeacher(id);
     }
@@ -449,7 +371,7 @@ contract TeachContract is AccessControl {
     function getClassroomGuid(
         int x,
         int y
-    ) public view onlyRole(TEACHER) returns (string memory) {
+    ) public view onlyRole(roleMap.teacher) returns (string memory) {
         // does the teacher have access to this classroom from the supplied coordinates?
         Teacher memory teacher = idsToObjects.teacher[msg.sender];
         uint256 callingLandId = landRegistry.encodeTokenId(x, y);
@@ -621,9 +543,7 @@ contract TeachContract is AccessControl {
             classroomIds: emptyUintList,
             teacherIds: emptyAddressList
         });
-        registeredIds.classroomAdmin.push(_walletAddress);
-        registeredIds.classroomAdminBool[_walletAddress] = true;
-        grantRole(CLASSROOM_ADMIN, _walletAddress);
+        toggleRole(_walletAddress, roleMap.classroomAdmin, true);
         // landIds automatically registered in require
     }
 
@@ -642,12 +562,7 @@ contract TeachContract is AccessControl {
         }
 
         delete idsToObjects.classroomAdmin[_walletAddress];
-        removeAddressFromArrayMaintainOrder(
-            registeredIds.classroomAdmin,
-            _walletAddress
-        );
-        delete registeredIds.classroomAdminBool[_walletAddress];
-        revokeRole(CLASSROOM_ADMIN, _walletAddress);
+        toggleRole(_walletAddress, roleMap.classroomAdmin, false);
     }
 
     function registerClassroom(
@@ -727,7 +642,7 @@ contract TeachContract is AccessControl {
     ) private {
         // they could already be registered by another classroom admin
         // in which case we need to update them
-        if (registeredIds.teacherBool[_walletAddress]) {
+        if (hasRole(roleMap.teacher, _walletAddress)) {
             // they are already registered with another CA
             idsToObjects.teacher[_walletAddress].classroomAdminIds.push(
                 msg.sender
@@ -740,9 +655,11 @@ contract TeachContract is AccessControl {
                 classroomIds: _classroomIds,
                 classroomAdminIds: classroomAdminsWallets
             });
-            registeredIds.teacher.push(_walletAddress);
-            registeredIds.teacherBool[_walletAddress] = true;
-            grantRole(TEACHER, _walletAddress);
+            toggleRole(
+                _walletAddress,
+                roleMap.teacher,
+                true
+            );
         }
         // associate with classrooms
         for (uint256 i = 0; i < _classroomIds.length; i++) {
@@ -753,30 +670,32 @@ contract TeachContract is AccessControl {
         idsToObjects.classroomAdmin[msg.sender].teacherIds.push(_walletAddress);
     }
 
-    function unregisterTeacher(address _id) private {
-        Teacher memory teacher = idsToObjects.teacher[_id];
+    function unregisterTeacher(address _walletAddress) private {
+        Teacher memory teacher = idsToObjects.teacher[_walletAddress];
         uint256 classroomAdminCount = teacher.classroomAdminIds.length;
 
         removeAddressFromArrayMaintainOrder(
             idsToObjects.classroomAdmin[msg.sender].teacherIds,
-            _id
+            _walletAddress
         );
         removeAddressFromArrayMaintainOrder(
-            idsToObjects.teacher[_id].classroomAdminIds,
+            idsToObjects.teacher[_walletAddress].classroomAdminIds,
             msg.sender
         );
 
         if (classroomAdminCount == 1) {
-            removeAddressFromArrayMaintainOrder(registeredIds.teacher, _id);
-            delete registeredIds.teacherBool[_id];
+            toggleRole(
+                _walletAddress,
+                roleMap.teacher,
+                false
+            );
             for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
                 removeAddressFromArrayMaintainOrder(
                     idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
-                    _id
+                    _walletAddress
                 );
             }
-            delete idsToObjects.teacher[_id];
-            revokeRole(TEACHER, teacher.walletAddress);
+            delete idsToObjects.teacher[_walletAddress];
         }
     }
 
@@ -883,5 +802,48 @@ contract TeachContract is AccessControl {
             size := extcodesize(addr)
         }
         return size > 0;
+    }
+
+    /*
+     *    Grant or revoke role based on grant flag
+     */
+    function toggleRole(
+        address beneficiary,
+        RoleDetail storage roleDetail,
+        bool grant
+    ) private {
+        if (grant) {
+            roleDetail.addressArray.push(beneficiary);
+            roleDetail.boolMapping[beneficiary] = true;
+        } else {
+            removeAddressFromArrayMaintainOrder(
+                roleDetail.addressArray,
+                beneficiary
+            );
+            delete roleDetail.boolMapping[beneficiary];
+        }
+    }
+
+    function hasRole(
+        RoleDetail storage roleDetail,
+        address user
+    ) internal view returns (bool) {
+        return roleDetail.boolMapping[user];
+    }
+
+    modifier onlyRole(RoleDetail storage roleDetail) {
+        require(
+            roleDetail.boolMapping[msg.sender] == true,
+            "You lack the appropriate role to call this function"
+        );
+        _;
+    }
+
+    modifier onlyOwner() {
+        require(
+            msg.sender == owner,
+            "You lack the appropriate role to call this function"
+        );
+        _;
     }
 }
