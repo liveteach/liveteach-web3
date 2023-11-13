@@ -43,7 +43,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser).createTeacher(randomWallet, [1]))
       .to.be.revertedWith(
-        "AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b"
+        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -92,7 +92,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser2).getTeachers())
       .to.be.revertedWith(
-        "AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b"
+        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -171,94 +171,6 @@ describe("TeachContractTeacher", function () {
     assert.equal([otherUser3.address].toString(), classroom.teacherIds);
   });
 
-  // // update
-  it("Classroom admin can update a teacher's classrooms", async function () {
-
-    await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
-
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await teachContract.connect(otherUser).updateTeacher(randomWallet, [1, 2]);
-    teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal([1n, 2n].toString(), teacher.classroomIds.toString());
-
-    await teachContract.connect(otherUser).updateTeacher(randomWallet, [1, 2]);
-    teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal([1n, 2n].toString(), teacher.classroomIds.toString());
-  });
-
-  it("Non classroom admin cannot update a teacher's classrooms", async function () {
-
-    await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
-
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser2).updateTeacher(randomWallet, [1, 2]))
-      .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
-  });
-
-  it("Classroom admin cannot update another classroom admin's teachers", async function () {
-
-    await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(operator).createClassroomAdmin(otherUser2, [5, 6]);
-
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [2, 3], getGuid());
-
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser2).updateTeacher(randomWallet, [1, 2]))
-      .to.be.revertedWith("Object doesn't exist or you don't have access to it.");
-  });
-
-  it("Classroom admin cannot update a teacher's classrooms to classrooms that doesn't belong to them", async function () {
-
-    await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(operator).createClassroomAdmin(otherUser2, [5, 6]);
-
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
-    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6], getGuid());
-
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal([1n].toString(), teacher.classroomIds.toString());
-    await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [5]))
-      .to.be.revertedWith("Provided id invalid.");
-  });
-
-  it("Classroom admin cannot update a teacher's classrooms to classrooms that don't exist", async function () {
-
-    await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
-    await teachContract.connect(operator).createClassroomAdmin(otherUser2, [5, 6]);
-
-    await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1], getGuid());
-    await teachContract.connect(otherUser2).createClassroomLandIds("Test Classroom 2", [5, 6], getGuid());
-
-    await teachContract.connect(otherUser).createTeacher(randomWallet, [1]);
-
-    let teacher = await teachContract.connect(otherUser).getTeacher(randomWallet);
-    assert.equal(randomWallet, teacher.walletAddress);
-    assert.equal([1n].toString(), teacher.classroomIds.toString());
-
-    await expect(teachContract.connect(otherUser).updateTeacher(randomWallet, [99]))
-      .to.be.revertedWith("Provided id invalid.");
-
-  });
   // // delete
   it("Classroom admin can delete their own teachers", async function () {
 
@@ -285,7 +197,7 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
 
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
-      .to.be.revertedWith("AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x8fae52bd529c983ddf22c97f6ce088aa2f77daae61682d55801fab9144bd3e4b");
+      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
 
   });
 

@@ -35,16 +35,17 @@ describe("TeachContractClassroomAdmin", function () {
     assert.equal(4, result.landCoordinates.length);
   });
 
-  it("Cannot create a classroom admin with already assigned land ids.", async function () {
+  it("Can create a classroom admin with already assigned land ids.", async function () {
     await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
-    await expect(teachContract.connect(operator).createClassroomAdmin(user2, [4, 5]))
-      .to.be.revertedWith("Provided id invalid.");
+    await teachContract.connect(operator).createClassroomAdmin(user2, [4, 5]);
+    let result = await teachContract.connect(owner).getClassroomAdmin(user2);
+    assert.equal(2, result.landCoordinates.length);
   });
 
   it("Cannot create a double classroom admin", async function () {
     await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
     await expect(teachContract.connect(operator).createClassroomAdmin(user1, [4, 5]))
-      .to.be.revertedWith("Provided wallet already has role.");
+      .to.be.revertedWith("Provided wallet already has role: CLASSROOM_ADMIN");
   });
 
   it("Can get all classroom admins", async function () {
@@ -76,33 +77,6 @@ describe("TeachContractClassroomAdmin", function () {
   it("Cannot get single non existing classroom admin", async function () {
     await expect(teachContract.connect(owner).getClassroomAdmin(user1.address))
       .to.be.revertedWith("Classroom admin not found.");
-  });
-
-
-  it("Can update existing classroom admin", async function () {
-    await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
-    let result = await teachContract.connect(owner).getClassroomAdmin(user1);
-    assert.equal(user1.address, result.walletAddress);
-    assert.equal([1n, 2n, 3n, 4n].toString(), result.landIds.toString());
-    await teachContract.connect(owner).updateClassroomAdmin(user1, [5, 6]);
-    result = await teachContract.connect(owner).getClassroomAdmin(user1);
-    assert.equal(user1.address, result.walletAddress);
-    assert.equal([5n, 6n].toString(), result.landIds.toString());
-  });
-
-  it("Cannot update existing classroom admin with already assigned land ids", async function () {
-    await teachContract.connect(operator).createClassroomAdmin(user2, [5, 6]);
-    await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
-    let result = await teachContract.connect(owner).getClassroomAdmin(user1);
-    assert.equal(user1.address, result.walletAddress);
-    assert.equal([1n, 2n, 3n, 4n].toString(), result.landIds.toString());
-    await expect(teachContract.connect(owner).updateClassroomAdmin(user1, [5, 6]))
-      .to.be.revertedWith("Provided id invalid.");
-  });
-
-  it("Cannot update a non classroom admin", async function () {
-    await expect(teachContract.connect(owner).updateClassroomAdmin(user1, [5, 6]))
-      .to.be.revertedWith("Provided wallet lacks appropriate role.");
   });
 
   it("Can delete classroom admin", async function () {
