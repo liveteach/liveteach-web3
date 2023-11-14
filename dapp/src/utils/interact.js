@@ -312,6 +312,11 @@ export const getUserRoles = async () => {
     if (held && isNaN(role))
       rtn.push(role);
   }
+  // everyone is a landOperator
+  // they can only create / view / delete
+  // if they have land permissions.
+  rtn.push("landOperator");
+
   return rtn;
 }
 ////
