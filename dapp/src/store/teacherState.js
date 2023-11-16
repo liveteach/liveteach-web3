@@ -13,7 +13,9 @@ export const teacherStateSlice = createSlice({
             guid: ""
         },
         newClassReference: "",
-        newClassDescription: ""
+        newClassDescription: "",
+        ipfsUrl: "",
+        jwtToken: ""
     },
     reducers: {
         setWalletAddress: (state, action)=> {
@@ -33,6 +35,12 @@ export const teacherStateSlice = createSlice({
         },
         setNewClassDescription: (state,action) => {
             state.newClassDescription = action.payload
+        },
+        setIpfsUrl: (state, action) => {
+            state.ipfsUrl = action.payload
+        },
+        setJwtToken: (state, action) => {
+            state.jwtToken = action.payload
         }
     }
 });
@@ -42,6 +50,8 @@ export const { setWalletAddress,
     setSelectedClass,
     setClassIds,
     setNewClassReference,
-    setNewClassDescription} = teacherStateSlice.actions;
+    setNewClassDescription,
+    setIpfsUrl,
+    setJwtToken} = teacherStateSlice.actions;
 
 export default teacherStateSlice.reducer;
