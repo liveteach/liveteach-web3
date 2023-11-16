@@ -37,7 +37,7 @@ export default function Teacher(props){
                 dispatch(setClassIds(result.classroomIds))
             })
         }
-    },[])
+    },[roles])
 
     return(
         <div className="ui container">
