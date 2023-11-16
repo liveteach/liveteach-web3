@@ -68,6 +68,7 @@ export function AddClass(props){
 
 
     const classTemplate = {
+        pinataContent: {
         "content": {
             "id": selectedClass.id,
             "guid": selectedClass.guid,
@@ -76,7 +77,8 @@ export function AddClass(props){
             "images": fields,
             "videos": videoFields,
             "models": model
-        }
+        }},
+        pinataMetadata: {name: selectedClass.guid}
     };
 
 
@@ -96,9 +98,8 @@ export function AddClass(props){
 
     const handlePublish = () => {
         document.getElementById("ipfsPending").style.display = 'block';
-        const jsonData = JSON.stringify(classTemplate, null, 2);
 
-        pinJSONToIPFS(jsonData, dispatch, jwtToken).then(response => {
+        pinJSONToIPFS(classTemplate, dispatch, jwtToken).then(response => {
             console.log(response)
         })
     }
