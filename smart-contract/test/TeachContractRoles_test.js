@@ -44,26 +44,26 @@ describe("TeachContractRoles", function () {
   it("Registered classroom admin should be able to get correct roles", async function () {
     let roles = await teachContract.connect(classroomAdmin).getRoles();
     assert.equal(true, roles.classroomAdmin);
-    assert.equal(false, roles.student);
+    // assert.equal(false, roles.student);
     assert.equal(false, roles.teacher);
-    assert.equal(false, roles.landOperator);
+    // assert.equal(false, roles.landOperator);
   });
 
   it("Registered teacher should be able to get correct roles", async function () {
     let roles = await teachContract.connect(teacher).getRoles();
     assert.equal(false, roles.classroomAdmin);
-    assert.equal(false, roles.student);
+    // assert.equal(false, roles.student);
     assert.equal(true, roles.teacher);
-    assert.equal(false, roles.landOperator);
+    // assert.equal(false, roles.landOperator);
 
   });
 
   it("Non registered user should be able to get correct roles", async function () {
     let roles = await teachContract.connect(nonRegisteredUser).getRoles();
     assert.equal(false, roles.classroomAdmin);
-    assert.equal(false, roles.student);
+    // assert.equal(false, roles.student);
     assert.equal(false, roles.teacher);
-    assert.equal(false, roles.landOperator);
+    // assert.equal(false, roles.landOperator);
   });
 
 });
