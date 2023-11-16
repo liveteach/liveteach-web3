@@ -1,42 +1,84 @@
-import {Grid, TextField, Button, ButtonGroup} from "@mui/material";
+import {Grid, TextField, Button, ButtonGroup, Modal} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
-import {setNewClassReference, setNewClassDescription} from "../../../store/teacherState";
+import {setNewClassReference, setNewClassDescription, setJwtToken} from "../../../store/teacherState";
 import {NoAdmittance} from "../NoAdmittance";
-import {useState} from "react";
+import React, {useState} from "react";
 import {AddFields} from "./additionalComponents/AddFields";
+import {pinJSONToIPFS} from "../../../utils/pinata";
+import {Typography} from "@material-ui/core";
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 export function AddClass(props){
 
-    const { newClassReference, newClassDescription, selectedClass } = useSelector((state) => state.teacher)
+    const { newClassDescription, selectedClass,ipfsUrl, jwtToken } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
-    const imgVidObjectStructure = { src: "", caption: "" };
-    const modelObjectStructure = { key: "" }
+    const imgVidObjectStructure = { src: "", caption: "", ratio: "" };
+    const modelObjectStructure = { src: "", position: { x: 0, y: 0, z: 0 }, scale: { x: 1,y: 1,z: 1 }, animations: [{clip: "", loop: false}], spin: false, replace: false }
+
+    const [open, setOpen] = useState(false)
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     const [fields,setFields] = useState([{
         src: "",
-        caption: ""
+        caption: "",
+        ratio: 0.0
     }]);
+
     const [videoFields,setVideoFields] = useState([{
         src: "",
-        caption: ""
+        caption: "",
+        ratio: 0.0
     }]);
+
     const [model, setModel] = useState([{
-        key:""
+        src: "",
+        position: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        scale: {
+            x: 1,
+            y: 1,
+            z: 1
+        },
+        animations: [
+            {
+                clip: "",
+                loop: false
+            }
+        ],
+        spin: false,
+        replace: false
     }])
+
 
     const classTemplate = {
         "content": {
             "id": selectedClass.id,
             "guid": selectedClass.guid,
-            "name": newClassReference,
+            "name": selectedClass.name,
             "description": newClassDescription,
             "images": fields,
             "videos": videoFields,
             "models": model
         }
-        };
+    };
+
 
     const handleDownload = () => {
         const jsonData = JSON.stringify(classTemplate, null, 2);
@@ -52,6 +94,14 @@ export function AddClass(props){
         URL.revokeObjectURL(url);
     };
 
+    const handlePublish = () => {
+        document.getElementById("ipfsPending").style.display = 'block';
+        const jsonData = JSON.stringify(classTemplate, null, 2);
+
+        pinJSONToIPFS(jsonData, dispatch, jwtToken).then(response => {
+            console.log(response)
+        })
+    }
 
     return (
         <div className="ui container">
@@ -60,12 +110,12 @@ export function AddClass(props){
                 <div className="ui container">
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
-                            <h4>Setup Class</h4>
+                            <h2>Setup Class</h2>
                         </div>
                         <div className="dcl tabs-right">
                             <Button
                                 onClick={() => {
-
+                                    handleOpen()
                                 }}
                                 className="ui small primary button"
                             >Publish</Button>
@@ -80,7 +130,14 @@ export function AddClass(props){
                         </div>
                     </div>
                 </div>
+                <div id="ipfsPending" style={{ display:'none'}}>
+                    <span  style={{color: 'green'}}>Pending..</span>
+                </div>
+                <div id="ipfsUrl" style={{display: 'none'}}>
+                    <span style={{color:'#ff2d55', fontSize: '20px'}}>Copy this URL to use before navigating away:</span> <a rel="noreferrer" target="_blank" href={ipfsUrl} style={{color: 'green'}}>{ipfsUrl}</a>
+                </div>
                 <Grid container>
+                <div className="ui container" style={{backgroundColor: '#37333d', padding: '20px', borderRadius: "10px"}}>
                     <Grid item xs={12}>
                         <div className={"inputFields"}>
                             <h4>Name</h4>
@@ -110,21 +167,22 @@ export function AddClass(props){
                             />
                         </div>
                     </Grid>
+                </div>
                     <div className="ui container">
                         <div className="dcl tabs">
-                            <h3>Images</h3>
+                            <h2>Images</h2>
                         </div>
                     </div>
                     <AddFields fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
-                            <h3>Videos</h3>
+                            <h2>Videos</h2>
                         </div>
                     </div>
                     <AddFields fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
-                            <h3>Models</h3>
+                            <h2>Models</h2>
                         </div>
                     </div>
                     <AddFields fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
@@ -133,6 +191,45 @@ export function AddClass(props){
             ) : (
                 <NoAdmittance/>
             )}
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <div className="ui page modals dimmer transition visible active SignIn center" >
+                    <div className="ui modal transition visible active " style={style}>
+                        <Typography className="dcl modal-navigation" variant="h6" component="h2">
+                            Please Enter your Pinata JWT
+                        </Typography>
+                        <div className="dcl modal-navigation-button modal-navigation-close" onClick={handleClose}>
+                        </div>
+                        <div style={{width: '80%', margin:'20px auto'}}  className="inputFields">
+                            <TextField
+                                fullWidth={true}
+                                label="JWT"
+                                className="textInput"
+                                value={jwtToken}
+                                onChange={(e) => {
+                                    dispatch(setJwtToken(e.target.value))
+                                }}
+                            />
+                        </div>
+
+                        <div style={{margin: '15px'}}>
+                            <Button
+                                className="ui small primary button"
+                                onClick={() => {
+                                    handlePublish()
+                                    handleClose()
+                                }}
+                            >
+                                Publish
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }

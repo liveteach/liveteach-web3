@@ -58,8 +58,8 @@
     width: 50%;
 }
 .jsonFields{
-    margin: 10px 0;
-    width: 50%;
+    margin: 20px 0;
+    width: 80%;
 }
 .textInput{
     background-color: white;
@@ -160,4 +160,8 @@
 
 .coordinate-item:hover .tooltip {
     visibility: visible;
+}
+
+h4{
+    color: #a09ba8!important;
 }
