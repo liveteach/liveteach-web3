@@ -221,6 +221,59 @@ export function AddFields(props){
                                     </div>
                                 </Grid>
                             </Grid>
+                            <h4>Animations:</h4>
+                                {
+                                    field.animations.map((field, indexAnim) => {
+                                        return <Grid container>
+                                            <h4>{String.fromCharCode(97 + indexAnim)}.</h4>
+                                            {
+                                                field.hasOwnProperty("clip") && <Grid item xs={6}>
+                                                    <div className={"jsonFields"}>
+                                                        <h4>Clip</h4>
+                                                        <TextField
+                                                            fullWidth={true}
+                                                            className="textInput"
+                                                            color="error"
+                                                            name="clip"
+                                                            value={field.clip}
+                                                            onChange={e => handleChangeAnimationInput(index, indexAnim, e)}
+                                                        />
+                                                    </div>
+                                                </Grid>
+                                            }
+                                            {
+                                                field.hasOwnProperty("loop") && <Grid item xs={6}>
+                                                    <div className={"jsonFields"}>
+                                                        <h4>Loop</h4>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={field.loop}
+                                                            name="loop"
+                                                            onChange={(e) => {
+                                                                handleAnimationCheckbox(index, indexAnim, e)
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </Grid>
+                                            }
+                                            <Grid item xs={3}>
+                                                <div className={"jsonFields"}>
+                                                    <h4>Add/Remove Fields</h4>
+                                                    <ButtonGroup>
+                                                        <Button
+                                                            variant="contained"
+                                                            onClick={() => handleAddAnimation(index, props.fields, props.setFields, animationObjectStructure)}
+                                                        > + </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            onClick={() => handleSubAnimation(index, indexAnim, props.fields, props.setFields)}
+                                                        > - </Button>
+                                                    </ButtonGroup>
+                                                </div>
+                                            </Grid>
+                                        </Grid>
+                                    })
+                                }
                             </div>
                         }
                         {
@@ -273,63 +326,9 @@ export function AddFields(props){
                                         </div>
                                     </Grid>
                                 </Grid>
-                            <Grid container>
-                                <Grid item>
-                                    {
-                                        field.animations.map((field, indexAnim) => {
-                                            return <Grid container>
-                                                {
-                                                    field.hasOwnProperty("clip") && <Grid item xs={3}>
-                                                        <div className={"jsonFields"}>
-                                                            <h4>Clip</h4>
-                                                            <TextField
-                                                                fullWidth={true}
-                                                                className="textInput"
-                                                                color="error"
-                                                                name="clip"
-                                                                value={field.clip}
-                                                                onChange={e => handleChangeAnimationInput(index, indexAnim, e)}
-                                                            />
-                                                        </div>
-                                                    </Grid>
-                                                }
-                                                {
-                                                    field.hasOwnProperty("loop") && <Grid item xs={3}>
-                                                        <div className={"jsonFields"}>
-                                                            <h4>Loop</h4>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={field.loop}
-                                                                name="loop"
-                                                                onChange={(e) => {
-                                                                    handleAnimationCheckbox(index, indexAnim, e)
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </Grid>
-                                                }
-                                                <Grid item xs={3}>
-                                                    <div className={"jsonFields"}>
-                                                        <h4>Add/Remove Fields</h4>
-                                                        <ButtonGroup>
-                                                            <Button
-                                                                variant="contained"
-                                                                onClick={() => handleAddAnimation(index, props.fields, props.setFields, animationObjectStructure)}
-                                                            > + </Button>
-                                                            <Button
-                                                                variant="contained"
-                                                                onClick={() => handleSubAnimation(index, indexAnim, props.fields, props.setFields)}
-                                                            > - </Button>
-                                                        </ButtonGroup>
-                                                    </div>
-                                                </Grid>
-                                            </Grid>
-                                        })
-                                    }
-                                </Grid>
-                            </Grid>
                             </div>
                         }
+
                         <Divider />
 
                     </Grid>
