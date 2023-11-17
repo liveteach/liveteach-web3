@@ -1,18 +1,15 @@
 const { ethers } = require("hardhat");
 
-const DEPLOYED_ADDRESS = '0x09182b67EdfdafBc241F7FC993C4fa39aF569cF9'
-const LAND_REGISTRY_ADDRESS = '0xA09F9f8079Ae76428dC8F258096776b1dAD9Fd13'
+const DEPLOYED_ADDRESS = '0x2393217785EcF12A6E8a4Fd3F6a23f58323e4D31'
+const LAND_REGISTRY_ADDRESS = '0xE7646e8273A84c2DDBA6665627b003CF4CeEb24c'
 
 /*  LAND Registry I have deployed, I removed the only Authorized checks
     I don't seem to be able to get round them in test. 
 */
-const LAND_OWNER_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
+const LAND_OWNER_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26'.toLowerCase() // shared
 const LAND_OPERATOR_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26' // shared
 const CLASSROOM_ADMIN_WALLET = '0xF6D7e21Ae74559F6A8A63A8937a0e2EB87F7a255' // qa
 const TEACHER_1_WALLET = '0xbEA7Ad6cdb932fD81EB386cc9BD21E426b99cB37' // qa
-const TEACHER_2_WALLET = '0x456a04125aEC71F06352EE4eA62A9499ACED6e74' // frankie
-
-// const QA_WALLET = '0xbEA7Ad6cdb932fD81EB386cc9BD21E426b99cB37'
 
 
 const CLASSROOM_1_GUID = '8cb23bef-b5b0-4461-8ddb-2813b5a802bd'
@@ -34,16 +31,20 @@ async function main() {
     // await setLandRegistry();
     // await grantLandPermissions();
     // await createClassroomAdmin();
-    let teacher1LandIds = await getLandIdsFromCoordinates(TEACHER_1_COORDINATES);
     // let teacher2LandIds = await getLandIdsFromCoordinates(TEACHER_2_COORDINATES);
-    await createClassroomLandIds("QA Classroom 1", teacher1LandIds, CLASSROOM_1_GUID);
-    // await createClassroomLandIds("Frankie's Classroom 2", teacher2LandIds, CLASSROOM_2_GUID);
+    // await createClassroomLandIds("QA Classroom 1", teacher2LandIds, CLASSROOM_1_GUID);
 
     // await createTeacher(TEACHER_1_WALLET, [1]);
     // await createTeacher(TEACHER_2_WALLET, [2]);
+    await callTest();
 }
 
 main();
+
+async function callTest() {
+    let rtn = await contract.getClassroomGuid(-55,1);
+    console.log(rtn);
+}
 
 
 function coordinatePairsToXYForLandRegistry(coordinatePairs) {

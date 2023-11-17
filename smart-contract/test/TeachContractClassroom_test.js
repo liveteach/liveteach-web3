@@ -42,7 +42,7 @@ describe("TeachContractClassroom", function () {
 
   it("Non classroom admin cannot create classroom", async function () {
     await expect(teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid()))
-      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
+      .to.be.revertedWith("You " + otherUser.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN");
   });
 
   it("Classroom admin cannot create classroom with unregistered landIds", async function () {
@@ -132,7 +132,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1], getGuid());
     await expect(teachContract.connect(otherUser2).getClassrooms())
-      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
+      .to.be.revertedWith("You " + otherUser2.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN");
   });
 
   it("Classroom admin cannot get data about another classroom admin's classrooms", async function () {
@@ -197,7 +197,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], getGuid());
     await expect(teachContract.connect(otherUser2).deleteClassroom(1))
-      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
+      .to.be.revertedWith("You " + otherUser2.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN");
     let allClassrooms = await teachContract.connect(otherUser).getClassrooms();
     assert.equal(1, allClassrooms.length);
     let result = await teachContract.connect(otherUser).getClassroom(1);
@@ -236,7 +236,7 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], guid);
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
     await expect(teachContract.connect(otherUser3).getClassroomGuid(0, 1))
-      .to.be.revertedWith("You lack the appropriate role to call this function: TEACHER");
+      .to.be.revertedWith("You " + otherUser3.address.toLowerCase() + " are not authorised to use this classroom.");
   });
 
 
@@ -255,9 +255,70 @@ describe("TeachContractClassroom", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser3, [2]);
 
     await expect(teachContract.connect(otherUser2).getClassroomGuid(1, 1))
-      .to.be.revertedWith("You are not authorised to use this classroom.");
+      .to.be.revertedWith("You " + otherUser2.address.toLowerCase() + " are not authorised to use this classroom.");
   });
 
+  // TODO: Move these tests to seperate contract
+  // it("Teacher can get / set the classroom config url", async function () {
+  //   let guid = getGuid();
+  //   let result;
+  //   await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2]);
+  //   await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], guid);
+
+  //   await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
+
+  //   result = await teachContract.connect(otherUser2).getClassroomConfigUrl(guid);
+  //   assert.equal("Config url not yet set for this classroom", result);
+
+  //   let expectedJsonUrl = "https://frankieclassroomjson.com/c1.json";
+  //   await teachContract.connect(otherUser2).setClassroomConfigUrl(guid, expectedJsonUrl);
+
+  //   result = await teachContract.connect(otherUser2).getClassroomConfigUrl(guid);
+  //   assert.equal(result, expectedJsonUrl);
+  // });
+
+
+  // it("Teacher cannot get / set a classroom config url that doesn't belong to them", async function () {
+  //   let guid = getGuid();
+  //   let guid2 = getGuid();
+
+  //   await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 5, 6]);
+  //   await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], guid);
+  //   await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 2", [5, 6], guid2);
+
+  //   await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
+  //   await teachContract.connect(otherUser).createTeacher(otherUser3, [2]);
+
+  //   await expect(teachContract.connect(otherUser3).getClassroomConfigUrl(guid))
+  //     .to.be.revertedWith(
+  //       "Object doesn't exist or you don't have access to it."
+  //     );
+
+  //   let expectedJsonUrl = "https://frankieclassroomjson.com/c1.json";
+  //   await expect(teachContract.connect(otherUser3).setClassroomConfigUrl(guid, expectedJsonUrl))
+  //     .to.be.revertedWith(
+  //       "Object doesn't exist or you don't have access to it."
+  //     );
+  // });
+
+
+  // it("Non teacher cannot get / set the classroom config url", async function () {
+  //   let guid = getGuid();
+
+  //   await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2]);
+  //   await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom 1", [1, 2], guid);
+  //   await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
+  //   await expect(teachContract.connect(otherUser3).getClassroomConfigUrl(guid))
+  //     .to.be.revertedWith(
+  //       "You " + otherUser3.address.toLowerCase() + " lack the appropriate role to call this function: TEACHER"
+  //     );
+
+  //   let expectedJsonUrl = "https://frankieclassroomjson.com/c1.json";
+  //   await expect(teachContract.connect(otherUser3).setClassroomConfigUrl(guid, expectedJsonUrl))
+  //     .to.be.revertedWith(
+  //       "You " + otherUser3.address.toLowerCase() + " lack the appropriate role to call this function: TEACHER"
+  //     );
+  // });
 });
 
 function getGuid() {
