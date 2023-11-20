@@ -27,7 +27,7 @@ export function AddClass(props){
     const dispatch = useDispatch()
     const imgVidObjectStructure = { src: "", caption: "", ratio: "" };
     const modelObjectStructure = { src: "", position: { x: 0, y: 0, z: 0 }, scale: { x: 1,y: 1,z: 1 }, animations: [{clip: "", loop: false}], spin: false, replace: false }
-
+    const pollStructure = { key: "poll", data: { title: "", options: [ "" ] }}
     const [open, setOpen] = useState(false)
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -66,6 +66,16 @@ export function AddClass(props){
         replace: false
     }])
 
+    const [poll, setPoll] = useState([{
+        key: "poll",
+        data: {
+            title: "",
+            options: [
+                "",
+            ]
+        }
+    }])
+
 
     const classTemplate = {
         pinataContent: {
@@ -76,7 +86,8 @@ export function AddClass(props){
             "description": newClassDescription,
             "images": fields,
             "videos": videoFields,
-            "models": model
+            "models": model,
+            "contentUnits": poll
         }},
         pinataMetadata: {name: selectedClass.guid}
     };
@@ -187,6 +198,12 @@ export function AddClass(props){
                         </div>
                     </div>
                     <AddFields fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h2>Polls</h2>
+                        </div>
+                    </div>
+                    <AddFields fields={poll} setFields={setPoll} objStructure={pollStructure}/>
                 </Grid>
             </div>
             ) : (

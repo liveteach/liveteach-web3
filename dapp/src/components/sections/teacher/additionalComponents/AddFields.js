@@ -1,5 +1,6 @@
 import {Button, ButtonGroup, Grid, TextField} from "@mui/material";
 import Divider from '@mui/material/Divider';
+import {PollCreation} from "./PollCreation";
 
 export function AddFields(props){
 
@@ -49,7 +50,6 @@ export function AddFields(props){
         }
     }
 
-
     function handleAddAnimation(parentIndex, array, func, objectStructure) {
         const newObj = { ...objectStructure };
         const updatedModel = [...array];
@@ -67,6 +67,7 @@ export function AddFields(props){
         }
     }
 
+
     return(
         <div className="ui container" style={{backgroundColor: '#37333d', padding: '20px', borderRadius: "10px"}}>
             {
@@ -81,19 +82,21 @@ export function AddFields(props){
                             <h4>{index +1}.</h4>
                         </Grid>
 
-                        <Grid item xs={3}>
-                            <div className={"jsonFields"}>
-                                <h4>{field.hasOwnProperty("src") ? "Source" : "Key"}</h4>
-                                <TextField
-                                    fullWidth={true}
-                                    className="textInput"
-                                    color="error"
-                                    value={field.hasOwnProperty("src") ? field.src : field.key}
-                                    name={field.hasOwnProperty("src") ? "src" : "key"}
-                                    onChange={e => handleChangeInput(index, e)}
-                                />
-                            </div>
-                        </Grid>
+                        {
+                            field.hasOwnProperty("src") && <Grid item xs={3}>
+                                <div className={"jsonFields"}>
+                                    <h4>Source</h4>
+                                    <TextField
+                                        fullWidth={true}
+                                        className="textInput"
+                                        color="error"
+                                        value={field.src}
+                                        name="src"
+                                        onChange={e => handleChangeInput(index, e)}
+                                    />
+                                </div>
+                            </Grid>
+                        }
                         {
                             field.hasOwnProperty("caption") &&  <Grid item xs={3}>
                                 <div className={"jsonFields"}>
@@ -154,6 +157,9 @@ export function AddFields(props){
                                     />
                                 </div>
                             </Grid>
+                        }
+                        {
+                            field.hasOwnProperty("data") && <PollCreation index={index} field={field} fields={props.fields} setFields={props.setFields} objStructure={props.objStructure}/>
                         }
                         <Grid item xs={3}>
                             <div className={"jsonFields"}>
@@ -328,6 +334,7 @@ export function AddFields(props){
                                 </Grid>
                             </div>
                         }
+
 
                         <Divider />
 
