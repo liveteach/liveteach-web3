@@ -1,6 +1,7 @@
 import pageOne from "../components/markdown/test.md";
 import classroomAdminClassrooms from "../components/markdown/classroomAdmin/classroomAdminClassrooms.md";
 import classroomAdminTeachers  from "../components/markdown/classroomAdmin/classroomAdminTeachers.md";
+import teacherConfigCreation from "../components/markdown/teacher/teacherConfigCreation.md";
 import pageTwo from "../components/markdown/thirdTest.md";
 import devMenuData from '../resource/devMenuData.json';
 import teacherMenuData from '../resource/teacherMenuData.json';
@@ -22,7 +23,7 @@ export const devDocs = (props) => {
 };
 
 export const teacherMarkup = {
-    page1: pageOne,
+    config: teacherConfigCreation,
     page2: pageTwo
 };
 

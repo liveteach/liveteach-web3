@@ -4,8 +4,8 @@
     "menuItems": [
       {
         "id": 41,
-        "label": "page1",
-        "link": "/docs/teacher/page1"
+        "label": "Config Creation",
+        "link": "/docs/teacher/config"
       },
       {
         "id": 43,
