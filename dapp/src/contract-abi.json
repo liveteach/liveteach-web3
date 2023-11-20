@@ -262,6 +262,11 @@
             "internalType": "string",
             "name": "guid",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "configUrl",
+            "type": "string"
           }
         ],
         "internalType": "struct TeachContract.Classroom",
@@ -422,6 +427,11 @@
             "internalType": "string",
             "name": "guid",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "configUrl",
+            "type": "string"
           }
         ],
         "internalType": "struct TeachContract.Classroom[]",
@@ -556,25 +566,6 @@
         "internalType": "struct TeachContract.Teacher[]",
         "name": "",
         "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_walletAddress",
-        "type": "address"
-      }
-    ],
-    "name": "isClassroomAdmin",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",

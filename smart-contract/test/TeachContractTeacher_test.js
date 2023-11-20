@@ -20,11 +20,20 @@ describe("TeachContractTeacher", function () {
     let landContractAddress = await landContract.target;
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
 
-    await landContract.connect(owner).assignMultipleParcels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 1], owner);
-    for (let i = 1; i < 22; i++) {
-      await landContract.connect(owner).approve(operator, i);
+
+    let parcels = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14], [0, 15], [0, 16], [0, 17], [0, 18], [0, 19], [0, 20], [0, 21], [1, 1], [-55, 1], [-55, 2], [-55, 3], [-55, 4]];
+    let xParcels = [];
+    let yParcels = [];
+    for (let i = 0; i < parcels.length; i++) {
+      let currentParcel = parcels[i];
+      xParcels.push(currentParcel[0]);
+      yParcels.push(currentParcel[1]);
     }
-    await landContract.connect(owner).approve(operator, 340282366920938463463374607431768211457n);
+    let assetIds =  await teachContract.connect(owner).getLandIdsFromCoordinates(parcels);
+    await landContract.connect(owner).assignMultipleParcels(xParcels, yParcels, owner);
+    for (let i = 0; i < assetIds.length; i++) {
+      await landContract.connect(owner).approve(operator, assetIds[i]);
+    }
 
   })
 
@@ -43,7 +52,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser).createTeacher(randomWallet, [1]))
       .to.be.revertedWith(
-        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
+        "You " + otherUser.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -92,7 +101,7 @@ describe("TeachContractTeacher", function () {
 
     await expect(teachContract.connect(otherUser2).getTeachers())
       .to.be.revertedWith(
-        "You lack the appropriate role to call this function: CLASSROOM_ADMIN"
+        "You " + otherUser2.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN"
       );
   });
 
@@ -131,8 +140,8 @@ describe("TeachContractTeacher", function () {
       );
   });
 
-  
-  it("Teacher can get data themselves", async function () {
+
+  it("Teacher can get data about themselves", async function () {
 
     await teachContract.connect(operator).createClassroomAdmin(otherUser, [1, 2, 3, 4]);
     await teachContract.connect(otherUser).createClassroomLandIds("Test Classroom", [1, 2, 3, 4], getGuid());
@@ -197,7 +206,9 @@ describe("TeachContractTeacher", function () {
     await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
 
     await expect(teachContract.connect(otherUser2).deleteTeacher(otherUser2))
-      .to.be.revertedWith("You lack the appropriate role to call this function: CLASSROOM_ADMIN");
+      .to.be.revertedWith(
+        "You " + otherUser2.address.toLowerCase() + " lack the appropriate role to call this function: CLASSROOM_ADMIN"
+        );
 
   });
 
@@ -224,6 +235,20 @@ describe("TeachContractTeacher", function () {
     assert.equal(guid, response);
 
   });
+
+  it("Teacher can get their classroom guid 2", async function () {
+    let guid = getGuid();
+    let coordinatePairs = [[-55, 1], [-55, 2], [-55, 3]];
+    let landIds = await teachContract.connect(operator).getLandIdsFromCoordinates(coordinatePairs);
+    landIds = Array.from(landIds); // Array.from is important here as the contract returns an object
+    await teachContract.connect(operator).createClassroomAdmin(otherUser, landIds);
+    await teachContract.connect(otherUser).createClassroomCoordinates("Test Classroom", coordinatePairs, guid);
+    await teachContract.connect(otherUser).createTeacher(otherUser2, [1]);
+    let response = await teachContract.connect(otherUser2).getClassroomGuid(-55,1);
+    assert.equal(guid, response);
+
+  });
+
 
 });
 

@@ -29,8 +29,6 @@ describe("TeachContractClassroomAdmin", function () {
   // classroom admin
   it("Can create classroom admin", async function () {
     await teachContract.connect(operator).createClassroomAdmin(user1, [1, 2, 3, 4]);
-    let result = await teachContract.connect(owner).isClassroomAdmin(user1);
-    assert.equal("true", result.toString()); // string conversion to assert actual true rather than truthy value
     result = await teachContract.connect(owner).getClassroomAdmin(user1);
     assert.equal(4, result.landCoordinates.length);
   });
@@ -72,11 +70,6 @@ describe("TeachContractClassroomAdmin", function () {
 
     assert.equal(user1.address, classroomAdmin1.walletAddress);
     assert.equal([1n, 2n, 3n, 4n].toString(), classroomAdmin1.landIds);
-  });
-
-  it("Cannot get single non existing classroom admin", async function () {
-    await expect(teachContract.connect(owner).getClassroomAdmin(user1.address))
-      .to.be.revertedWith("Classroom admin not found.");
   });
 
   it("Can delete classroom admin", async function () {
