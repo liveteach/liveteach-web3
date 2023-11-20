@@ -29,7 +29,7 @@ export function DocsInitialPage(){
                                     </Link>
                                 </Grid>
                                 <Grid item xs={3}>
-                                    <Link to={"/docs/teacher/page1"}>
+                                    <Link to={"/docs/teacher/config"}>
                                         <div className="user-card" style={{background: '#4947CD'}}>
                                             <div className="card-icon">
                                                 <img height="25px" src={graduationCap} alt="Icon" />

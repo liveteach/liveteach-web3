@@ -39,28 +39,28 @@ export default function DocsNav(){
                         <Link to="/docs/dev/page1">
                             <div className="dcl tab active tabColor">
                                 Developers
-                                {activeTab === 'dev' && <div className="active-bar" id="dev"></div>}
+                                {activeTab === 'dev' && <div className="active-bar" id="dev"/>}
                             </div>
                         </Link>
 
-                        <Link to="/docs/teacher/page1">
+                        <Link to="/docs/teacher/config">
                             <div className="dcl tab active tabColor">
                                 Teachers
-                                {activeTab === 'teacher' && <div className="active-bar" id="teacher"></div>}
+                                {activeTab === 'teacher' && <div className="active-bar" id="teacher"/>}
                             </div>
                         </Link>
 
                         <Link to="/docs/owner/page1">
                             <div className="dcl tab active tabColor">
                                 Land Owners
-                                {activeTab === 'owner' && <div className="active-bar" id="owner"></div>}
+                                {activeTab === 'owner' && <div className="active-bar" id="owner"/>}
                             </div>
                         </Link>
 
                         <Link to="/docs/admin/classrooms">
                             <div className="dcl tab active tabColor">
                                 Classroom Administrators
-                                {activeTab === 'admin' && <div className="active-bar" id="admin"></div>}
+                                {activeTab === 'admin' && <div className="active-bar" id="admin"/>}
                             </div>
                         </Link>
                     </div>
