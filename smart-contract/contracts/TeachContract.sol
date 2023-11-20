@@ -1,5 +1,7 @@
 pragma solidity ^0.8.12;
 
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
 interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
 
@@ -56,6 +58,7 @@ contract TeachContract {
         address classroomAdminId;
         address[] teacherIds;
         string guid;
+        string configUrl;
     }
 
     struct Teacher {
@@ -82,6 +85,7 @@ contract TeachContract {
         mapping(uint256 => bool) classroomBool;
         uint256[] landsRegisteredToClassroom;
         mapping(uint256 => bool) landsRegisteredToClassroomBool;
+        mapping(string => uint256) guidToClassroom;
     }
 
     // id to object mappings
@@ -113,6 +117,20 @@ contract TeachContract {
     IdsToObjects private idsToObjects;
 
     ILANDRegistry public landRegistry;
+
+     // OWNER ONLY METHODS
+
+    function allLands() public view onlyOwner returns (uint256[] memory) {
+        return registeredIds.landsRegisteredToClassroomAdmin;
+    }
+
+    function allClassrooms() public view onlyOwner returns (uint256[] memory) {
+        return registeredIds.classroom;
+    }
+
+    function allTeachers() public view onlyOwner returns (address[] memory) {
+        return roleMap.teacher.addressArray;
+    }
 
     function setLANDRegistry(address _registry) public onlyOwner {
         require(_isContract(_registry), "LAND registry not a contract");
@@ -158,17 +176,17 @@ contract TeachContract {
 
     // OWNER ONLY METHODS
 
-    function allLands() public view onlyOwner returns (uint256[] memory) {
-        return registeredIds.landsRegisteredToClassroomAdmin;
-    }
+    // function allLands() public view onlyOwner returns (uint256[] memory) {
+    //     return registeredIds.landsRegisteredToClassroomAdmin;
+    // }
 
-    function allClassrooms() public view onlyOwner returns (uint256[] memory) {
-        return registeredIds.classroom;
-    }
+    // function allClassrooms() public view onlyOwner returns (uint256[] memory) {
+    //     return registeredIds.classroom;
+    // }
 
-    function allTeachers() public view onlyOwner returns (address[] memory) {
-        return roleMap.teacher.addressArray;
-    }
+    // function allTeachers() public view onlyOwner returns (address[] memory) {
+    //     return roleMap.teacher.addressArray;
+    // }
 
     // CLASSROOM ADMIN
     // create
@@ -200,12 +218,6 @@ contract TeachContract {
     }
 
     // read
-    function isClassroomAdmin(
-        address _walletAddress
-    ) public view returns (bool) {
-        return hasRole(roleMap.classroomAdmin, _walletAddress);
-    }
-
     function getClassroomAdmins()
         public
         view
@@ -229,7 +241,6 @@ contract TeachContract {
     function getClassroomAdmin(
         address _walletAddress
     ) public view returns (ClassroomAdmin memory) {
-        require(isClassroomAdmin(_walletAddress), "Classroom admin not found.");
         ClassroomAdmin memory rtn = idsToObjects.classroomAdmin[_walletAddress];
         rtn.landCoordinates = getCoordinatesFromLandIds(rtn.landIds);
         return rtn;
@@ -412,10 +423,12 @@ contract TeachContract {
         bool entitledToViewTeacher = false;
 
         if (hasRole(roleMap.teacher, msg.sender)) {
+            // teacher trying to view self
             if (msg.sender == id) {
                 entitledToViewTeacher = true;
             }
         } else if (hasRole(roleMap.classroomAdmin, msg.sender)) {
+            // classroom admin trying to view teacher
             entitledToViewTeacher = walletOwnsTeacher(msg.sender, id);
         }
         require(entitledToViewTeacher, ERR_OBJECT_ACCESS);
@@ -428,11 +441,48 @@ contract TeachContract {
         unregisterTeacher(id);
     }
 
-    // SCENE
+    // EXTERNAL CALLS
+    // TODO: Move these calls to external contract
+    // function getClassroomConfigUrl(
+    //     string memory classroomGuid
+    // ) public view onlyRole(roleMap.teacher) returns (string memory) {
+    //     uint256 classroomId = registeredIds.guidToClassroom[classroomGuid];
+
+    //     require(
+    //         arrayContainsUint(
+    //             idsToObjects.teacher[msg.sender].classroomIds,
+    //             classroomId
+    //         ),
+    //         ERR_OBJECT_ACCESS
+    //     );
+    //     Classroom memory classroom = idsToObjects.classroom[classroomId];
+    //     if (Strings.equal(classroom.configUrl, "")) {
+    //         return "Config url not yet set for this classroom";
+    //     } else {
+    //         return classroom.configUrl;
+    //     }
+    // }
+
+    // function setClassroomConfigUrl(
+    //     string memory classroomGuid,
+    //     string memory url
+    // ) public onlyRole(roleMap.teacher) {
+    //     uint256 classroomId = registeredIds.guidToClassroom[classroomGuid];
+    //     require(
+    //         arrayContainsUint(
+    //             idsToObjects.teacher[msg.sender].classroomIds,
+    //             classroomId
+    //         ),
+    //         ERR_OBJECT_ACCESS
+    //     );
+    //     Classroom storage classroom = idsToObjects.classroom[classroomId];
+    //     classroom.configUrl = url;
+    // }
+
     function getClassroomGuid(
         int x,
         int y
-    ) public view onlyRole(roleMap.teacher) returns (string memory) {
+    ) public view returns (string memory) {
         // does the teacher have access to this classroom from the supplied coordinates?
         Teacher memory teacher = idsToObjects.teacher[msg.sender];
         uint256 callingLandId = landRegistry.encodeTokenId(x, y);
@@ -456,7 +506,11 @@ contract TeachContract {
         }
         require(
             teacherCanUseLand,
-            "You are not authorised to use this classroom."
+            string.concat(
+                "You ",
+                Strings.toHexString(uint160(msg.sender)),
+                " are not authorised to use this classroom."
+            )
         );
 
         return _classroomGuid;
@@ -559,10 +613,12 @@ contract TeachContract {
             landCoordinates: emptyIntList,
             classroomAdminId: _classroomAdminId,
             teacherIds: emptyAddressList,
-            guid: _guid
+            guid: _guid,
+            configUrl: ""
         });
         registeredIds.classroom.push(_id);
         registeredIds.classroomBool[_id] = true;
+        registeredIds.guidToClassroom[_guid] = _id;
         for (uint256 i = 0; i < _landIds.length; i++) {
             registerLandToClassroom(_landIds[i], _id);
         }
@@ -575,6 +631,9 @@ contract TeachContract {
         removeUintFromArrayMaintainOrder(registeredIds.classroom, _id);
 
         delete registeredIds.classroomBool[_id];
+        if (Strings.equal(classroom.guid, "")) {
+            delete registeredIds.guidToClassroom[classroom.guid];
+        }
         for (uint256 i = 0; i < _landIds.length; i++) {
             unregisterLandFromClassroom(_landIds[i]);
         }
@@ -697,17 +756,17 @@ contract TeachContract {
         }
     }
 
-    // function arrayContainsUint(
-    //     uint256[] memory arr,
-    //     uint256 val
-    // ) private pure returns (bool) {
-    //     for (uint256 i = 0; i < arr.length; i++) {
-    //         if (arr[i] == val) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    function arrayContainsUint(
+        uint256[] memory arr,
+        uint256 val
+    ) private pure returns (bool) {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (arr[i] == val) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     function arrayContainsAddress(
         address[] memory arr,
@@ -773,9 +832,11 @@ contract TeachContract {
 
     modifier onlyRole(RoleDetail storage roleDetail) {
         require(
-            roleDetail.boolMapping[msg.sender] == true,
+            hasRole(roleDetail, msg.sender),
             string.concat(
-                "You lack the appropriate role to call this function: ",
+                "You ",
+                Strings.toHexString(uint160(msg.sender)),
+                " lack the appropriate role to call this function: ",
                 roleDetail.roleName
             )
         );
