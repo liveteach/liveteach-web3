@@ -1,6 +1,7 @@
 const { assert, expect } = require("chai");
+const Utils = require("./LiveTeachUtils");
 
-describe("TeachContractDeleteCascade", function () {
+describe("LiveTeachContractDeleteCascade", function () {
   let owner;
   let CA0;
   let CA1;
@@ -17,7 +18,7 @@ describe("TeachContractDeleteCascade", function () {
   let landContract 
 
   this.beforeEach(async function () {
-    teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
+    teachContract = await ethers.deployContract("contracts/LiveTeach.sol:LiveTeach");
     let accounts = await ethers.getSigners();
     owner = accounts[0];
     CA0 = accounts[1];
@@ -44,10 +45,10 @@ describe("TeachContractDeleteCascade", function () {
 
     await teachContract.connect(operator).createClassroomAdmin(CA0, [1, 2, 3, 4]);
     await teachContract.connect(operator).createClassroomAdmin(CA1, [5, 6, 7]);
-    await teachContract.connect(CA0).createClassroomLandIds("CR0", [1], getGuid());
-    await teachContract.connect(CA0).createClassroomLandIds("CR1", [2], getGuid());
-    await teachContract.connect(CA0).createClassroomLandIds("CR2", [3], getGuid());
-    await teachContract.connect(CA1).createClassroomLandIds("CR3", [5, 6], getGuid());
+    await teachContract.connect(CA0).createClassroomLandIds("CR0", [1], Utils.getGuid());
+    await teachContract.connect(CA0).createClassroomLandIds("CR1", [2], Utils.getGuid());
+    await teachContract.connect(CA0).createClassroomLandIds("CR2", [3], Utils.getGuid());
+    await teachContract.connect(CA1).createClassroomLandIds("CR3", [5, 6], Utils.getGuid());
 
     await teachContract.connect(CA0).createTeacher(T0, [1]);
     await teachContract.connect(CA0).createTeacher(T1, [1]);
@@ -245,11 +246,4 @@ function assertTeacherLooksRight(teacher, expectedWallet, expectedClassroomIdsLe
   assert.equal(expectedWallet.address, teacher.walletAddress);
   assert.equal(expectedClassroomIdsLength, teacher.classroomIds.length);
   assert.equal(expectedClassroomAdmin.address, teacher.classroomAdminIds[0]);
-}
-
-function getGuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
-    return v.toString(16)
-  })
 }

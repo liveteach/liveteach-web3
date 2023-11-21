@@ -18,7 +18,7 @@ interface ILANDRegistry {
     ) external view returns (bool);
 }
 
-contract TeachContract {
+contract LiveTeach {
     uint256 private latestClassroomId;
 
     address private owner;
@@ -173,20 +173,6 @@ contract TeachContract {
         }
         return landIds;
     }
-
-    // OWNER ONLY METHODS
-
-    // function allLands() public view onlyOwner returns (uint256[] memory) {
-    //     return registeredIds.landsRegisteredToClassroomAdmin;
-    // }
-
-    // function allClassrooms() public view onlyOwner returns (uint256[] memory) {
-    //     return registeredIds.classroom;
-    // }
-
-    // function allTeachers() public view onlyOwner returns (address[] memory) {
-    //     return roleMap.teacher.addressArray;
-    // }
 
     // CLASSROOM ADMIN
     // create
