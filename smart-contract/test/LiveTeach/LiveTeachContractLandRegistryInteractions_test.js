@@ -1,6 +1,6 @@
 const { assert, expect } = require("chai");
 
-describe("TeachContractLandRegistryInteractions", function () {
+describe("LiveTeachContractLandRegistryInteractions", function () {
 
   let contractOwner;
   let landOwner;
@@ -21,8 +21,7 @@ describe("TeachContractLandRegistryInteractions", function () {
   let landRegistryContract;
 
   this.beforeEach(async function () {
-    teachContract = await ethers.deployContract("contracts/TeachContract.sol:TeachContract");
-    proxy = await ethers.deployContract("contracts/references/LANDRegistry.sol:ProxyStorage");
+    teachContract = await ethers.deployContract("contracts/LiveTeach.sol:LiveTeach");
     landRegistryContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
 
     let accounts = await ethers.getSigners();
@@ -45,11 +44,6 @@ describe("TeachContractLandRegistryInteractions", function () {
     assert.equal([[1n, 2n, 3n, 4n, 5n], [1n, 2n, 3n, 4n, 5n]].toString(), result);
     result = await landRegistryContract.connect(landOwner).isApprovedForAll(landOwner, operator);
     assert.equal(true, result);
-    // for (let i = 1; i < 10; i++) {
-    //   result = await landRegistryContract.connect(landOwner).encodeTokenId(i, i);
-    //   console.log(result);
-    // }
-
   });
 
   it("Land Operator can create classroom admin with assigned land", async function () {
@@ -70,10 +64,3 @@ describe("TeachContractLandRegistryInteractions", function () {
     ])).to.be.revertedWith("You don't have access to this land");
   });
 });
-
-function getGuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
-    return v.toString(16)
-  })
-}
