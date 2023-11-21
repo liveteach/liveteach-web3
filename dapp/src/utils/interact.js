@@ -16,8 +16,11 @@ const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY_SOCKET;
 const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(alchemyKey);
 
-const contractABI = require("../contract-abi.json");
-const contractAddress = process.env.REACT_APP_SMART_CONTRACT_ADDRESS;
+const liveTeachContractAbi = require("../contracts/LiveTeach.json");
+const teachersContractAbi = require("../contracts/LiveTeachTeachers.json");
+
+const liveTeachContractAddress = process.env.REACT_APP_SMART_CONTRACT_ADDRESS;
+const teachersContractAddress = process.env.REACT_APP_SMART_TEACHERS_CONTRACT_ADDRESS;
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -90,11 +93,11 @@ export const getCurrentWalletConnected = async () => {
 };
 
 export const getContractInstance = async () => {
-  return new web3.eth.Contract(contractABI, contractAddress);
+  return new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
 };
 
 export const getBalanceOfUser = async () => {
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const balanceOfUser = await window.contract.methods
     .balanceOf("0x88ad51a54cc7bee75dfa052ad6be78d772dd9d81")
     .call({ from: window.ethereum.selectedAddress });
@@ -112,7 +115,7 @@ export const getTokenOfOwnerByIndex = async (index) => {
     .decodeTokenId(token + "")
     .call({ from: window.ethereum.selectedAddress });
   const visit = `https://play.decentraland.org?position=${coordinate[0]},${coordinate[1]}`;
-  const opensea = `https://opensea.io/assets/${contractAddress}/${token}`;
+  const opensea = `https://opensea.io/assets/${liveTeachContractAddress}/${token}`;
   return { token, coordinate, visit, opensea };
 };
 
@@ -123,7 +126,7 @@ export const calculateMetamaskValueFromEthereum = (ethereumAmount) => {
 };
 
 export const getLandIdsFromCoordinates = async (coordinatePairs) => {
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getLandIdsFromCoordinates(coordinatePairs)
     .call({ from: window.ethereum.selectedAddress });
@@ -142,14 +145,14 @@ export const createClassroomAdminCoordinates = async (walletAddress, coordinateP
 export const createClassroomAdmin = async (walletAddress, landIds) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.createClassroomAdmin, [walletAddress, landIds]);
 };
 // read
 export const getClassroomAdmins = async () => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getClassroomAdmins()
     .call({ from: window.ethereum.selectedAddress });
@@ -159,7 +162,7 @@ export const getClassroomAdmins = async () => {
 export const getClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getClassroomAdmin(walletAddress)
     .call({ from: window.ethereum.selectedAddress });
@@ -168,7 +171,7 @@ export const getClassroomAdmin = async (walletAddress) => {
 
 export const isClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .isClassroomAdmin(walletAddress)
     .call({ from: window.ethereum.selectedAddress });
@@ -179,7 +182,7 @@ export const isClassroomAdmin = async (walletAddress) => {
 export const updateClassroomAdmin = async (walletAddress, landIds) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
   // updates landIds for a classroom admin
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.updateClassroom,
     [walletAddress, landIds]);
 };
@@ -187,7 +190,7 @@ export const updateClassroomAdmin = async (walletAddress, landIds) => {
 // delete
 export const removeClassroomAdmin = async (walletAddress) => {
   // should only be callable by LAND_OPERATOR, currently callable by anyone
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.deleteClassroomAdmin,
     [walletAddress]);
 };
@@ -197,7 +200,7 @@ export const removeClassroomAdmin = async (walletAddress) => {
 // create
 export const createClassroomLandIds = async (name, landIds) => {
   // onlyRole(CLASSROOM_ADMIN)
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.createClassroom,
     [name, landIds]);
 };
@@ -213,7 +216,7 @@ export const createClassroom = async (name, coordinatePairs, guid, url, history)
   ] 
   */
   // onlyRole(CLASSROOM_ADMIN)
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.createClassroomCoordinates,
     [name, coordinatePairs, guid], url, history);
 };
@@ -221,7 +224,7 @@ export const createClassroom = async (name, coordinatePairs, guid, url, history)
 export const getClassrooms = async () => {
   // onlyRole(CLASSROOM_ADMIN)
   // gets All a classroom admin's assigned classrooms
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getClassrooms()
     .call({ from: window.ethereum.selectedAddress });
@@ -231,46 +234,26 @@ export const getClassrooms = async () => {
 export const getClassroom = async (id) => {
   // onlyRole(CLASSROOM_ADMIN)
   // gets a classroom admin's classroom by id
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getClassroom(id)
     .call({ from: window.ethereum.selectedAddress });
   return result;
 };
 
-
-// TODO: call to be moved to separate contract
-// export const getClassroomConfigUrl = async (guid) => {
-//   // onlyRole(TEACHER)
-//   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-//   const result = await window.contract.methods
-//     .getClassroomConfigUrl(guid)
-//     .call({ from: window.ethereum.selectedAddress });
-//   return result;
-// };
-
-// update
-
 export const updateClassroom = async (id, name, landIds) => {
   // onlyRole(CLASSROOM_ADMIN)
   // updates fields for a given classroom id
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.updateClassroom,
     [id, name, landIds]);
 };
 
-// // TODO: call to be moved to separate contract
-// export const setClassroomConfigUrl = async (guid, url) => {
-//   // onlyRole(TEACHER)
-//   window.contract = await new web3.eth.Contract(contractABI, contractAddress);
-//   return callGasTransaction(window.contract.methods.setClassroomConfigUrl,
-//     [guid, url]);
-// };
 // delete
 export const deleteClassroom = async (id) => {
   // onlyRole(CLASSROOM_ADMIN)
   // deletes a classroom by id
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.deleteClassroom,
     [id]);
 };
@@ -280,7 +263,7 @@ export const deleteClassroom = async (id) => {
 export const createTeacher = async (walletAddress, classroomIds, url, history) => {
   // onlyRole(CLASSROOM_ADMIN)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.createTeacher,
     [walletAddress, classroomIds], url, history);
 }
@@ -288,7 +271,7 @@ export const createTeacher = async (walletAddress, classroomIds, url, history) =
 export const getTeachers = async () => {
   // onlyRole(CLASSROOM_ADMIN)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getTeachers()
     .call({ from: window.ethereum.selectedAddress });
@@ -297,7 +280,7 @@ export const getTeachers = async () => {
 export const getTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getTeacher(walletAddress)
     .call({ from: window.ethereum.selectedAddress });
@@ -307,7 +290,7 @@ export const getTeacher = async (walletAddress) => {
 export const updateTeacher = async (walletAddress, classroomIds) => {
   // onlyRole(CLASSROOM_ADMIN)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.updateTeacher,
     [walletAddress, classroomIds]);
 }
@@ -315,7 +298,7 @@ export const updateTeacher = async (walletAddress, classroomIds) => {
 export const deleteTeacher = async (walletAddress) => {
   // onlyRole(CLASSROOM_ADMIN)
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   return callGasTransaction(window.contract.methods.deleteTeacher,
     [walletAddress]);
 }
@@ -324,7 +307,7 @@ export const deleteTeacher = async (walletAddress) => {
 ////
 export const getUserRoles = async () => {
   //PUBLIC
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new web3.eth.Contract(liveTeachContractAbi, liveTeachContractAddress);
   const result = await window.contract.methods
     .getRoles()
     .call({ from: window.ethereum.selectedAddress });
@@ -341,6 +324,57 @@ export const getUserRoles = async () => {
   return rtn;
 }
 ////
+
+// LiveTeachTeachers contract calls
+// create
+
+/* Create a new ClassConfig.
+ * Callable by anyone.
+ */
+export const createClassConfig = async (classReference, contentUrl) => {
+  window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress);
+  return callGasTransaction(window.contract.methods.createTeacher,
+    [classReference, contentUrl], null, null, teachersContractAddress);
+}
+// read
+/* Get all the ClassConfigs associated with the calling teacher.
+ */
+export const getClassConfigs = async () => {
+  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress)
+    .getClassConfigs()
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+/* Get a single ClassConfig by id.
+ * The caller must own (have created) the ClassConfig.
+ */
+export const getClassConfig = async (id) => {
+  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress)
+    .getClassConfig(id)
+    .call({ from: window.ethereum.selectedAddress });
+  return result;
+}
+// update
+/* Update the classReference and contentUrl fields 
+ * on a ClassConfig identified by id.
+ * The caller must own (have created) the ClassConfig.
+ */
+export const updateClassConfig = async (id, classReference, contentUrl) => {
+  window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress);
+  return callGasTransaction(window.contract.methods.updateClassConfig,
+    [id, classReference, contentUrl], null, null, teachersContractAddress);
+}
+// delete
+/* Delete a ClassConfig by id.
+ * The caller must own (have created) the ClassConfig.
+ */
+export const deleteClassConfig = async (id) => {
+  window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress);
+  return callGasTransaction(window.contract.methods.deleteClassConfig,
+    [id], null, null, teachersContractAddress);
+}
+
+
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -368,7 +402,9 @@ async function getReceipt(txHash) {
   }
 }
 
-async function callGasTransaction(func, params, redirectUrl = null, history = null) {
+async function callGasTransaction(func, params, redirectUrl = null, history = null, contractAddress = null) {
+  if (!contractAddress)
+    contractAddress = liveTeachContractAddress;
   const transactionParameters = {
     to: contractAddress,
     from: window.ethereum.selectedAddress,
