@@ -333,7 +333,7 @@ export const getUserRoles = async () => {
  */
 export const createClassConfig = async (classReference, contentUrl) => {
   window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress);
-  return callGasTransaction(window.contract.methods.createTeacher,
+  return callGasTransaction(window.contract.methods.createClassConfig,
     [classReference, contentUrl], null, null, teachersContractAddress);
 }
 // read

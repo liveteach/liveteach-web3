@@ -110,7 +110,7 @@ export function AddClass(props){
     const handlePublish = () => {
         document.getElementById("ipfsPending").style.display = 'block';
 
-        pinJSONToIPFS(classTemplate, dispatch, jwtToken).then(response => {
+        pinJSONToIPFS(classTemplate, dispatch, jwtToken,selectedClass.name).then(response => {
             console.log(response)
         })
     }
