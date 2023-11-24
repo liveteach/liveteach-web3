@@ -51,5 +51,15 @@
         ]
       }
     ]
+  },
+  {
+    "heading": "API Documentation",
+    "menuItems": [
+      {
+        "id": 25,
+        "label": "Api Docs",
+        "outboundLink": "https://htmlpreview.github.io/?https://raw.githubusercontent.com/liveteach/liveteach-package/develop/docs/modules.html"
+      }
+    ]
   }
 ]

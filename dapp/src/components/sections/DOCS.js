@@ -65,14 +65,18 @@ export function DOCS(props){
                                                         {
                                                             item.menuItems.map(link => (
                                                                 <li key={link.id}>
-                                                                    <Link style={{color: 'white'}} to={link.link ? link.link : ""}
-                                                                          key={link.label} onClick={(e) => {
-                                                                        if (link.subMenu) {
-                                                                            e.preventDefault();
-                                                                            handlePageSwitch(e, link.label);
-                                                                            handleDropdown("subMenu"+link.id);
-                                                                        }
-                                                                        }}>{link.label}</Link>
+
+                                                                    {link.outboundLink ? <a target="_blank" href={link.outboundLink} rel="noreferrer" >{link.label}</a> : <Link style={{color: 'white'}}
+                                                                                                         to={link.link ? link.link : ""}
+                                                                                                         key={link.label}
+                                                                                                         onClick={(e) => {
+                                                                                                             if (link.subMenu) {
+                                                                                                                 e.preventDefault();
+                                                                                                                 handlePageSwitch(e, link.label);
+                                                                                                                 handleDropdown("subMenu"+link.id);
+                                                                                                             }
+                                                                                                         }}
+                                                                    >{link.label}</Link> }
                                                                         {link.subMenu && (
                                                                             <ul key={link.subMenu + link.id} className={"dropDownHidden"} id={"subMenu"+link.id}>
                                                                                 {link.subMenu.map(subItem => (
