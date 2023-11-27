@@ -1,10 +1,13 @@
 import {Button, ButtonGroup, Grid, TextField} from "@mui/material";
 import Divider from '@mui/material/Divider';
 import {PollCreation} from "./PollCreation";
+import {PinFilesToIPFS} from "./PinFilesToIPFS";
+import React, {useState} from "react";
 
 export function AddFields(props){
 
     const animationObjectStructure = {clip: "", loop: false}
+    const [open, setOpen] = useState(false)
 
     function handleChangeAnimationInput(index,indexAnim, e){
         const values = [...props.fields];
@@ -73,7 +76,7 @@ export function AddFields(props){
             {
                 props.fields.map((field, index) => {
 
-                    return <Grid container>
+                    return <Grid key={"addfields" + index} container>
 
                         <Grid item xs={12}>
                             {
@@ -93,7 +96,22 @@ export function AddFields(props){
                                         value={field.src}
                                         name="src"
                                         onChange={e => handleChangeInput(index, e)}
+                                        key={`textfield-${field.src}`}
                                     />
+                                    {
+                                        props.images ? <PinFilesToIPFS
+                                            src={field.src}
+                                            open={open}
+                                            setOpen={setOpen}
+                                            fields={props.fields}
+                                            setFields={props.setFields}
+                                            index={index}
+                                            handleChangeInput={handleChangeInput}
+                                        /> : null
+                                    }
+                                    <div id={"ipfsFilePending" + index} style={{ display:'none'}}>
+                                        <span  style={{color: 'green'}}>Pending..</span>
+                                    </div>
                                 </div>
                             </Grid>
                         }

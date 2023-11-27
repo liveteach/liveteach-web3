@@ -185,25 +185,25 @@ export function AddClass(props){
                             <h2>Images</h2>
                         </div>
                     </div>
-                    <AddFields fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
+                    <AddFields images={true} fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Videos</h2>
                         </div>
                     </div>
-                    <AddFields fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
+                    <AddFields images={false} fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Models</h2>
                         </div>
                     </div>
-                    <AddFields fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
+                    <AddFields images={false} fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Polls</h2>
                         </div>
                     </div>
-                    <AddFields fields={poll} setFields={setPoll} objStructure={pollStructure}/>
+                    <AddFields images={false} fields={poll} setFields={setPoll} objStructure={pollStructure}/>
                 </Grid>
             </div>
             ) : (
