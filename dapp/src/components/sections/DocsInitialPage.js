@@ -24,7 +24,7 @@ export function DocsInitialPage(){
                                             <div className="card-icon">
                                                 <img height="25px" src={terminal} alt="Icon" />
                                             </div>
-                                            <h4>For Developers</h4>
+                                            <h3>For Developers</h3>
                                         </div>
                                     </Link>
                                 </Grid>
@@ -34,7 +34,7 @@ export function DocsInitialPage(){
                                             <div className="card-icon">
                                                 <img height="25px" src={graduationCap} alt="Icon" />
                                             </div>
-                                            <h4>For Teachers</h4>
+                                            <h3>For Teachers</h3>
                                         </div>
                                     </Link>
                                 </Grid>
@@ -44,7 +44,7 @@ export function DocsInitialPage(){
                                             <div className="card-icon">
                                                 <img height="25px" src={diploma} alt="Icon" />
                                             </div>
-                                            <h4>For Land Owners</h4>
+                                            <h3>For Land Owners</h3>
                                         </div>
                                     </Link>
                                 </Grid>
@@ -54,7 +54,7 @@ export function DocsInitialPage(){
                                             <div className="card-icon">
                                                 <img height="25px" src={chalkboardUser} alt="Icon" />
                                             </div>
-                                            <h4>For Classroom Administrators</h4>
+                                            <h3>For Classroom Administrators</h3>
                                         </div>
                                     </Link>
                                 </Grid>

@@ -1,7 +1,7 @@
 import pageOne from "../components/markdown/test.md";
 import classroomAdminClassrooms from "../components/markdown/classroomAdmin/classroomAdminClassrooms.md";
 import classroomAdminTeachers  from "../components/markdown/classroomAdmin/classroomAdminTeachers.md";
-import teacherConfigCreation from "../components/markdown/teacher/teacherConfigCreation.md";
+import * as teacher from  "../components/markdown/teacher/index";
 import pageTwo from "../components/markdown/thirdTest.md";
 import devMenuData from '../resource/devMenuData.json';
 import teacherMenuData from '../resource/teacherMenuData.json';
@@ -23,8 +23,11 @@ export const devDocs = (props) => {
 };
 
 export const teacherMarkup = {
-    config: teacherConfigCreation,
-    page2: pageTwo
+    config: teacher.teacherConfigCreation,
+    imagesAndVideos: teacher.imagesAndVideo,
+    models: teacher.models,
+    polls: teacher.polls,
+    publish: teacher.publish
 };
 
 export const teacherDocs = (props) => {
