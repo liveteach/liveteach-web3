@@ -78,7 +78,7 @@ export function DOCS(props){
                                                                                                          }}
                                                                     >{link.label}</Link> }
                                                                         {link.subMenu && (
-                                                                            <ul key={link.subMenu + link.id} className={"dropDownHidden"} id={"subMenu"+link.id}>
+                                                                            <ul key={link.subMenu + link.id} className={"dropDownShow"} id={"subMenu"+link.id}>
                                                                                 {link.subMenu.map(subItem => (
                                                                                     <li key={subItem.id}>
                                                                                         <Link style={{color: 'white'}}

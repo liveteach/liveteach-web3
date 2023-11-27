@@ -5,16 +5,31 @@
       {
         "id": 41,
         "label": "Config Creation",
-        "link": "/docs/teacher/config"
-      },
-      {
-        "id": 43,
-        "label": "Page Two Dropdown",
         "subMenu": [
           {
-            "id": 431,
-            "label": "page2",
-            "link": "/docs/teacher/page2"
+            "id": 411,
+            "label": "Initial Access",
+            "link": "/docs/teacher/config"
+          },
+          {
+            "id": 412,
+            "label": "Images And Videos",
+            "link": "/docs/teacher/imagesAndVideos"
+          },
+          {
+            "id": 413,
+            "label": "Models",
+            "link": "/docs/teacher/models"
+          },
+          {
+            "id": 414,
+            "label": "Polls",
+            "link": "/docs/teacher/polls"
+          },
+          {
+            "id": 415,
+            "label": "Publishing",
+            "link": "/docs/teacher/publish"
           }
         ]
       }
