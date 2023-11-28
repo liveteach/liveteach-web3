@@ -96,7 +96,6 @@ export function AddFields(props){
                                         value={field.src}
                                         name="src"
                                         onChange={e => handleChangeInput(index, e)}
-                                        key={`textfield-${field.src}`}
                                     />
                                     {
                                         props.images ? <PinFilesToIPFS

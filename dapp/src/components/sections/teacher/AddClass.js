@@ -26,6 +26,7 @@ export function AddClass(props){
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
     const imgVidObjectStructure = { src: "", caption: "", ratio: "" };
+    const referenceLinksObjectStructure = { src: "", caption: "" };
     const modelObjectStructure = { src: "", position: { x: 0, y: 0, z: 0 }, scale: { x: 1,y: 1,z: 1 }, animations: [{clip: "", loop: false}], spin: false, replace: false }
     const pollStructure = { key: "poll", data: { title: "", options: [ "" ] }}
     const [open, setOpen] = useState(false)
@@ -43,6 +44,11 @@ export function AddClass(props){
         caption: "",
         ratio: 0.0
     }]);
+
+    const [referenceLinks, setReferenceLinks] = useState([{
+        src: "",
+        caption: ""
+    }])
 
     const [model, setModel] = useState([{
         src: "",
@@ -87,7 +93,8 @@ export function AddClass(props){
             "images": fields,
             "videos": videoFields,
             "models": model,
-            "contentUnits": poll
+            "contentUnits": poll,
+            "links": referenceLinks
         }},
         pinataMetadata: {name: selectedClass.guid}
     };
@@ -204,6 +211,12 @@ export function AddClass(props){
                         </div>
                     </div>
                     <AddFields images={false} fields={poll} setFields={setPoll} objStructure={pollStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h2>Reference Links</h2>
+                        </div>
+                    </div>
+                    <AddFields images={false} fields={referenceLinks} setFields={setReferenceLinks} objStructure={referenceLinksObjectStructure}/>
                 </Grid>
             </div>
             ) : (
