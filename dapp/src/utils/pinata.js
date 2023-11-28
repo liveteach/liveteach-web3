@@ -1,25 +1,30 @@
+import {setIpfsUrl} from "../store/teacherState";
+import {createClassConfig, createClassroom} from "./interact";
+const FormData = require('form-data')
+const fs = require('fs')
 require('dotenv').config();
-const key = process.env.REACT_APP_PINATA_KEY;
-const secret = process.env.REACT_APP_PINATA_SECRET;
-
 
 const axios = require('axios');
 
-export const pinJSONToIPFS = async(JSONBody) => {
+export const pinJSONToIPFS = async(JSONBody, dispatch,jwt,classroomName) => {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
     //making axios POST request to Pinata ⬇️
     return axios
         .post(url, JSONBody, {
             headers: {
-                pinata_api_key: key,
-                pinata_secret_api_key: secret,
+                'Authorization': `Bearer ${jwt}`
             }
         })
         .then(function (response) {
+            dispatch(setIpfsUrl("https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash))
+            document.getElementById("ipfsPending").style.display = 'none';
+            document.getElementById("ipfsUrl").style.display = 'block'
+            createClassConfig(classroomName,"https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash )
             return {
                 success: true,
                 pinataUrl: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
             };
+
         })
         .catch(function (error) {
             console.log(error)
@@ -30,3 +35,34 @@ export const pinJSONToIPFS = async(JSONBody) => {
 
         });
 };
+
+
+export const pinFileToIPFS = async (JWT, src) => {
+    const formData = new FormData();
+
+    //const file = fs.createReadStream(src)
+    formData.append('file', src)
+
+    const pinataMetadata = JSON.stringify({
+        name: 'File name',
+    });
+    formData.append('pinataMetadata', pinataMetadata);
+
+    const pinataOptions = JSON.stringify({
+        cidVersion: 0,
+    })
+    formData.append('pinataOptions', pinataOptions);
+
+    try{
+        const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+            maxBodyLength: "Infinity",
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                'Authorization': `Bearer ${JWT}`
+            }
+        });
+        return "https://gateway.pinata.cloud/ipfs/" + res.data.IpfsHash
+    } catch (error) {
+        console.log(error);
+    }
+}

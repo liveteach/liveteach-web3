@@ -1,0 +1,150 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ERR_OBJECT_ACCESS",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_classReference",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_contentUrl",
+        "type": "string"
+      }
+    ],
+    "name": "createClassConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteClassConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClassConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "teacher",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "classReference",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contentUrl",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct LiveTeachTeachers.ClassConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getClassConfigs",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "teacher",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "classReference",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contentUrl",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct LiveTeachTeachers.ClassConfig[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_classReference",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_contentUrl",
+        "type": "string"
+      }
+    ],
+    "name": "updateClassConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

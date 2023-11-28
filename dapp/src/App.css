@@ -44,3 +44,124 @@
 .css-1yq5fb3-MuiButtonBase-root-MuiIconButton-root{
     color: white!important;
 }
+
+.dropDownHidden{
+    display: none;
+}
+
+.dropDownShow{
+    display: block;
+}
+
+.inputFields{
+    margin: 50px 0;
+    width: 50%;
+}
+.jsonFields{
+    margin: 20px 0;
+    width: 80%;
+}
+.textInput{
+    background-color: white;
+    border-radius: 5px;
+    border-color: #ff2d55;
+}
+
+.selectMenu{
+    background-color: white !important;
+    border-radius: 5px;
+    border-color: white !important;
+    color: black !important;
+}
+.selectItem{
+    background-color: white !important;
+    color: black !important;
+    width: 100%;
+}
+
+.menuSpacing{
+    margin-bottom: 50px !important;
+}
+
+.user-card{
+    font-weight: 500;
+    border-radius: 8px;
+    box-shadow: 0 10px 9px -8px rgba(0,0,0,.48);
+    height: 280px;
+    margin-right: 20px;
+    padding: 20px;
+    text-align: left;
+    color: white !important;
+    transition: all .5s ease-in-out;
+}
+
+.user-card:hover {
+    transform: translateY(-10px);
+}
+
+.welcome-header{
+    margin-top: 100px !important;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+}
+
+.welcome-secondary{
+    color: gray;
+    font-size: 21px;
+    margin-bottom: 100px;
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #E5E5E5;
+    border-radius: 50%;
+    opacity: 0.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 3px;
+    border-radius: 50%;
+}
+
+.active-bar{
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    border-bottom: 3px solid #ff2d55;
+    z-index: 10;
+}
+
+.coordinates-container {
+    position: relative;
+}
+
+.coordinate-item {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.coordinate-item:hover .tooltip {
+    visibility: visible;
+}
+
+h4{
+    color: #a09ba8!important;
+}

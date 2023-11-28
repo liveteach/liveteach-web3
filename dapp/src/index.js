@@ -4,6 +4,7 @@ import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import store from "./store/store";
 import { Provider} from "react-redux";
+import {theme} from "./styles/muiTheme";
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -11,12 +12,15 @@ import * as serviceWorker from './serviceWorker';
 import './App.css'
 import 'decentraland-ui/lib/styles.css'
 import 'decentraland-ui/lib/dark-theme.css'
+import {ThemeProvider} from "@mui/material";
 const history = createBrowserHistory();
 
 ReactDOM.render(
     <Provider store={store}>
         <Router history={history}>
-            <App />
+            <ThemeProvider theme={theme}>
+                <App />
+            </ThemeProvider>
         </Router>
     </Provider>,
     document.getElementById('root')

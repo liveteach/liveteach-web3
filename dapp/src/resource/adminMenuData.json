@@ -1,0 +1,17 @@
+[
+  {
+    "heading": "Classroom Admin",
+    "menuItems": [
+      {
+        "id": 11,
+        "label": "Add Classrooms",
+        "link": "/docs/admin/classrooms"
+      },
+      {
+        "id": 12,
+        "label": "Add Teachers",
+        "link": "/docs/admin/teachers"
+      }
+    ]
+  }
+]

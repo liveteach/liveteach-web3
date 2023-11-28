@@ -5,8 +5,9 @@ import {Link} from "react-router-dom";
 import Logo from "./partials/Logo";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
-import {setAvatar, setName, setWalletAddress} from "../../store/adminUser";
-import {getCurrentWalletConnected} from "../../utils/interact";
+import {setAuth, setAvatar, setName, setWalletAddress, setAvatarLoaded, setRoles} from "../../store/adminUser";
+import {getCurrentWalletConnected, getUserRoles} from "../../utils/interact";
+import {checkConnectedWalletAddress} from "../../utils/AuthCheck";
 
 const propTypes = {
   authenticated: PropTypes.bool,
@@ -21,18 +22,12 @@ const Header = ({
                   ...props
                 }) => {
 
-  const { avatar,name } = useSelector((state) => state.adminUser);
+  const { avatar,name,auth, avatarLoaded, roles } = useSelector((state) => state.adminUser);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null)
 
-  useEffect(async () => {
-
-    await getCurrentWalletConnected().then(result => {
-      console.log(result)
-      getProfile(result.address);
-      dispatch(setWalletAddress(result.address))
-    })
+  useEffect( () => {
 
     const handleOutsideClick = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -47,7 +42,46 @@ const Header = ({
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
+
+
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    dispatch(setAuth(checkConnectedWalletAddress().auth));
+    getCurrentWalletConnected().then( result => {
+      console.log(result)
+      getProfile(result.address).then(() => dispatch(setAvatarLoaded(true)));
+      dispatch(setWalletAddress(result.address))
+    })
+  },[avatarLoaded])
+
+  useEffect(() => {
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.on('accountsChanged', function (accounts) {
+        if (accounts.length > 0) {
+          const newAccount = accounts[0];
+          dispatch(setAuth(checkConnectedWalletAddress().auth));
+          getCurrentWalletConnected().then( result => {
+            getUserRoles().then(result => {
+              console.log(result)
+              dispatch(setRoles(result))
+            })
+            getProfile(result.address).then(() => dispatch(setAvatarLoaded(true)));
+            dispatch(setWalletAddress(result.address))
+          })
+        } else {
+          console.log('User disconnected their MetaMask account');
+        }
+      });
+    } else {
+      console.log('MetaMask is not installed or not available');
+    }
+    return () => {
+      if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.removeAllListeners('accountsChanged');
+      }
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -61,16 +95,17 @@ const Header = ({
         );
         console.log(result);
         dispatch(setAvatar(result.data.avatars[0].avatar.snapshots.face256));
-        dispatch(setName(result.data.avatars[0].name))
+        dispatch(setName(result.data.avatars[0].name));
       } catch (error) {
+        dispatch(setAvatar(""));
+        dispatch(setName(""));
         console.error("Error:", error);
       }
     }}
 
   return (
       <header className="dcl navbar fullscreen">
-        {authenticated && (
-            <>
+         <>
               <nav
                   className="ui container"
               >
@@ -82,16 +117,20 @@ const Header = ({
                     <div className="item tabColor">
                       <Link to={"/FAQ"} ><span className="tabColor">FAQ</span></Link>
                     </div>
+                    <div className="item tabColor">
+                      <Link to={"/docs"} ><span className="tabColor">DOCS</span></Link>
+                    </div>
                   </div>
 
                 </div>
 
-                {authenticated && (
+                {(auth && avatarLoaded) ? (
                     <div className="dcl navbar-account">
                       <Button
                           className="ui small basic button"
                           size="small"
                           variant="contained"
+                          disabled
                       >
                         connected
                       </Button>
@@ -115,13 +154,13 @@ const Header = ({
                             </div>
                           </div>
                           <ul className="actions">
-                            <a href="https://account.decentraland.org" target="_blank">
+                            <a href="https://account.decentraland.org" target="_blank" rel="noreferrer" >
                               <li>
                                 <i aria-hidden={true} className="user icon" ></i>
                                 Profile
                               </li>
                             </a>
-                            <a href="https://profile.decentraland.org"  target="_blank">
+                            <a href="https://profile.decentraland.org"  target="_blank" rel="noreferrer" >
                               <li>
                                 <div className="WalletIcon">
                                   <svg width={13} height={13} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,10 +175,19 @@ const Header = ({
                       </div>
                     </div>
 
+                ) : (
+                    <div className="dcl navbar-account">
+                      <Button
+                          className="ui small basic button"
+                          size="small"
+                          variant="contained"
+                      >
+                        <Link to={'/login'}>LOGIN</Link>
+                      </Button>
+                    </div>
                 )}
               </nav>
             </>
-        )}
       </header>
   );
 };

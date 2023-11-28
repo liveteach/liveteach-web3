@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import { useLocation, Switch, useHistory} from "react-router-dom";
 import AppRoute from "./utils/AppRoute";
 import {FAQ} from "./components/sections/FAQ";
@@ -11,40 +11,59 @@ import LayoutLogIn from "./layouts/LayoutLogIn";
 import LogIn from "./views/LogIn";
 
 // AuthCheck Utils
-import {checkConnectedWalletAddress, userCheck} from "./utils/AuthCheck";
-import {setIsPrivate} from "./store/adminUser";
+import {checkConnectedWalletAddress} from "./utils/AuthCheck";
 import {useDispatch, useSelector} from "react-redux";
 import Home from "./views/Home";
-import AppRouteAdmin from "./utils/AppRouteAdmin";
-import ClassroomAdmin from "./components/sections/ClassroomAdmin";
-import LandOperator from "./components/sections/LandOperator";
-import Student from "./components/sections/Student";
-import Teacher from "./components/sections/Teacher";
-import {Test} from "./components/sections/Test";
+import ClassroomAdmin from "./components/sections/classroomAdmin/ClassroomAdmin";
+import { LandOperator} from "./components/sections/landOperator/LandOperator";
+import Student from "./components/sections/student/Student";
+import Teacher from "./components/sections/teacher/Teacher";
+import {Route} from "react-router-dom";
+import {setAuth, setRoles} from "./store/adminUser";
+import {AddTeacher} from "./components/sections/classroomAdmin/AddTeacher";
+import {AddClassroom} from "./components/sections/classroomAdmin/AddClassroom";
+import {AddClass} from "./components/sections/teacher/AddClass";
+import {WorldsOwner} from "./components/sections/worldsOwner/WorldsOwner";
+import {DocsInitialPage} from "./components/sections/DocsInitialPage";
+import {adminDocs, devDocs, ownerDocs, teacherDocs} from "./utils/markup";
+import {getUserRoles} from "./utils/interact";
 
 const App = () => {
+
   const history = useHistory();
-  let location = useLocation();
-  const {isPrivate} = useSelector((state) => state.adminUser)
+  const location = useLocation();
+  const currentURL = location.pathname;
+
+  const {auth} = useSelector((state) => state.adminUser)
   const dispatch = useDispatch();
+
   useEffect(() => {
     document.body.classList.add("is-loaded");
-  }, [location]);
-
-  useEffect(() => {
-    const auth = checkConnectedWalletAddress();
-    if (auth.auth) {
-      history.push("/student");
-    } else {
-      history.push("/login");
-    }
+    dispatch(setAuth(checkConnectedWalletAddress().auth));
   }, []);
 
-  useEffect(async () => {
-      // await userCheck().then(result => {
-      //       dispatch(setIsPrivate(!result.admin));
-      // })
-  })
+  useEffect(() => {
+        if (auth) {
+          history.push("/teacher");
+        } else {
+            if(currentURL.includes('/docs/')){
+                history.push(currentURL)
+            } else {
+                history.push("/login");
+            }
+        }
+  }, [auth]);
+
+  useEffect( () => {
+      if(auth){
+      getUserRoles().then(result => {
+          console.log(result)
+          dispatch(setRoles(result))
+      })
+      }
+  },[auth])
+
+
   return (
       <Switch>
         {/* route to home */}
@@ -64,44 +83,104 @@ const App = () => {
 
         {/*common routes*/}
 
-        <AppRoute
-            exact
-            path="/student"
-            component={Student}
-            layout={LayoutDefault}
-        />
+        {/*<AppRoute*/}
+        {/*    exact*/}
+        {/*    path="/student"*/}
+        {/*    component={Student}*/}
+        {/*    layout={LayoutDefault}*/}
+        {/*/>*/}
 
         <AppRoute
             exact
             path="/teacher"
-            component={Test}
+            component={Teacher}
             layout={LayoutDefault}
         />
 
+          <AppRoute
+              exact
+              path="/teacher/add"
+              component={AddClass}
+              layout={LayoutDefault}
+          />
+          {/*<AppRoute*/}
+          {/*    exact*/}
+          {/*    path="/teacher/edit"*/}
+          {/*    component={EditClass}*/}
+          {/*    layout={LayoutDefault}*/}
+          {/*/>*/}
         {/* private Routes */}
-
-          <AppRouteAdmin
-              exact
-              path="/classadmin"
-              isPrivate={isPrivate}
-              component={ClassroomAdmin}
-              layout={LayoutDefault}
-          />
-          <AppRouteAdmin
-              exact
-              path="/operator"
-              isPrivate={isPrivate}
-              component={LandOperator}
-              layout={LayoutDefault}
-          />
-
 
           <AppRoute
               exact
-              path="/FAQ"
-              component={FAQ}
+              path="/classroomadmin"
+              component={ClassroomAdmin}
               layout={LayoutDefault}
           />
+          <AppRoute
+              exact
+              path="/classroomadmin/teacher"
+              component={AddTeacher}
+              layout={LayoutDefault}
+          />
+          <AppRoute
+              exact
+              path="/classroomadmin/class"
+              component={AddClassroom}
+              layout={LayoutDefault}
+          />
+          <AppRoute
+              exact
+              path="/operator"
+              component={LandOperator}
+              layout={LayoutDefault}
+          />
+          <AppRoute
+              exact
+              path="/operator/add"
+              component={AddClass}
+              layout={LayoutDefault}
+          />
+          <AppRoute
+              exact
+              path="/worlds"
+              component={WorldsOwner}
+              layout={LayoutDefault}
+          />
+
+          {/*outside login routes*/}
+
+          <Route
+              exact
+              path="/FAQ"
+              component={FAQ}
+          />
+          <Route
+              exact
+              path="/docs"
+              component={DocsInitialPage}
+          />
+          <Route
+              exact
+              path="/docs/dev/:page"
+              render={devDocs}
+          />
+          <Route
+              exact
+              path="/docs/teacher/:page"
+              component={teacherDocs}
+          />
+          <Route
+              exact
+              path="/docs/owner/:page"
+              component={ownerDocs}
+          />
+          <Route
+              exact
+              path="/docs/admin/:page"
+              component={adminDocs}
+          />
+
       </Switch>
   );
 };

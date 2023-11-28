@@ -53,7 +53,7 @@ const LogInBlock = ({
     setWalletAddress(address);
     setWalletStatus({ status, message });
     if (status === walletStatus_Connected) {
-      history.push("/student");
+      history.push("/teacher");
     }
   }, []);
 
@@ -62,7 +62,7 @@ const LogInBlock = ({
     setWalletAddress(address);
     setWalletStatus({ status, message });
     if (status === walletStatus_Connected) {
-      history.push("/student");
+      history.push("/teacher");
     } else {
       console.log("Opening modal")
       handleOpen()

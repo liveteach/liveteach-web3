@@ -1,4 +1,5 @@
 import React from 'react';
+import DAO_logo from "../../../images/DAO_logo.png";
 
 const FooterNav = ({
                      className,
@@ -8,11 +9,10 @@ const FooterNav = ({
 
   return (
       <div className="main-footer">
-        <div
-            className="links"
-        >
-          <a href="https://www.decentraland.university/" target="_blank">Website</a>
-        </div>
+          <div className="social-links">
+              <img height="20px" alt="Decentraland.DAO" src={DAO_logo}/>
+          </div>
+
       </div>
   );
 }

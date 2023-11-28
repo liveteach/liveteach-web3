@@ -1,0 +1,65 @@
+[
+  {
+    "heading": "Main menu",
+    "menuItems": [
+          {
+            "id": 21,
+            "label": "page1",
+            "link": "/docs/dev/page1"
+          },
+          {
+            "id": 23,
+            "label": "Page Two Dropdown",
+            "subMenu": [
+              {
+                "id": 231,
+                "label": "page2",
+                "link": "/docs/dev/page2"
+              }
+            ]
+          },
+          {
+            "id": 24,
+            "label": "Page 3 Dropdown",
+            "subMenu": [
+              {
+                "id": 241,
+                "label": "page3",
+                "link": "/docs/dev/page3"
+              }
+            ]
+          }
+      ]
+  },
+  {
+    "heading": "Second menu",
+    "menuItems": [
+      {
+        "id": 25,
+        "label": "page1",
+        "link": "/docs/dev/page1"
+      },
+      {
+        "id": 26,
+        "label": "Page Two Dropdown",
+        "subMenu": [
+          {
+            "id": 261,
+            "label": "page2",
+            "link": "/docs/dev/page2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "heading": "API Documentation",
+    "menuItems": [
+      {
+        "id": 25,
+        "label": "Api Docs",
+        "outboundLink": "https://htmlpreview.github.io/?https://raw.githubusercontent.com/liveteach/liveteach-package/develop/docs/modules.html"
+      }
+    ]
+  }
+]
