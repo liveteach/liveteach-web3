@@ -84,6 +84,22 @@ export function AddFields(props){
                             }
                             <h4>{index +1}.</h4>
                         </Grid>
+                        {
+                            field.hasOwnProperty("name") &&  <Grid item xs={3}>
+                                <div className={"jsonFields"}>
+                                    <h4>Name</h4>
+                                    <TextField
+                                        fullWidth={true}
+                                        className="textInput"
+                                        color="error"
+                                        name="name"
+                                        value={field.name}
+                                        onChange={e => handleChangeInput(index, e)}
+                                    />
+                                </div>
+
+                            </Grid>
+                        }
 
                         {
                             field.hasOwnProperty("src") && <Grid item xs={3}>
@@ -113,6 +129,9 @@ export function AddFields(props){
                                     </div>
                                 </div>
                             </Grid>
+                        }
+                        {
+                            field.hasOwnProperty("data") && <PollCreation index={index} field={field} fields={props.fields} setFields={props.setFields} objStructure={props.objStructure}/>
                         }
                         {
                             field.hasOwnProperty("caption") &&  <Grid item xs={3}>
@@ -175,9 +194,7 @@ export function AddFields(props){
                                 </div>
                             </Grid>
                         }
-                        {
-                            field.hasOwnProperty("data") && <PollCreation index={index} field={field} fields={props.fields} setFields={props.setFields} objStructure={props.objStructure}/>
-                        }
+
                         <Grid item xs={3}>
                             <div className={"jsonFields"}>
                                 <h4>Add/Remove Fields</h4>
