@@ -35,8 +35,9 @@ export function PollCreation(props){
 
     return (
         <div>
+
             {
-                props.field.hasOwnProperty("data") &&<div  style={{ width:"350%"}}> <Grid item xs={3}>
+                props.field.data.hasOwnProperty("title") &&<div  style={{ width:"400%"}}> <Grid item xs={3}>
                     <div className={"jsonFields"}>
                         <h4>Title</h4>
                         <TextField
@@ -56,7 +57,7 @@ export function PollCreation(props){
                                 <h4>{String.fromCharCode(97 + itemIndex)}.</h4>
                                 <Grid item xs={3}>
                                     <div className={"jsonFields"}>
-                                        <h4>Title</h4>
+                                        <h4>Option</h4>
                                         <TextField
                                             fullWidth={true}
                                             className="textInput"
@@ -84,6 +85,75 @@ export function PollCreation(props){
                                 </Grid>
                             </Grid>
                         })
+                    }
+
+                </div>
+            }
+            {
+                props.field.data.hasOwnProperty("question") &&<div  style={{ width:"350%"}}> <Grid item xs={3}>
+                    <div className={"jsonFields"}>
+                        <h4>Question</h4>
+                        <TextField
+                            fullWidth={true}
+                            className="textInput"
+                            color="error"
+                            value={props.field.data.question}
+                            name="question"
+                            onChange={e => handleChangeInput(props.index, e)}
+                        />
+                    </div>
+                </Grid>
+                    <h4>Answers</h4>
+                    {
+                        props.field.data.options.map((item, itemIndex) => {
+                            return <Grid container>
+                                <h4>{String.fromCharCode(97 + itemIndex)}.</h4>
+                                <Grid item xs={3}>
+                                    <div className={"jsonFields"}>
+                                        <h4>Answer</h4>
+                                        <TextField
+                                            fullWidth={true}
+                                            className="textInput"
+                                            color="error"
+                                            value={item}
+                                            name="options"
+                                            onChange={e => handleChangeInputOptions(props.index, itemIndex, e)}
+                                        />
+                                    </div>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <div className={"jsonFields"}>
+                                        <h4>Add/Remove Fields</h4>
+                                        <ButtonGroup>
+                                            <Button
+                                                variant="contained"
+                                                onClick={() => handleAddOptions(props.index, props.fields, props.setFields, "")}
+                                            > + </Button>
+                                            <Button
+                                                variant="contained"
+                                                onClick={() => handleSubOptions(props.index, itemIndex, props.fields, props.setFields)}
+                                            > - </Button>
+                                        </ButtonGroup>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        })
+                    }
+                    <h4>Answer</h4>
+                    {
+                        <Grid item xs={3}>
+                            <div className={"jsonFields"}>
+                                <h4>Answer</h4>
+                                <TextField
+                                    fullWidth={true}
+                                    className="textInput"
+                                    color="error"
+                                    value={props.field.data.answer}
+                                    name="answer"
+                                    onChange={e => handleChangeInput(props.index, e)}
+                                />
+                            </div>
+                        </Grid>
                     }
                 </div>
             }
