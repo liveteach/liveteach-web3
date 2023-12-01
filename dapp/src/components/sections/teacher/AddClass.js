@@ -6,6 +6,7 @@ import React, {useState} from "react";
 import {AddFields} from "./additionalComponents/AddFields";
 import {pinJSONToIPFS} from "../../../utils/pinata";
 import {Typography} from "@material-ui/core";
+import {SpecialActionsSection} from "./additionalComponents/SpecialActionsSection";
 
 const style = {
     position: 'absolute',
@@ -31,6 +32,21 @@ export function AddClass(props){
     const pollStructure = { name: "", key: "poll", data: { title: "", options: [ "" ] }}
     const quizStructure = { name: "", key: "quiz", data: { question: "", options: [ "" ], answer: 0 }}
     const [open, setOpen] = useState(false)
+    const [inputText, setInputText] = useState('');
+    const [jsonObject, setJsonObject] = useState(null);
+
+    const handleInputChange = (event) => {
+        const text = event.target.value;
+        setInputText(text);
+
+        try {
+            const parsedJson = JSON.parse(text);
+            setJsonObject(parsedJson);
+        } catch (error) {
+            setJsonObject(null);
+        }
+    };
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -106,7 +122,7 @@ export function AddClass(props){
             "images": fields,
             "videos": videoFields,
             "models": model,
-            "contentUnits": [...poll, ...quiz] ,
+            "contentUnits": [...poll, ...quiz, jsonObject] ,
             "links": referenceLinks
         }},
         pinataMetadata: {name: selectedClass.guid}
@@ -236,6 +252,12 @@ export function AddClass(props){
                         </div>
                     </div>
                     <AddFields images={false} fields={referenceLinks} setFields={setReferenceLinks} objStructure={referenceLinksObjectStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h2>Special Actions</h2>
+                        </div>
+                    </div>
+                    <SpecialActionsSection inputText={inputText} handleInputChange={handleInputChange} jsonObject={jsonObject}/>
                 </Grid>
             </div>
             ) : (
