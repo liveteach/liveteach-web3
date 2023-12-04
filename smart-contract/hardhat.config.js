@@ -6,7 +6,7 @@ require('dotenv').config();
 require('@openzeppelin/hardhat-upgrades');
 require("@nomicfoundation/hardhat-verify");
 
-const { GOERLI_API_URL, SEPOLIA_API_URL, PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
+const { GOERLI_API_URL, SEPOLIA_API_URL, PRIVATE_KEY, MAINNET_PRIVATE_KEY, ETHERSCAN_API_KEY, MAINNET_JSON_RPC_PROVIDER_URL } = process.env;
 
 module.exports = {
   networks: {
@@ -48,7 +48,8 @@ module.exports = {
   etherscan: {
     apiKey: {
       goerli: ETHERSCAN_API_KEY,
-      sepolia: ETHERSCAN_API_KEY
+      sepolia: ETHERSCAN_API_KEY,
+      mainnet: ETHERSCAN_API_KEY
     }
   },
   paths: {
