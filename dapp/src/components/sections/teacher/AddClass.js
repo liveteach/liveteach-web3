@@ -6,6 +6,7 @@ import React, {useState} from "react";
 import {AddFields} from "./additionalComponents/AddFields";
 import {pinJSONToIPFS} from "../../../utils/pinata";
 import {Typography} from "@material-ui/core";
+import {SpecialActionsSection} from "./additionalComponents/SpecialActionsSection";
 
 const style = {
     position: 'absolute',
@@ -28,8 +29,24 @@ export function AddClass(props){
     const imgVidObjectStructure = { src: "", caption: "", ratio: "" };
     const referenceLinksObjectStructure = { src: "", caption: "" };
     const modelObjectStructure = { src: "", position: { x: 0, y: 0, z: 0 }, scale: { x: 1,y: 1,z: 1 }, animations: [{clip: "", loop: false}], spin: false, replace: false }
-    const pollStructure = { key: "poll", data: { title: "", options: [ "" ] }}
+    const pollStructure = { name: "", key: "poll", data: { title: "", options: [ "" ] }}
+    const quizStructure = { name: "", key: "quiz", data: { question: "", options: [ "" ], answer: 0 }}
     const [open, setOpen] = useState(false)
+    const [inputText, setInputText] = useState('');
+    const [jsonObject, setJsonObject] = useState(null);
+
+    const handleInputChange = (event) => {
+        const text = event.target.value;
+        setInputText(text);
+
+        try {
+            const parsedJson = JSON.parse(text);
+            setJsonObject(parsedJson);
+        } catch (error) {
+            setJsonObject(null);
+        }
+    };
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -73,6 +90,7 @@ export function AddClass(props){
     }])
 
     const [poll, setPoll] = useState([{
+        name: "",
         key: "poll",
         data: {
             title: "",
@@ -82,6 +100,17 @@ export function AddClass(props){
         }
     }])
 
+    const [quiz, setQuiz] = useState([{
+        name: "",
+        key: "quiz",
+        data: {
+            question: "",
+            options: [
+                "",
+            ],
+            answer: 0
+        }
+    }])
 
     const classTemplate = {
         pinataContent: {
@@ -93,7 +122,7 @@ export function AddClass(props){
             "images": fields,
             "videos": videoFields,
             "models": model,
-            "contentUnits": poll,
+            "contentUnits": [...poll, ...quiz, jsonObject] ,
             "links": referenceLinks
         }},
         pinataMetadata: {name: selectedClass.guid}
@@ -192,31 +221,43 @@ export function AddClass(props){
                             <h2>Images</h2>
                         </div>
                     </div>
-                    <AddFields images={true} fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
+                    <AddFields images={true} advanced={false} fields={fields} setFields={setFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Videos</h2>
                         </div>
                     </div>
-                    <AddFields images={false} fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
+                    <AddFields images={false} advanced={false} fields={videoFields} setFields={setVideoFields} objStructure={imgVidObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Models</h2>
                         </div>
                     </div>
-                    <AddFields images={false} fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
+                    <AddFields images={false} advanced={true} fields={model} setFields={setModel} objStructure={modelObjectStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Polls</h2>
                         </div>
                     </div>
-                    <AddFields images={false} fields={poll} setFields={setPoll} objStructure={pollStructure}/>
+                    <AddFields images={false} advanced={false} fields={poll} setFields={setPoll} objStructure={pollStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h2>Quiz</h2>
+                        </div>
+                    </div>
+                    <AddFields images={false} advanced={false} fields={quiz} setFields={setQuiz} objStructure={quizStructure}/>
                     <div className="ui container">
                         <div className="dcl tabs">
                             <h2>Reference Links</h2>
                         </div>
                     </div>
                     <AddFields images={false} fields={referenceLinks} setFields={setReferenceLinks} objStructure={referenceLinksObjectStructure}/>
+                    <div className="ui container">
+                        <div className="dcl tabs">
+                            <h2>Special Actions</h2>
+                        </div>
+                    </div>
+                    <SpecialActionsSection inputText={inputText} handleInputChange={handleInputChange} jsonObject={jsonObject}/>
                 </Grid>
             </div>
             ) : (

@@ -6,7 +6,7 @@
 # Node artifact files
 node_modules/
 *.env
-!prod.env
+!production.env
 !uat.env
 # Compiled Java class files
 *.class

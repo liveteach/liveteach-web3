@@ -165,3 +165,29 @@
 h4{
     color: #a09ba8!important;
 }
+
+.accordion {
+    background-color: #3d3b43;
+    color:white;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 1.4s;
+    margin: 10px;
+}
+
+#textContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.startText {
+    order: 1;
+}
+
+.endText {
+    order: 2;
+}
