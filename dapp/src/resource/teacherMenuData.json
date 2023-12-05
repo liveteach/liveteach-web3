@@ -23,11 +23,16 @@
           },
           {
             "id": 414,
-            "label": "Polls",
+            "label": "Polls, Quiz, Links",
             "link": "/docs/teacher/polls"
           },
           {
             "id": 415,
+            "label": "Special",
+            "link": "/docs/teacher/special"
+          },
+          {
+            "id": 416,
             "label": "Publishing",
             "link": "/docs/teacher/publish"
           }
