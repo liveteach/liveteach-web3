@@ -27,6 +27,7 @@ export const teacherMarkup = {
     imagesAndVideos: teacher.imagesAndVideo,
     models: teacher.models,
     polls: teacher.polls,
+    special: teacher.special,
     publish: teacher.publish
 };
 

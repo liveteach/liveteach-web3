@@ -2,13 +2,24 @@
 We can also add 3D models to the class for displaying during the lesson, this is achieved by the models window and has
 slightly more to it that the previous examples. The Input appears like so:
 
-![](https://i.ibb.co/gZQ56DS/Models.png)
+![](https://i.ibb.co/hVxS0rQ/Models.png)
 
 
-Setting the models source is the first step and this is the path to the model in the sdk project folder. Then we have a
-few steps to configure the position and some functions of the model. Position and Scale are a good place to start, this
-will require some investigation in the sdk scene to get the x,y,z axis for the position you would like the model to be
-displayed, in you sdk scene there is a tool next to the map to show you the current position your avatar is standing:
+Setting the models source is the first step and this is the path to the model in the sdk project folder. there are two
+checkboxes that follow one to set if the model has spin and the other to set whether to replace this model in the 
+sequence of models in the lesson, this can be useful if a model should remain in world and have another model overlay,
+or be displayed at the same time, checking this box will mean the next model in order will replace the current one.
+
+
+
+There are advanced configurations which can be added when we click on the advanced tab, These options should really be
+setup by a fairly experienced developer.
+
+![](https://i.ibb.co/CbLn0My/Models-Advanced.png)
+
+The options are as follows Position and Scale, this will require some 
+investigation in the sdk scene to get the x,y,z axis for the position you would like the model to be displayed, in you 
+sdk scene there is a tool next to the map to show you the current position your avatar is standing:
 
 ![](https://i.ibb.co/dbNK80y/position.png)
 
@@ -26,4 +37,4 @@ We can also add any animations that the model may have, we can add any number as
 simply enter the clip name, and check whether this is a looping animation or not. We can add and remove animations with
 the + and - buttons, adding will appear like so:
 
-![](https://i.ibb.co/fnCLKDY/Add-Animation.png)
+![](https://i.ibb.co/LrgzD19/Models-Animations.png)
