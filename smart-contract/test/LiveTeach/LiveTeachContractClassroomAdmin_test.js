@@ -57,14 +57,23 @@ describe("LiveTeachContractClassroomAdmin", function () {
     await Utils.teachContract.connect(Utils.operator).createClassroomAdmin(Utils.user1, [1, 2, 3, 4]);
     let result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(1, result.length);
-    await Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1);
+    await Utils.teachContract.connect(Utils.operator).deleteClassroomAdmin(Utils.user1);
     result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(result.length, 0);
   });
 
   it("Cannot delete non existing classroom admin", async function () {
-    await expect(Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1))
+    await expect(Utils.teachContract.connect(Utils.operator).deleteClassroomAdmin(Utils.user1))
       .to.be.revertedWith("Provided wallet lacks appropriate role.");
   });
 
+  it("Cannot delete classroom admin if you're not the landoperator", async function () {
+    await Utils.teachContract.connect(Utils.operator).createClassroomAdmin(Utils.user1, [1, 2, 3, 4]);
+    let result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
+    assert.equal(1, result.length);
+    await expect(Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1))
+      .to.be.revertedWith("You don't have access to this land");
+    result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
+    assert.equal(result.length, 1);
+  });
 });

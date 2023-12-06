@@ -16,6 +16,8 @@ interface ILANDRegistry {
         address operator,
         uint256 assetId
     ) external view returns (bool);
+
+    function updateOperator(uint256 input) external view returns (address);
 }
 
 contract LiveTeach {
@@ -118,7 +120,7 @@ contract LiveTeach {
 
     ILANDRegistry public landRegistry;
 
-     // OWNER ONLY METHODS
+    // OWNER ONLY METHODS
 
     function allLands() public view onlyOwner returns (uint256[] memory) {
         return registeredIds.landsRegisteredToClassroomAdmin;
@@ -181,7 +183,7 @@ contract LiveTeach {
         uint256[] memory assetIds
     ) private view returns (bool) {
         for (uint256 i = 0; i < assetIds.length; i++) {
-            if (!landRegistry.isAuthorized(msg.sender, assetIds[i])) {
+            if (landRegistry.updateOperator(assetIds[i]) != msg.sender) {
                 return false;
             }
         }
@@ -235,16 +237,18 @@ contract LiveTeach {
     // delete
 
     function deleteClassroomAdmin(address _walletAddress) public {
-        // check caller is entitled to land TODO
         require(
             hasRole(roleMap.classroomAdmin, _walletAddress),
             ERR_ACCESS_DENIED
         );
-        // remove existing mappings
         ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
             _walletAddress
         ];
-
+        require(
+            isCallerLandOperator(classroomAdmin.landIds),
+            "You don't have access to this land"
+        );
+        // remove existing mappings
         for (uint256 i = 0; i < classroomAdmin.landIds.length; i++) {
             unregisterLandFromClassroomAdmin(classroomAdmin.landIds[i]);
         }
