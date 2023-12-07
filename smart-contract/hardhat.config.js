@@ -22,7 +22,8 @@ module.exports = {
     },
     goerli: {
       url: GOERLI_API_URL,
-      accounts: [`0x${PRIVATE_KEY}`]
+      accounts: [`0x${PRIVATE_KEY}`],
+      gasPrice: 200000000000, // 200 gwei
     }
   },
   solidity: {

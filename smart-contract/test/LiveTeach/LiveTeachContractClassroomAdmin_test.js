@@ -72,7 +72,10 @@ describe("LiveTeachContractClassroomAdmin", function () {
     let result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(1, result.length);
     await expect(Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1))
-      .to.be.revertedWith("Parcel 4 expected operator: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8\n");
+      .to.be.revertedWith("Parcel 1 expected operator: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8\n" +
+      "Parcel 2 expected operator: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8\n" +
+      "Parcel 3 expected operator: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8\n" +
+      "Parcel 4 expected operator: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8\n");
     result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(result.length, 1);
   });
