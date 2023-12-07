@@ -22,7 +22,7 @@ const Header = ({
                   ...props
                 }) => {
 
-  const { avatar,name,auth, avatarLoaded, roles } = useSelector((state) => state.adminUser);
+  const { avatar,name,auth, avatarLoaded, roles, walletAddress } = useSelector((state) => state.adminUser);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null)
@@ -94,11 +94,12 @@ const Header = ({
             `https://peer.decentraland.org/lambdas/profiles/${address}`
         );
         console.log(result);
-        dispatch(setAvatar(result.data.avatars[0].avatar.snapshots.face256));
+        let avatar = result.data.avatars[0].avatar.snapshots.face256 ? result.data.avatars[0].avatar.snapshots.face256 : walletAddress
+        dispatch(setAvatar(avatar));
         dispatch(setName(result.data.avatars[0].name));
       } catch (error) {
-        dispatch(setAvatar(""));
-        dispatch(setName(""));
+        dispatch(setAvatar(walletAddress));
+        dispatch(setName(walletAddress));
         console.error("Error:", error);
       }
     }}
@@ -137,7 +138,13 @@ const Header = ({
                       <div className="dcl user-menu">
                         <div className="toggle" onClick={toggleMenu}>
                           <div className="dcl avatar-face medium">
-                            <img src={avatar} alt=""/>
+                            {
+                              typeof avatar === 'string' && avatar.includes('https') ? (
+                                  <img src={avatar} alt="" />
+                              ) : (
+                                  <div style={{position: 'absolute', top: 10, left: 4}}>{ avatar.substring(0,5) }</div>
+                              )
+                            }
                           </div>
                         </div>
                         <div className={`menu ${isMenuOpen ? "open clickable" : ""}`} ref={menuRef}>

@@ -33,10 +33,12 @@ describe("LiveTeachContractLandRegistryInteractions", function () {
     await teachContract.connect(contractOwner).setLANDRegistry(landRegistryContract);
 
     // set up a land
-    await landRegistryContract.connect(contractOwner).assignMultipleParcels([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], landOwner);
+    let xParcels = [1, 2, 3, 4, 5];
+    let yParcels = [1, 2, 3, 4, 5];
+    let assetIds = await teachContract.connect(contractOwner).getLandIdsFromCoordinates([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]);
+    await landRegistryContract.connect(contractOwner).assignMultipleParcels(xParcels, yParcels, landOwner);
     await landRegistryContract.connect(landOwner).setApprovalForAll(operator, true);
-    // await landRegistryContract.connect(landOwner).approve(operator, 340282366920938463463374607431768211457n);
-
+    await landRegistryContract.connect(landOwner).setManyUpdateOperator([...assetIds], operator);
   })
 
   it("Test data looks right", async function () {
@@ -61,6 +63,6 @@ describe("LiveTeachContractLandRegistryInteractions", function () {
     await expect(teachContract.connect(operator).createClassroomAdmin(nonOperator, [
       oneOne,
       sixSix
-    ])).to.be.revertedWith("You don't have access to this land");
+    ])).to.be.revertedWith("Parcel 2041694201525630780780247644590609268742 expected operator: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc but was: 0x00\n");
   });
 });

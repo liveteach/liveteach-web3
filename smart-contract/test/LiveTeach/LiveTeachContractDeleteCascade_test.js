@@ -14,8 +14,9 @@ describe("LiveTeachContractDeleteCascade", function () {
   let T7;
   let T8;
   let T10;
+  let operator;
   let teachContract;
-  let landContract 
+  let landContract
 
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/LiveTeach.sol:LiveTeach");
@@ -38,10 +39,12 @@ describe("LiveTeachContractDeleteCascade", function () {
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
 
     await landContract.connect(owner).assignMultipleParcels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 1], owner);
+
     for (let i = 1; i < 22; i++) {
-      await landContract.connect(owner).approve(operator, i);
+      // await landContract.connect(owner).approve(operator, i);
+      await landContract.connect(owner).setManyUpdateOperator([i], operator);
     }
-    await landContract.connect(owner).approve(operator, 340282366920938463463374607431768211457n);
+    await landContract.connect(owner).setManyUpdateOperator([340282366920938463463374607431768211457n], operator);
 
     await teachContract.connect(operator).createClassroomAdmin(CA0, [1, 2, 3, 4]);
     await teachContract.connect(operator).createClassroomAdmin(CA1, [5, 6, 7]);
@@ -178,7 +181,7 @@ describe("LiveTeachContractDeleteCascade", function () {
   it("Deleting a classroom admin deletes it's classrooms", async function () {
     let allClassrooms = await teachContract.connect(owner).allClassrooms();
     assert.equal(4, allClassrooms.length);
-    await teachContract.connect(owner).deleteClassroomAdmin(CA0.address);
+    await teachContract.connect(operator).deleteClassroomAdmin(CA0.address);
     allClassrooms = await teachContract.connect(owner).allClassrooms();
     assert.equal(1, allClassrooms.length);
   });
@@ -186,7 +189,7 @@ describe("LiveTeachContractDeleteCascade", function () {
   it("Deleting a classroom admin deletes it's teachers", async function () {
     let allTeachers = await teachContract.connect(owner).allTeachers();
     assert.equal(9, allTeachers.length);
-    await teachContract.connect(owner).deleteClassroomAdmin(CA0.address);
+    await teachContract.connect(operator).deleteClassroomAdmin(CA0.address);
     allTeachers = await teachContract.connect(owner).allTeachers();
     assert.equal(1, allTeachers.length);
   });
@@ -194,7 +197,7 @@ describe("LiveTeachContractDeleteCascade", function () {
   it("Deleting a classroom admin deletes it's lands", async function () {
     let allLands = await teachContract.connect(owner).allLands();
     assert.equal(7, allLands.length);
-    await teachContract.connect(owner).deleteClassroomAdmin(CA0.address);
+    await teachContract.connect(operator).deleteClassroomAdmin(CA0.address);
     allLands = await teachContract.connect(owner).allLands();
     assert.equal(3, allLands.length);
   });
@@ -202,7 +205,7 @@ describe("LiveTeachContractDeleteCascade", function () {
   it("Deleting a classroom deletes it's teachers but not teachers assigned to other classrooms", async function () {
     let allTeachers = await teachContract.connect(owner).allTeachers();
     assert.equal(9, allTeachers.length);
-    await teachContract.connect(owner).deleteClassroomAdmin(CA0.address);
+    await teachContract.connect(operator).deleteClassroomAdmin(CA0.address);
     allTeachers = await teachContract.connect(owner).allTeachers();
     assert.equal(1, allTeachers.length);
 
