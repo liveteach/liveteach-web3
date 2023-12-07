@@ -63,6 +63,6 @@ describe("LiveTeachContractLandRegistryInteractions", function () {
     await expect(teachContract.connect(operator).createClassroomAdmin(nonOperator, [
       oneOne,
       sixSix
-    ])).to.be.revertedWith("You don't have access to this land");
+    ])).to.be.revertedWith("Parcel 2041694201525630780780247644590609268742 expected operator: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc but was: 0x00\n");
   });
 });

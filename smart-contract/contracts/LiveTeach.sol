@@ -179,25 +179,11 @@ contract LiveTeach {
     // CLASSROOM ADMIN
     // create
 
-    function isCallerLandOperator(
-        uint256[] memory assetIds
-    ) private view returns (bool) {
-        for (uint256 i = 0; i < assetIds.length; i++) {
-            if (landRegistry.updateOperator(assetIds[i]) != msg.sender) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     function createClassroomAdmin(
         address _walletAddress,
         uint256[] memory _landIds
     ) public {
-        require(
-            isCallerLandOperator(_landIds),
-            "You don't have access to this land"
-        );
+        requireCallerLandOperator(_landIds);
         require(
             !hasRole(roleMap.classroomAdmin, _walletAddress),
             string.concat(ERR_ROLE_ASSIGNED, roleMap.classroomAdmin.roleName)
@@ -244,10 +230,8 @@ contract LiveTeach {
         ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
             _walletAddress
         ];
-        require(
-            isCallerLandOperator(classroomAdmin.landIds),
-            "You don't have access to this land"
-        );
+        requireCallerLandOperator(classroomAdmin.landIds);
+
         // remove existing mappings
         for (uint256 i = 0; i < classroomAdmin.landIds.length; i++) {
             unregisterLandFromClassroomAdmin(classroomAdmin.landIds[i]);
@@ -839,5 +823,26 @@ contract LiveTeach {
             "Only the contract owner can call this function"
         );
         _;
+    }
+
+    function requireCallerLandOperator(uint256[] memory assetIds) public view {
+        bool isOperator = true;
+        string memory err="";
+        for (uint256 i = 0; i < assetIds.length; i++) {
+            address actualOperator = landRegistry.updateOperator(assetIds[i]);
+            if (actualOperator != msg.sender) {
+                isOperator = false;
+                err = string.concat(err,
+                    "Parcel ",
+                    Strings.toString(assetIds[i]),
+                    " expected operator: ",
+                    Strings.toHexString(uint160(msg.sender)),
+                    " but was: ",
+                    Strings.toHexString(uint160(actualOperator)),
+                    "\n"
+                );
+            }
+        }
+        require(isOperator, err);
     }
 }
