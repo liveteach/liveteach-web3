@@ -51,7 +51,7 @@ export default function Teacher(props){
                                 <th>Id</th>
                                 <th>Name</th>
                                 <th>Content URL</th>
-                                <th>Delete</th>
+                                <th>Remove</th>
                             </tr>
 
                             {
