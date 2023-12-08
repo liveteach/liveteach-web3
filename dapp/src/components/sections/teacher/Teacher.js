@@ -2,9 +2,8 @@ import { useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
-import {deleteClassConfig, deleteTeacher, getClassConfigs, getTeachers} from "../../../utils/interact";
+import {deleteClassConfig, getClassConfigs} from "../../../utils/interact";
 import {Button} from "@mui/material";
-import {setTeachers} from "../../../store/classroomAdminState";
 
 export default function Teacher(props){
 
