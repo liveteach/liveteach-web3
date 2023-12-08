@@ -22,7 +22,7 @@ const style = {
 
 export function AddClass(props){
 
-    const { newClassDescription, selectedClass,ipfsUrl, jwtToken } = useSelector((state) => state.teacher)
+    const { newClassReference,newClassDescription, selectedClass,ipfsUrl, jwtToken } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
@@ -117,7 +117,7 @@ export function AddClass(props){
         "content": {
             "id": selectedClass.id,
             "guid": selectedClass.guid,
-            "name": selectedClass.name,
+            "name": newClassReference,
             "description": newClassDescription,
             "images": fields,
             "videos": videoFields,
@@ -193,8 +193,7 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={selectedClass.name}
-                                disabled={true}
+                                value={newClassReference}
                                 onChange={(e) => {
                                     dispatch(setNewClassReference(e.target.value))
                                 }}
