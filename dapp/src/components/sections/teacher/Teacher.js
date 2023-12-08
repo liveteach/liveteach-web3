@@ -2,7 +2,9 @@ import { useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
-import {getClassConfigs} from "../../../utils/interact";
+import {deleteClassConfig, deleteTeacher, getClassConfigs, getTeachers} from "../../../utils/interact";
+import {Button} from "@mui/material";
+import {setTeachers} from "../../../store/classroomAdminState";
 
 export default function Teacher(props){
 
@@ -50,6 +52,7 @@ export default function Teacher(props){
                                 <th>Id</th>
                                 <th>Name</th>
                                 <th>Content URL</th>
+                                <th>Delete</th>
                             </tr>
 
                             {
@@ -58,6 +61,7 @@ export default function Teacher(props){
                                             <tr key={`Contributor_${item}`}>
                                                 <td>
                                                     {item.id}
+                                                    <span style={{color:'green', display: 'none'}} id={`manifestRemove${index}`}>Pending..</span>
                                                 </td>
                                                 <td>
                                                     {item.classReference}
@@ -65,6 +69,21 @@ export default function Teacher(props){
                                                 <td>
                                                     {item.contentUrl}
                                                 </td>
+                                                <Button
+                                                    onClick={() => {
+                                                        let text = document.getElementById(`manifestRemove${index}`);
+                                                        text.style.display = 'block'
+                                                        deleteClassConfig(item.id).then(result => {
+                                                            text.style.display = 'none'
+                                                            getClassConfigs().then(result => {
+                                                                console.log("Class Configs")
+                                                                console.log(result)
+                                                                setClassData(result);
+                                                            })
+                                                            console.log(result)
+                                                        })
+                                                    }}
+                                                >Remove</Button>
                                             </tr>
                                         );
                                 })
