@@ -142,7 +142,7 @@ const Header = ({
                               typeof avatar === 'string' && avatar.includes('https') ? (
                                   <img src={avatar} alt="" />
                               ) : (
-                                  <div style={{position: 'absolute', top: 10, left: 4}}>{ avatar.substring(0,5) }</div>
+                                  <div style={{position: 'absolute', top: 10, left: 4, fontSize: '13px'}}>{ avatar.substring(0,5) }</div>
                               )
                             }
                           </div>

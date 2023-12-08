@@ -12,6 +12,7 @@ export const teacherStateSlice = createSlice({
             id: 0,
             guid: ""
         },
+        pendingClass: [{name: "", status: ""}],
         newClassReference: "",
         newClassDescription: "",
         ipfsUrl: "",
@@ -41,7 +42,10 @@ export const teacherStateSlice = createSlice({
         },
         setJwtToken: (state, action) => {
             state.jwtToken = action.payload
-        }
+        },
+        setPendingClass: (state, action) => {
+            state.pendingClass = action.payload
+        },
     }
 });
 
@@ -52,6 +56,7 @@ export const { setWalletAddress,
     setNewClassReference,
     setNewClassDescription,
     setIpfsUrl,
-    setJwtToken} = teacherStateSlice.actions;
+    setJwtToken,
+    setPendingClass} = teacherStateSlice.actions;
 
 export default teacherStateSlice.reducer;
