@@ -68,6 +68,7 @@ export default function Teacher(props){
                                                 <td>
                                                     {item.contentUrl}
                                                 </td>
+                                                <td>
                                                 <Button
                                                     onClick={() => {
                                                         let text = document.getElementById(`manifestRemove${index}`);
@@ -83,6 +84,7 @@ export default function Teacher(props){
                                                         })
                                                     }}
                                                 >Remove</Button>
+                                                </td>
                                             </tr>
                                         );
                                 })
