@@ -78,7 +78,7 @@ export default function Teacher(props){
                                                     ><button
                                                         className="ui small primary button"
                                                         onClick={() => {
-                                                            let ids = {name: item.name, id: item.id, guid: item.guid}
+                                                            let ids = {name: "", id: item.id, guid: ""}
                                                             dispatch(setSelectedClass(ids))
                                                         }}
                                                     >Setup</button></Link>
