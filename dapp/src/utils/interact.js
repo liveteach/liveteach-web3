@@ -340,9 +340,9 @@ export const createClassConfig = async (classReference, contentUrl) => {
 /* Get all the ClassConfigs associated with the calling teacher.
  */
 export const getClassConfigs = async () => {
-  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress)
-    .getClassConfigs()
-    .call({ from: window.ethereum.selectedAddress });
+  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress).methods
+      .getClassConfigs()
+      .call({ from: window.ethereum.selectedAddress });
   return result;
 }
 /* Get a single ClassConfig by id.

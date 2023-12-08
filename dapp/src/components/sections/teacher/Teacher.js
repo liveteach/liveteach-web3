@@ -1,10 +1,10 @@
 import {Button} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import {NoAdmittance} from "../NoAdmittance";
-import {getClassroom, getTeacher} from "../../../utils/interact";
+import {getClassConfigs, getClassroom, getTeacher} from "../../../utils/interact";
 import {setClassIds, setSelectedClass} from "../../../store/teacherState";
 import {setGuid} from "../../../store/classroomAdminState";
 
@@ -30,14 +30,16 @@ export default function Teacher(props){
     }, [classIds]);
 
     useEffect(() => {
-        console.log(roles)
-        if(roles.includes("teacher")){
+
             getTeacher(walletAddress).then(result => {
                 console.log(result)
                 dispatch(setClassIds(result.classroomIds))
             })
-        }
-    },[roles])
+        getClassConfigs().then(result => {
+            console.log("Class Configs")
+            console.log(result)
+        })
+    },[])
 
     return(
         <div className="ui container">
@@ -47,6 +49,14 @@ export default function Teacher(props){
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
                             <h4>Classes</h4>
+                        </div>
+                        <div className="dcl tabs-right">
+                            <Link
+                                to={"/teacher/add"}
+                            ><button
+                                onClick={() => console.log("Eat My Shorts")}
+                                className="ui small primary button"
+                            >Add</button></Link>
                         </div>
                     </div>
                 </div>
