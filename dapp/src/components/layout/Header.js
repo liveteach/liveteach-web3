@@ -93,7 +93,6 @@ const Header = ({
         const result = await axios.get(
             `https://peer.decentraland.org/lambdas/profiles/${address}`
         );
-        console.log(result);
         let avatar = result.data.avatars[0].avatar.snapshots.face256 ? result.data.avatars[0].avatar.snapshots.face256 : walletAddress
         dispatch(setAvatar(avatar));
         dispatch(setName(result.data.avatars[0].name));
