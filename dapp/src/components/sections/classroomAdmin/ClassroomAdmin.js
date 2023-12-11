@@ -17,11 +17,9 @@ export default function ClassroomAdmin(props){
     useEffect(() => {
         if(render) {
             getClassrooms().then(result => {
-                console.log(result)
                 dispatch(setClassrooms(result))
             })
             getTeachers().then(result => {
-                console.log(result)
                 dispatch(setTeachers(result))
             })
         }
