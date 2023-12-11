@@ -135,19 +135,19 @@ export function AdvancedModelSection(props){
                                                         className="textInput"
                                                         color="error"
                                                         name="clip"
-                                                        value={props.field.clip}
+                                                        value={field.clip}
                                                         onChange={e => handleChangeAnimationInput(props.index, indexAnim, e)}
                                                     />
                                                 </div>
                                             </Grid>
                                         }
                                         {
-                                            props.field.hasOwnProperty("loop") && <Grid item xs={6}>
+                                            <Grid item xs={6}>
                                                 <div className={"jsonFields"}>
                                                     <h4>Loop</h4>
                                                     <input
                                                         type="checkbox"
-                                                        checked={props.field.loop}
+                                                        checked={field.loop}
                                                         name="loop"
                                                         onChange={(e) => {
                                                             handleAnimationCheckbox(props.index, indexAnim, e)

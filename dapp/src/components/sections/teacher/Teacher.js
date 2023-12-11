@@ -80,7 +80,7 @@ export default function Teacher(props){
                             <Link
                                 to={"/teacher/add"}
                             ><button
-                                onClick={() => console.log("Eat My Shorts")}
+                                onClick={() => console.log("Nav Clicked")}
                                 className="ui small primary button"
                             >Add</button></Link>
                         </div>

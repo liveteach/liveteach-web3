@@ -35,18 +35,30 @@ export function AddClass(props){
     const quizStructure = { name: "", key: "quiz", data: { question: "", options: [ "" ], answer: 0 }}
     const [open, setOpen] = useState(false)
     const [inputText, setInputText] = useState('');
-    const [jsonObject, setJsonObject] = useState(null);
+    const [jsonObject, setJsonObject] = useState([]);
     const history = useHistory()
 
-    const handleInputChange = (event) => {
-        const text = event.target.value;
-        setInputText(text);
+    const handleInputChange = (text) => {
+        if(isValidJSON(text)){
+            setInputText(text);
+            try {
+                const parsedJson = JSON.parse(text);
+                setJsonObject(parsedJson);
+                alert("Successfully Added")
+            } catch (error) {
+                setJsonObject(null);
+            }
+        } else {
+            alert("This isnt a valid JSON array")
+        }
+    };
 
+    const isValidJSON = (text) => {
         try {
-            const parsedJson = JSON.parse(text);
-            setJsonObject(parsedJson);
+            JSON.parse(text);
+            return true;
         } catch (error) {
-            setJsonObject(null);
+            return false;
         }
     };
 
@@ -125,7 +137,7 @@ export function AddClass(props){
             "images": fields,
             "videos": videoFields,
             "models": model,
-            "contentUnits": [...poll, ...quiz, jsonObject] ,
+            "contentUnits": [...poll, ...quiz, ...jsonObject] ,
             "links": referenceLinks
         }},
         pinataMetadata: {name: newClassReference}
