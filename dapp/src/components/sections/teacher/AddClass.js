@@ -7,6 +7,8 @@ import {AddFields} from "./additionalComponents/AddFields";
 import {pinJSONToIPFS} from "../../../utils/pinata";
 import {Typography} from "@material-ui/core";
 import {SpecialActionsSection} from "./additionalComponents/SpecialActionsSection";
+import {useHistory} from "react-router-dom";
+import {setPendingTeachers} from "../../../store/classroomAdminState";
 
 const style = {
     position: 'absolute',
@@ -22,7 +24,7 @@ const style = {
 
 export function AddClass(props){
 
-    const { newClassDescription, selectedClass,ipfsUrl, jwtToken } = useSelector((state) => state.teacher)
+    const { newClassReference,newClassDescription, selectedClass,ipfsUrl, jwtToken } = useSelector((state) => state.teacher)
     const {roles} = useSelector((state) => state.adminUser)
     const render = roles.includes("teacher") || roles.includes("classroomAdmin")
     const dispatch = useDispatch()
@@ -34,6 +36,7 @@ export function AddClass(props){
     const [open, setOpen] = useState(false)
     const [inputText, setInputText] = useState('');
     const [jsonObject, setJsonObject] = useState(null);
+    const history = useHistory()
 
     const handleInputChange = (event) => {
         const text = event.target.value;
@@ -117,7 +120,7 @@ export function AddClass(props){
         "content": {
             "id": selectedClass.id,
             "guid": selectedClass.guid,
-            "name": selectedClass.name,
+            "name": newClassReference,
             "description": newClassDescription,
             "images": fields,
             "videos": videoFields,
@@ -125,7 +128,7 @@ export function AddClass(props){
             "contentUnits": [...poll, ...quiz, jsonObject] ,
             "links": referenceLinks
         }},
-        pinataMetadata: {name: selectedClass.guid}
+        pinataMetadata: {name: newClassReference}
     };
 
 
@@ -144,9 +147,10 @@ export function AddClass(props){
     };
 
     const handlePublish = () => {
+
         document.getElementById("ipfsPending").style.display = 'block';
 
-        pinJSONToIPFS(classTemplate, dispatch, jwtToken,selectedClass.name).then(response => {
+        pinJSONToIPFS(classTemplate, dispatch, jwtToken,newClassReference, "/teacher", history).then(response => {
             console.log(response)
         })
     }
@@ -193,8 +197,7 @@ export function AddClass(props){
                                 fullWidth={true}
                                 className="textInput"
                                 color="error"
-                                value={selectedClass.name}
-                                disabled={true}
+                                value={newClassReference}
                                 onChange={(e) => {
                                     dispatch(setNewClassReference(e.target.value))
                                 }}
@@ -290,6 +293,7 @@ export function AddClass(props){
 
                         <div style={{margin: '15px'}}>
                             <Button
+
                                 className="ui small primary button"
                                 onClick={() => {
                                     handlePublish()

@@ -42,13 +42,10 @@ contract LiveTeachTeachers {
     function createClassConfig(
         string memory _classReference,
         string memory _contentUrl
-    ) public {
-        registerClassConfig(
-            getNewClassConfigId(),
-            msg.sender,
-            _classReference,
-            _contentUrl
-        );
+    ) public returns (uint256) {
+        uint256 id = getNewClassConfigId();
+        registerClassConfig(id, msg.sender, _classReference, _contentUrl);
+        return id;
     }
 
     // read

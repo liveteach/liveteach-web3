@@ -1,15 +1,15 @@
 const { ethers } = require("hardhat");
 
+// dev
+// const DEPLOYED_ADDRESS = '0xf44b11C7c7248c592d0Cc1fACFd8a41e48C52762'
+// const LAND_REGISTRY_ADDRESS = '0x0F332c649CA9417EfE001F5df7415d7631f582E9'
+// const TEACHERS_CONTRACT_ADDRESS = '0x15eD220A421FD58A66188103A3a3411dA9d22295'
 
-// uat
-// const DEPLOYED_ADDRESS = '0xE5880655380C28F14c2C0396B509584a3fbDE242'
-// const LAND_REGISTRY_ADDRESS = '0x160cCf9ba313Fc4e8Ea9Eb763c0dC47807c9699A'
-// const TEACHERS_CONTRACT_ADDRESS = '0xDB1D9D5b5cb530fCCd769871D2DDe8D161235792'
+// sepolia - deployed 07/12/2023, test data all set
+// const DEPLOYED_ADDRESS = '0x71263080b21bBFc8Fb36D3825EB4A4Fc842A254e'
+// const LAND_REGISTRY_ADDRESS = '0x389fEFA55DEaFa195843892023330b08D87CB949'
+// const TEACHERS_CONTRACT_ADDRESS = '0x78E2dAD97F8894E090A4cb286fb1C97bC68D3F12'
 
-// dev (new)
-const DEPLOYED_ADDRESS = '0x9B69B40Ab44C56049BaEcd49Bf949AD5200d3379'
-const LAND_REGISTRY_ADDRESS = '0xE1800d91E1f8bb1137735ab0f894bA6DfD99e88c'
-const TEACHERS_CONTRACT_ADDRESS = '0x03d92EdE8f9ac91881FCAd58801189174587B530'
 
 const LAND_OWNER_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26'.toLowerCase() // shared
 const LAND_OPERATOR_WALLET = '0xEd485064EB5Ac855Da3014923A87d25BF2D26E26'.toLowerCase() // shared
@@ -44,11 +44,11 @@ async function main() {
     // CLASSROOM ADMIN WALLET
     // let teacher2LandIds = await getLandIdsFromCoordinates(TEACHER_2_COORDINATES);
     // await createClassroomLandIds("QA Classroom 1", teacher2LandIds, CLASSROOM_1_GUID);
-    await createTeacher(TEACHER_1_WALLET, [1]);
+    // await createTeacher(TEACHER_1_WALLET, [1]);
 
     // TEACHER WALLET
     // await callTest();
-    // await createClassroomContent();
+    await createClassroomContent();
 }
 
 main();
@@ -100,10 +100,6 @@ async function grantLandPermissions() {
         console.log(txReceipt)
         console.log("all coordinates length 3: " + allLandCoordinates.length);
         let assetIds = await contract.getLandIdsFromCoordinates(allLandCoordinates);
-        // console.log("granting operator for " + assetIds.length  +"asset ids:");
-        for(let i = 0 ; i < assetIds.length; i++) {
-            console.log(assetIds[i]);
-        }
         tx = await landRegistryContract.setManyUpdateOperator([...assetIds], LAND_OPERATOR_WALLET);
         console.log(tx)
         txReceipt = tx.wait()

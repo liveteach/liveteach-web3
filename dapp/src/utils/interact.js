@@ -331,18 +331,18 @@ export const getUserRoles = async () => {
 /* Create a new ClassConfig.
  * Callable by anyone.
  */
-export const createClassConfig = async (classReference, contentUrl) => {
+export const createClassConfig = async (classReference, contentUrl, redirectUrl, history) => {
   window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress);
   return callGasTransaction(window.contract.methods.createClassConfig,
-    [classReference, contentUrl], null, null, teachersContractAddress);
+    [classReference, contentUrl], redirectUrl, history, teachersContractAddress);
 }
 // read
 /* Get all the ClassConfigs associated with the calling teacher.
  */
 export const getClassConfigs = async () => {
-  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress)
-    .getClassConfigs()
-    .call({ from: window.ethereum.selectedAddress });
+  const result = window.contract = await new web3.eth.Contract(teachersContractAbi, teachersContractAddress).methods
+      .getClassConfigs()
+      .call({ from: window.ethereum.selectedAddress });
   return result;
 }
 /* Get a single ClassConfig by id.

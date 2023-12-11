@@ -169,7 +169,7 @@ export default function ClassroomAdmin(props){
                                                 <span style={{color:'green', display: 'none'}} id={`teacherRemove${index}`}>Pending..</span>
                                             </td>
                                             <td>
-                                                {item.classroomIds}
+                                                {item.classroomIds?.join(",")}
                                             </td>
                                             <td>
                                                 <Button
