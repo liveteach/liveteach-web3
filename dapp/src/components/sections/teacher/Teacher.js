@@ -74,7 +74,7 @@ export default function Teacher(props){
                 <div className="ui container">
                     <div className="dcl tabs">
                         <div className="dcl tabs-left">
-                            <h4>Classes</h4>
+                            <h4>Content Manifests</h4>
                         </div>
                         <div className="dcl tabs-right">
                             <Link
