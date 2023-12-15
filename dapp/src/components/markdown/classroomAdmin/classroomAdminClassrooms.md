@@ -18,6 +18,8 @@ map and will generate a map tile confirming the position, for example if we sele
 
 ![](https://i.ibb.co/zxGrJFh/map-Screen-One.png)
 
+>Alternatively you can copy the coords from the scene.json of the venue and paste them into the input for a quicker effect.
+
 This input excepts multiple co-ordinates for the class and centres the image on the most logical centre coord. If you add a
 co-ordinate by mistake simply click the "x" on the chip of the incorrect co-ordinate and that will be removed updating the 
 image.
