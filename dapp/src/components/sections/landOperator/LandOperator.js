@@ -62,7 +62,21 @@ export function LandOperator(props){
     }
 
     const handleChange = (newChips) => {
-        dispatch(setNewLandIds(newChips))
+        if(newChips.length > 0){
+            const formattedValues = newChips.toString().replace(/\t/g, '').split(', ');
+            const newArray = formattedValues
+                .map(str => str.replace(/"/g, '').split(', ')).join(', ').split(',');
+            const pairArray = [];
+            for (let i = 0; i < newArray.length - 1; i++) {
+                if(i % 2 === 0){
+                    const pair = `${newArray[i]},${newArray[i + 1]}`;
+                    pairArray.push(pair);
+                }
+            }
+            dispatch(setNewLandIds(pairArray))
+        } else {
+            dispatch(setNewLandIds(newChips))
+        }
     }
 
     return (
