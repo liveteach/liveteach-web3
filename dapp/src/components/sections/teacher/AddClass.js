@@ -39,19 +39,21 @@ export function AddClass(props){
     const history = useHistory()
 
     const handleInputChange = (text) => {
-        if(isValidJSON(text)){
-            setInputText(text);
-            try {
-                const parsedJson = JSON.parse(text);
+        try {
+            const parsedJson = JSON.parse(text);
+            if (Array.isArray(parsedJson)) {
+                setInputText(text);
                 setJsonObject(parsedJson);
-                alert("Successfully Added")
-            } catch (error) {
-                setJsonObject(null);
+                alert("Successfully Added");
+            } else {
+                alert("This is valid JSON but not a JSON array");
             }
-        } else {
-            alert("This isnt a valid JSON array")
+        } catch (error) {
+            alert("This isn't a valid JSON");
+            setJsonObject(null);
         }
     };
+
 
     const isValidJSON = (text) => {
         try {
