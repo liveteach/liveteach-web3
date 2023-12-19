@@ -13,6 +13,7 @@ export function MarkdownPage(props){
                     rehypePlugins={[rehypeKatex]}
                     skipHtml={true}
                     children={props.content}
+                    linkTarget="_blank"
                 />
             </article>
         </div>
