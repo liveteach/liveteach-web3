@@ -58,8 +58,8 @@ export function AddTeacher(props){
                     </div>
                 </div>
                 <Grid container>
-                    <Grid item xs={8}>
-                        <div className={"inputFields"}>
+                    <Grid item xs={6}>
+                        <div className={"teacherFields"}>
                             <h4>Wallet Address</h4>
                             <TextField
                                 fullWidth={true}
@@ -72,8 +72,8 @@ export function AddTeacher(props){
                             />
                         </div>
                     </Grid>
-                    <Grid item xs={4}>
-                        <div className={"inputFields"}>
+                    <Grid item xs={6}>
+                        <div className={"teacherFields"}>
                             <h4>Class</h4>
                             <Select
                                 className="selectMenu"

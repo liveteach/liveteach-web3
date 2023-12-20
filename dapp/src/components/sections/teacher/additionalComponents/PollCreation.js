@@ -110,7 +110,7 @@ export function PollCreation(props){
                                 <h4>{String.fromCharCode(97 + itemIndex)}.</h4>
                                 <Grid item xs={3}>
                                     <div className={"jsonFields"}>
-                                        <h4>Answer</h4>
+                                        <h4>Answers</h4>
                                         <TextField
                                             fullWidth={true}
                                             className="textInput"
@@ -139,7 +139,7 @@ export function PollCreation(props){
                             </Grid>
                         })
                     }
-                    <h4>Answer</h4>
+                    <h4>Correct Answer</h4>
                     {
                         <Grid item xs={3}>
                             <div className={"jsonFields"}>

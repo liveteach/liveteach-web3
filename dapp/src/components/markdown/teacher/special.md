@@ -6,7 +6,7 @@ Our final box is the custom JSON box where we can add a custom block of JSON to 
 covered by the previous inputs. For example here is some custom JSON which can be used to add interactions to a 3D
 Model:
 
-     {
+     [{
                 "name": "Cell Model",
                 "key": "interactive_model",
                 "data": {
@@ -127,7 +127,8 @@ Model:
                         }
                     ]
                 }
-            }
+            }]
 
 Simply pasting this block of code is enough it will be included in the JSON, an experienced developer should carry 
-out this step to ensure that the JSON is correctly formatted.  
+out this step to ensure that the JSON is correctly formatted. Please take note that the JSON is in the form of an Array,
+this is so that we can handle multiple "special action" objects within the config.

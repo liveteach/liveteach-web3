@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract LiveTeachTeachers {
     address private owner;
-    uint256 private latestClassConfigId = 1;
+    uint256 private latestClassConfigId = 0;
 
     RegisteredIds private registeredIds;
     IdsToObjects private idsToObjects;
@@ -99,6 +100,50 @@ contract LiveTeachTeachers {
         unregisterClassConfig(id);
     }
 
+    // Export the data contained in this contract
+    // Does not preserve contract owner
+    // Ensure on import to determine latest id
+    // Return values can be treated as an array in js
+    // except when using ethers I have noticed that the returned object 
+    // is `frozen` and cannot be used in an _import.
+    // The workaround is to include this at the beginning of the calling 
+    // js file:
+    // `Object.freeze = function(obj) { return obj; };`  
+    function export() public view onlyOwner returns (ClassConfig[] memory) {
+        uint256 recordCount = (registeredIds.classConfig.length);
+        ClassConfig[] memory rtn = new ClassConfig[](recordCount);
+        for (uint256 i = 0; i < recordCount; i++) {
+            rtn[i] = idsToObjects.classConfig[i];
+        }
+
+        return rtn;
+    }
+
+    // Destructive and assumes an empty contract
+    // (in order to keep gas fees down).
+    // See export notes if trying to call directly with
+    // exported value.
+    function _import(ClassConfig[] memory classConfigs) public onlyOwner {
+        require(
+            registeredIds.classConfig.length == 0,
+            "Can only call _import on an empty contract"
+        );
+        // go through the input and create objects
+        for (uint256 i = 0; i < classConfigs.length; i++) {
+            ClassConfig memory classConfig = classConfigs[i];
+            registerClassConfig(
+                classConfig.id,
+                classConfig.teacher,
+                classConfig.classReference,
+                classConfig.contentUrl
+            );
+            // keep id generation up to date
+            if(classConfig.id > latestClassConfigId) {
+                latestClassConfigId = classConfig.id;
+            }
+        }
+    }
+
     //////////////////////////////PRIVATE/////////////////////////////////
 
     function registerClassConfig(
@@ -139,5 +184,13 @@ contract LiveTeachTeachers {
                 break;
             }
         }
+    }
+
+    modifier onlyOwner() {
+        require(
+            msg.sender == owner,
+            "Only the contract owner can call this function"
+        );
+        _;
     }
 }

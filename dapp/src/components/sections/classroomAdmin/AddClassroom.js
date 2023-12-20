@@ -20,7 +20,23 @@ export function AddClassroom(props){
 
     const handleChange = (newChips) => {
         dispatch(setClassLandIds(newChips))
+        if(newChips.length > 0){
+            const formattedValues = newChips.toString().replace(/\t/g, '').split(', ');
+            const newArray = formattedValues
+                .map(str => str.replace(/"/g, '').split(', ')).join(', ').split(',');
+            const pairArray = [];
+            for (let i = 0; i < newArray.length - 1; i++) {
+                if(i % 2 === 0){
+                    const pair = `${newArray[i]},${newArray[i + 1]}`;
+                    pairArray.push(pair);
+                }
+            }
+            dispatch(setClassLandIds(pairArray))
+        } else {
+            dispatch(setClassLandIds(newChips))
+        }
     }
+
 
     useEffect(() => {
         dispatch(setGuid(getGuid()))
@@ -115,12 +131,16 @@ export function AddClassroom(props){
                     <Grid item xs={6}>
                         <h4>LAND Parcels</h4>
                         <div style={{backgroundColor: 'white', color: 'black'}}>
-                            <MuiChipsInput value={classLandIds} onChange={handleChange} fullWidth={true}/>
+                            <MuiChipsInput
+                                value={classLandIds}
+                                onChange={handleChange}
+                                fullWidth={true}/>
                         </div>
                     </Grid>
                     <Grid item xs={6}>
                             <img src={imgEndpoint} style={{width: '40%', marginLeft: '100px'}}/>
                     </Grid>
+
                 </Grid>
             </div>
                 ) : (
