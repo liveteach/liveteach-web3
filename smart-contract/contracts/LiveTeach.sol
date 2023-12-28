@@ -3,6 +3,35 @@ pragma solidity ^0.8.12;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
+interface IContractUtils {
+    function toggleRole(
+        address beneficiary,
+        string memory role,
+        bool grant
+    ) external;
+
+    function hasRole(
+        string memory name,
+        address user
+    ) external view returns (bool);
+
+    function allForRole(
+        string memory name
+    ) external view returns (address[] memory);
+
+    function arrayContainsUint(
+        uint256[] memory arr,
+        uint256 val
+    ) external pure returns (bool);
+
+    function arrayContainsAddress(
+        address[] memory arr,
+        address val
+    ) external pure returns (bool);
+
+    function _isContract(address addr) external view returns (bool);
+}
+
 interface ILANDRegistry {
     function encodeTokenId(int x, int y) external pure returns (uint256);
 
@@ -21,16 +50,39 @@ interface ILANDRegistry {
     function updateOperator(uint256 input) external view returns (address);
 }
 
+interface IDCLRegistrar {
+    function getOwnerOf(
+        string memory _subdomain
+    ) external view returns (address);
+}
+
 contract LiveTeach {
+    IContractUtils private contractUtils;
+    string constant teacherRole = "TEACHER";
+    string constant classroomAdminRole = "CLASSROOM_ADMIN";
     uint256 private latestClassroomId;
 
     address private owner;
 
+    uint256[] private emptyUintList;
+    address[] private emptyAddressList;
+    int[][] private emptyIntList;
+
+    function setContractUtils(address contractUtilsAddress) public onlyOwner {
+        contractUtils = IContractUtils(contractUtilsAddress);
+    }
+
+    function setDCLRegistrar(address _registrar) public onlyOwner {
+        require(
+            contractUtils._isContract(_registrar),
+            "DCL Registrar not a contract"
+        );
+        dclRegistrar = IDCLRegistrar(_registrar);
+    }
+
     constructor() {
         owner = msg.sender;
         latestClassroomId = 1;
-        roleMap.classroomAdmin.roleName = "CLASSROOM_ADMIN";
-        roleMap.teacher.roleName = "TEACHER";
     }
 
     // id generators, start at one so we can determine unassigned.
@@ -48,6 +100,7 @@ contract LiveTeach {
     struct ClassroomAdmin {
         address walletAddress;
         uint256[] landIds;
+        string world;
         int[][] landCoordinates; // not persisted
         uint256[] classroomIds;
         address[] teacherIds;
@@ -56,6 +109,7 @@ contract LiveTeach {
     struct Classroom {
         uint256 id;
         string name;
+        string world;
         uint256[] landIds;
         int[][] landCoordinates; // not persisted
         address classroomAdminId;
@@ -68,17 +122,6 @@ contract LiveTeach {
         address walletAddress;
         uint256[] classroomIds;
         address[] classroomAdminIds;
-    }
-
-    struct RoleDetail {
-        string roleName;
-        address[] addressArray;
-        mapping(address => bool) boolMapping;
-    }
-
-    struct RoleMap {
-        RoleDetail classroomAdmin;
-        RoleDetail teacher;
     }
 
     struct RegisteredIds {
@@ -116,10 +159,10 @@ contract LiveTeach {
         "Provided wallet lacks appropriate role.";
 
     RegisteredIds private registeredIds;
-    RoleMap private roleMap;
     IdsToObjects private idsToObjects;
 
     ILANDRegistry public landRegistry;
+    IDCLRegistrar public dclRegistrar;
 
     // OWNER ONLY METHODS
 
@@ -132,11 +175,14 @@ contract LiveTeach {
     }
 
     function allTeachers() public view onlyOwner returns (address[] memory) {
-        return roleMap.teacher.addressArray;
+        return contractUtils.allForRole(teacherRole);
     }
 
     function setLANDRegistry(address _registry) public onlyOwner {
-        require(_isContract(_registry), "LAND registry not a contract");
+        require(
+            contractUtils._isContract(_registry),
+            "LAND registry not a contract"
+        );
         landRegistry = ILANDRegistry(_registry);
     }
 
@@ -145,8 +191,11 @@ contract LiveTeach {
         return
             RoleResult({
                 // student: hasRole(STUDENT, msg.sender),
-                teacher: hasRole(roleMap.teacher, msg.sender),
-                classroomAdmin: hasRole(roleMap.classroomAdmin, msg.sender)
+                teacher: contractUtils.hasRole(teacherRole, msg.sender),
+                classroomAdmin: contractUtils.hasRole(
+                    classroomAdminRole,
+                    msg.sender
+                )
                 // landOperator: hasRole(LAND_OPERATOR, msg.sender)
             });
     }
@@ -179,6 +228,13 @@ contract LiveTeach {
 
     // CLASSROOM ADMIN
     // create
+    function createWorldClassroomAdmin(
+        address _walletAddress,
+        string memory world
+    ) public {
+        requireCallerWorldOwner(world);
+        registerWorldClassroomAdmin(_walletAddress, world);
+    }
 
     function createClassroomAdmin(
         address _walletAddress,
@@ -186,8 +242,8 @@ contract LiveTeach {
     ) public {
         requireCallerLandOperator(_landIds);
         require(
-            !hasRole(roleMap.classroomAdmin, _walletAddress),
-            string.concat(ERR_ROLE_ASSIGNED, roleMap.classroomAdmin.roleName)
+            !contractUtils.hasRole(classroomAdminRole, _walletAddress),
+            string.concat(ERR_ROLE_ASSIGNED, classroomAdminRole)
         );
         registerClassroomAdmin(_walletAddress, _landIds);
     }
@@ -198,9 +254,9 @@ contract LiveTeach {
         view
         returns (ClassroomAdmin[] memory)
     {
-        address[] memory registeredClassroomAdminIds = roleMap
-            .classroomAdmin
-            .addressArray;
+        address[] memory registeredClassroomAdminIds = contractUtils.allForRole(
+            classroomAdminRole
+        );
         ClassroomAdmin[] memory rtn = new ClassroomAdmin[](
             registeredClassroomAdminIds.length
         );
@@ -225,13 +281,17 @@ contract LiveTeach {
 
     function deleteClassroomAdmin(address _walletAddress) public {
         require(
-            hasRole(roleMap.classroomAdmin, _walletAddress),
+            contractUtils.hasRole(classroomAdminRole, _walletAddress),
             ERR_ACCESS_DENIED
         );
         ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
             _walletAddress
         ];
-        requireCallerLandOperator(classroomAdmin.landIds);
+        if (Strings.equal(classroomAdmin.world, "")) {
+            requireCallerLandOperator(classroomAdmin.landIds);
+        } else {
+            requireCallerWorldOwner(classroomAdmin.world);
+        }
 
         // remove existing mappings
         for (uint256 i = 0; i < classroomAdmin.landIds.length; i++) {
@@ -244,17 +304,42 @@ contract LiveTeach {
         }
 
         delete idsToObjects.classroomAdmin[_walletAddress];
-        toggleRole(_walletAddress, roleMap.classroomAdmin, false);
+        contractUtils.toggleRole(_walletAddress, classroomAdminRole, false);
     }
 
     // CLASSROOM
     // create
+    function createWorldClassroom(
+        string memory _name,
+        string memory world,
+        string memory guid
+    ) public onlyRole(classroomAdminRole) {
+        ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
+            msg.sender
+        ];
+        require(
+            Strings.equal(classroomAdmin.world, world),
+            string.concat(
+                "You are not authorised to use world: ",
+                world,
+                " only ",
+                classroomAdmin.world
+            )
+        );
+        registerWorldClassroom(
+            getNewClassroomId(),
+            _name,
+            world,
+            msg.sender,
+            guid
+        );
+    }
 
     function createClassroomLandIds(
         string memory _name,
         uint256[] memory _landIds,
         string memory guid
-    ) public onlyRole(roleMap.classroomAdmin) {
+    ) public onlyRole(classroomAdminRole) {
         bool landIdsSuitable = true;
         for (uint256 i = 0; i < _landIds.length; i++) {
             uint256 landId = _landIds[i];
@@ -285,7 +370,7 @@ contract LiveTeach {
         string memory _name,
         int[][] memory coordinatePairs,
         string memory guid
-    ) public onlyRole(roleMap.classroomAdmin) {
+    ) public onlyRole(classroomAdminRole) {
         uint256[] memory landIds = new uint256[](coordinatePairs.length);
         for (uint256 i = 0; i < coordinatePairs.length; i++) {
             landIds[i] = landRegistry.encodeTokenId(
@@ -300,7 +385,7 @@ contract LiveTeach {
     function getClassrooms()
         public
         view
-        onlyRole(roleMap.classroomAdmin)
+        onlyRole(classroomAdminRole)
         returns (Classroom[] memory)
     {
         uint256[] memory classroomIds = idsToObjects
@@ -323,14 +408,14 @@ contract LiveTeach {
         Classroom memory rtn = idsToObjects.classroom[id];
         bool entitledToViewClassroom = false;
 
-        if (hasRole(roleMap.teacher, msg.sender)) {
+        if (contractUtils.hasRole(teacherRole, msg.sender)) {
             for (uint256 i = 0; i < rtn.teacherIds.length; i++) {
                 if (msg.sender == rtn.teacherIds[i]) {
                     entitledToViewClassroom = true;
                     break;
                 }
             }
-        } else if (hasRole(roleMap.classroomAdmin, msg.sender)) {
+        } else if (contractUtils.hasRole(classroomAdminRole, msg.sender)) {
             entitledToViewClassroom = walletOwnsClassroom(msg.sender, id);
         }
         require(entitledToViewClassroom, ERR_OBJECT_ACCESS);
@@ -339,9 +424,7 @@ contract LiveTeach {
     }
 
     // delete
-    function deleteClassroom(
-        uint256 id
-    ) public onlyRole(roleMap.classroomAdmin) {
+    function deleteClassroom(uint256 id) public onlyRole(classroomAdminRole) {
         // check you're entitled to this classroom
         require(walletOwnsClassroom(msg.sender, id), ERR_OBJECT_ACCESS);
         unregisterClassroom(id);
@@ -351,7 +434,7 @@ contract LiveTeach {
     function createTeacher(
         address walletAddress,
         uint256[] memory classroomIds
-    ) public onlyRole(roleMap.classroomAdmin) {
+    ) public onlyRole(classroomAdminRole) {
         // check classroom ids belong to this
         // classroom admin
         bool classroomIdsSuitable = true;
@@ -379,7 +462,7 @@ contract LiveTeach {
     function getTeachers()
         public
         view
-        onlyRole(roleMap.classroomAdmin)
+        onlyRole(classroomAdminRole)
         returns (Teacher[] memory)
     {
         address[] memory teacherIds = idsToObjects
@@ -393,16 +476,16 @@ contract LiveTeach {
     }
 
     function getTeacher(address id) public view returns (Teacher memory) {
-        require(hasRole(roleMap.teacher, id), ERR_OBJECT_ACCESS);
+        require(contractUtils.hasRole(teacherRole, id), ERR_OBJECT_ACCESS);
         Teacher memory rtn = idsToObjects.teacher[id];
         bool entitledToViewTeacher = false;
 
-        if (hasRole(roleMap.teacher, msg.sender)) {
+        if (contractUtils.hasRole(teacherRole, msg.sender)) {
             // teacher trying to view self
             if (msg.sender == id) {
                 entitledToViewTeacher = true;
             }
-        } else if (hasRole(roleMap.classroomAdmin, msg.sender)) {
+        } else if (contractUtils.hasRole(classroomAdminRole, msg.sender)) {
             // classroom admin trying to view teacher
             entitledToViewTeacher = walletOwnsTeacher(msg.sender, id);
         }
@@ -411,48 +494,46 @@ contract LiveTeach {
     }
 
     // delete
-    function deleteTeacher(address id) public onlyRole(roleMap.classroomAdmin) {
+    function deleteTeacher(address id) public onlyRole(classroomAdminRole) {
         require(walletOwnsTeacher(msg.sender, id), ERR_OBJECT_ACCESS);
         unregisterTeacher(id);
     }
 
-    // EXTERNAL CALLS
-    // TODO: Move these calls to external contract
-    // function getClassroomConfigUrl(
-    //     string memory classroomGuid
-    // ) public view onlyRole(roleMap.teacher) returns (string memory) {
-    //     uint256 classroomId = registeredIds.guidToClassroom[classroomGuid];
+    function getWorldClassroomGuidByWorld(
+        string memory world
+    ) public view returns (string memory) {
+        // check teacher was created by CA with access to this world
+        require(!Strings.equal("", world), "Must pass valid world name");
+        Teacher memory teacher = idsToObjects.teacher[msg.sender];
+        string memory _classroomGuid;
 
-    //     require(
-    //         arrayContainsUint(
-    //             idsToObjects.teacher[msg.sender].classroomIds,
-    //             classroomId
-    //         ),
-    //         ERR_OBJECT_ACCESS
-    //     );
-    //     Classroom memory classroom = idsToObjects.classroom[classroomId];
-    //     if (Strings.equal(classroom.configUrl, "")) {
-    //         return "Config url not yet set for this classroom";
-    //     } else {
-    //         return classroom.configUrl;
-    //     }
-    // }
-
-    // function setClassroomConfigUrl(
-    //     string memory classroomGuid,
-    //     string memory url
-    // ) public onlyRole(roleMap.teacher) {
-    //     uint256 classroomId = registeredIds.guidToClassroom[classroomGuid];
-    //     require(
-    //         arrayContainsUint(
-    //             idsToObjects.teacher[msg.sender].classroomIds,
-    //             classroomId
-    //         ),
-    //         ERR_OBJECT_ACCESS
-    //     );
-    //     Classroom storage classroom = idsToObjects.classroom[classroomId];
-    //     classroom.configUrl = url;
-    // }
+        for (uint256 i = 0; i < teacher.classroomAdminIds.length; i++) {
+            ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
+                teacher.classroomAdminIds[i]
+            ];
+            if (Strings.equal(classroomAdmin.world, world)) {
+                for (
+                    uint256 j = 0;
+                    j < classroomAdmin.classroomIds.length;
+                    j++
+                ) {
+                    Classroom memory classroom = idsToObjects.classroom[
+                        classroomAdmin.classroomIds[j]
+                    ];
+                    if (Strings.equal(classroom.world, world)) {
+                        _classroomGuid = classroom.guid;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        require(
+            !Strings.equal(_classroomGuid, ""),
+            "You are not authorised to use this world."
+        );
+        return _classroomGuid;
+    }
 
     function getClassroomGuid(
         int x,
@@ -506,7 +587,7 @@ contract LiveTeach {
         address _teacherId
     ) private view returns (bool) {
         return
-            arrayContainsAddress(
+            contractUtils.arrayContainsAddress(
                 idsToObjects.teacher[_teacherId].classroomAdminIds,
                 walletId
             );
@@ -540,12 +621,27 @@ contract LiveTeach {
     }
 
     // classroomAdmin
+    function registerWorldClassroomAdmin(
+        address _walletAddress,
+        string memory world
+    ) private {
+        idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
+            walletAddress: _walletAddress,
+            landIds: emptyUintList,
+            world: world,
+            landCoordinates: emptyIntList,
+            classroomIds: emptyUintList,
+            teacherIds: emptyAddressList
+        });
+        if (!contractUtils.hasRole(classroomAdminRole, _walletAddress)) {
+            contractUtils.toggleRole(_walletAddress, classroomAdminRole, true);
+        }
+    }
+
     function registerClassroomAdmin(
         address _walletAddress,
         uint256[] memory landIds
     ) private {
-        uint256[] memory emptyUintList;
-        address[] memory emptyAddressList;
         int[][] memory _landCoordinates;
 
         // register land ids
@@ -564,11 +660,37 @@ contract LiveTeach {
         idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
             walletAddress: _walletAddress,
             landIds: landIds,
+            world: "",
             landCoordinates: _landCoordinates,
             classroomIds: emptyUintList,
             teacherIds: emptyAddressList
         });
-        toggleRole(_walletAddress, roleMap.classroomAdmin, true);
+        contractUtils.toggleRole(_walletAddress, classroomAdminRole, true);
+    }
+
+    function registerWorldClassroom(
+        uint256 _id,
+        string memory _name,
+        string memory world,
+        address _classroomAdminId,
+        string memory _guid
+    ) private {
+        idsToObjects.classroom[_id] = Classroom({
+            id: _id,
+            name: _name,
+            world: world,
+            landIds: emptyUintList,
+            landCoordinates: emptyIntList,
+            classroomAdminId: _classroomAdminId,
+            teacherIds: emptyAddressList,
+            guid: _guid,
+            configUrl: ""
+        });
+        registeredIds.classroom.push(_id);
+        registeredIds.classroomBool[_id] = true;
+        registeredIds.guidToClassroom[_guid] = _id;
+
+        idsToObjects.classroomAdmin[_classroomAdminId].classroomIds.push(_id);
     }
 
     function registerClassroom(
@@ -578,12 +700,10 @@ contract LiveTeach {
         address _classroomAdminId,
         string memory _guid
     ) private {
-        address[] memory emptyAddressList;
-        int[][] memory emptyIntList;
-
         idsToObjects.classroom[_id] = Classroom({
             id: _id,
             name: _name,
+            world: "",
             landIds: _landIds,
             landCoordinates: emptyIntList,
             classroomAdminId: _classroomAdminId,
@@ -655,7 +775,7 @@ contract LiveTeach {
     ) private {
         // they could already be registered by another classroom admin
         // in which case we need to update them
-        if (hasRole(roleMap.teacher, _walletAddress)) {
+        if (contractUtils.hasRole(teacherRole, _walletAddress)) {
             // they are already registered with another CA
             idsToObjects.teacher[_walletAddress].classroomAdminIds.push(
                 msg.sender
@@ -668,7 +788,7 @@ contract LiveTeach {
                 classroomIds: _classroomIds,
                 classroomAdminIds: classroomAdminsWallets
             });
-            toggleRole(_walletAddress, roleMap.teacher, true);
+            contractUtils.toggleRole(_walletAddress, teacherRole, true);
         }
         // associate with classrooms
         for (uint256 i = 0; i < _classroomIds.length; i++) {
@@ -693,7 +813,7 @@ contract LiveTeach {
         );
 
         if (classroomAdminCount == 1) {
-            toggleRole(_walletAddress, roleMap.teacher, false);
+            contractUtils.toggleRole(_walletAddress, teacherRole, false);
             for (uint256 i = 0; i < teacher.classroomIds.length; i++) {
                 removeAddressFromArrayMaintainOrder(
                     idsToObjects.classroom[teacher.classroomIds[i]].teacherIds,
@@ -731,30 +851,6 @@ contract LiveTeach {
         }
     }
 
-    function arrayContainsUint(
-        uint256[] memory arr,
-        uint256 val
-    ) private pure returns (bool) {
-        for (uint256 i = 0; i < arr.length; i++) {
-            if (arr[i] == val) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function arrayContainsAddress(
-        address[] memory arr,
-        address val
-    ) private pure returns (bool) {
-        for (uint256 i = 0; i < arr.length; i++) {
-            if (arr[i] == val) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     function removeClassroomFromArrayMaintainOrder(
         Classroom[] storage arr,
         uint256 _classroomId
@@ -768,56 +864,6 @@ contract LiveTeach {
         }
     }
 
-    function _isContract(address addr) internal view returns (bool) {
-        uint size;
-        assembly {
-            size := extcodesize(addr)
-        }
-        return size > 0;
-    }
-
-    // ROLES
-
-    /*
-     *    Grant or revoke role based on grant flag
-     */
-    function toggleRole(
-        address beneficiary,
-        RoleDetail storage roleDetail,
-        bool grant
-    ) private {
-        if (grant) {
-            roleDetail.addressArray.push(beneficiary);
-            roleDetail.boolMapping[beneficiary] = true;
-        } else {
-            removeAddressFromArrayMaintainOrder(
-                roleDetail.addressArray,
-                beneficiary
-            );
-            delete roleDetail.boolMapping[beneficiary];
-        }
-    }
-
-    function hasRole(
-        RoleDetail storage roleDetail,
-        address user
-    ) internal view returns (bool) {
-        return roleDetail.boolMapping[user];
-    }
-
-    modifier onlyRole(RoleDetail storage roleDetail) {
-        require(
-            hasRole(roleDetail, msg.sender),
-            string.concat(
-                "You ",
-                Strings.toHexString(uint160(msg.sender)),
-                " lack the appropriate role to call this function: ",
-                roleDetail.roleName
-            )
-        );
-        _;
-    }
-
     modifier onlyOwner() {
         require(
             msg.sender == owner,
@@ -826,14 +872,47 @@ contract LiveTeach {
         _;
     }
 
+    modifier onlyRole(string memory name) {
+        require(
+            contractUtils.hasRole(name, msg.sender),
+            string.concat(
+                "You ",
+                Strings.toHexString(uint160(msg.sender)),
+                " lack the appropriate role to call this function: ",
+                name
+            )
+        );
+        _;
+    }
+
+    function requireCallerWorldOwner(string memory world) public view {
+        bool isWorldOwner = true;
+        string memory err = "";
+        address actualWorldOwner = dclRegistrar.getOwnerOf(world);
+        if (actualWorldOwner != msg.sender) {
+            isWorldOwner = false;
+            err = string.concat(
+                err,
+                "Caller is not world owner of ",
+                world,
+                " expected: ",
+                Strings.toHexString(uint160(msg.sender)),
+                " but was: ",
+                Strings.toHexString(uint160(actualWorldOwner))
+            );
+        }
+        require(isWorldOwner, err);
+    }
+
     function requireCallerLandOperator(uint256[] memory assetIds) public view {
         bool isOperator = true;
-        string memory err="";
+        string memory err = "";
         for (uint256 i = 0; i < assetIds.length; i++) {
             address actualOperator = landRegistry.updateOperator(assetIds[i]);
             if (actualOperator != msg.sender) {
                 isOperator = false;
-                err = string.concat(err,
+                err = string.concat(
+                    err,
                     "Parcel ",
                     Strings.toString(assetIds[i]),
                     " expected operator: ",
