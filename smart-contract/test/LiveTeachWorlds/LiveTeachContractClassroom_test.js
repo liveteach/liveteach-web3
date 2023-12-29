@@ -25,7 +25,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
     let fakeWorld = "nopeland";
     await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
     await expect(Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", fakeWorld, Utils.getGuid()))
-      .to.be.revertedWith("You are not authorised to use world: " + fakeWorld + " only " + Utils.worldName);
+      .to.be.revertedWith("You are not authorised to use world: " + fakeWorld);
   });
 
 

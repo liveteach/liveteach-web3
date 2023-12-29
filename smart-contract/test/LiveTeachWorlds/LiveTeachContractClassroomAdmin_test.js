@@ -11,7 +11,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
   it("Can create world classroom admin", async function () {
     await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
     let result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmin(Utils.user1);
-    assert.equal(Utils.worldName, result.world);
+    assert.equal(true, result.worlds.indexOf(Utils.worldName) != -1);
     assert.equal(0, result.landIds);
   });
 
@@ -23,7 +23,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
     let result = await Utils.teachContract.connect(Utils.operator).getClassroomAdmins();
     assert.equal(2, result.length);
     for (let i = 0; i < result.length; i++) {
-      assert.equal("decentraland", result[i].world);
+      assert.equal(true, result[i].worlds.indexOf(Utils.worldName) != -1);
       assert.equal(0, result[i].landIds);
       assert.equal(admins[i].address, result[i].walletAddress);
     }
@@ -41,10 +41,10 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
     assert.equal(Utils.user3.address, classroomAdmin1.walletAddress);
     assert.equal(Utils.user4.address, classroomAdmin2.walletAddress);
 
-    assert.equal(Utils.worldName, classroomAdmin1.world);
+    assert.equal(true, classroomAdmin1.worlds.indexOf(Utils.worldName) != -1);
     assert.equal([].toString(), classroomAdmin1.landIds.toString());
 
-    assert.equal(Utils.worldName, classroomAdmin2.world);
+    assert.equal(true, classroomAdmin2.worlds.indexOf(Utils.worldName) != -1);
     assert.equal([].toString(), classroomAdmin2.landIds.toString());
   });
 
@@ -53,7 +53,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
     await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user2, Utils.worldName);
 
     let classroomAdmin1 = await Utils.teachContract.connect(Utils.worldOwner).getClassroomAdmin(Utils.user1.address);
-    assert.equal(Utils.worldName, classroomAdmin1.world);
+    assert.equal(true, classroomAdmin1.worlds.indexOf(Utils.worldName) != -1);
     assert.equal(0, classroomAdmin1.landIds);
   });
 
@@ -78,7 +78,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
     let result = await Utils.teachContract.connect(Utils.worldOwner).getClassroomAdmins();
     assert.equal(1, result.length);
     await expect(Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1))
-      .to.be.revertedWith("Caller is not world owner of decentraland expected: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 but was: 0x14dc79964da2c08b23698b3d3cc7ca32193d9955");
+      .to.be.revertedWith("Caller does not have rights to remove this classroom admin.");
     result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(result.length, 1);
   });

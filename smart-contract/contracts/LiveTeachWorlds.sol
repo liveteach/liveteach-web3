@@ -38,7 +38,7 @@ contract LiveTeachWorlds {
     struct ClassroomAdmin {
         address walletAddress;
         uint256[] landIds;
-        string world;
+        string[] worlds;
         int[][] landCoordinates; // not persisted
         uint256[] classroomIds;
         address[] teacherIds;
@@ -173,21 +173,37 @@ contract LiveTeachWorlds {
             hasRole(roleMap.classroomAdmin, _walletAddress),
             ERR_ACCESS_DENIED
         );
-        ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
+        ClassroomAdmin storage classroomAdmin = idsToObjects.classroomAdmin[
             _walletAddress
         ];
-
-        requireCallerWorldOwner(classroomAdmin.world);
-
-        // remove existing mappings
-
-        // delete classrooms
-        for (uint256 i = 0; i < classroomAdmin.classroomIds.length; i++) {
-            unregisterClassroom(classroomAdmin.classroomIds[i]);
+        bool callerIsWorldOwner = false;
+        for (uint256 i = 0; i < classroomAdmin.worlds.length; i++) {
+            if (
+                msg.sender == dclRegistrar.getOwnerOf(classroomAdmin.worlds[i])
+            ) {
+                removeStringFromArrayMaintainOrder(
+                    classroomAdmin.worlds,
+                    classroomAdmin.worlds[i]
+                );
+                callerIsWorldOwner = true;
+                break;
+            }
         }
+        require(
+            callerIsWorldOwner,
+            "Caller does not have rights to remove this classroom admin."
+        );
+        if (classroomAdmin.worlds.length == 0) {
+            // remove existing mappings
 
-        delete idsToObjects.classroomAdmin[_walletAddress];
-        toggleRole(_walletAddress, roleMap.classroomAdmin, false);
+            // delete classrooms
+            for (uint256 i = 0; i < classroomAdmin.classroomIds.length; i++) {
+                unregisterClassroom(classroomAdmin.classroomIds[i]);
+            }
+
+            delete idsToObjects.classroomAdmin[_walletAddress];
+            toggleRole(_walletAddress, roleMap.classroomAdmin, false);
+        }
     }
 
     // CLASSROOM
@@ -201,13 +217,8 @@ contract LiveTeachWorlds {
             msg.sender
         ];
         require(
-            Strings.equal(classroomAdmin.world, world),
-            string.concat(
-                "You are not authorised to use world: ",
-                world,
-                " only ",
-                classroomAdmin.world
-            )
+            arrayContainsString(classroomAdmin.worlds, world),
+            string.concat("You are not authorised to use world: ", world)
         );
         registerClassroom(getNewClassroomId(), _name, world, msg.sender, guid);
     }
@@ -342,7 +353,7 @@ contract LiveTeachWorlds {
             ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
                 teacher.classroomAdminIds[i]
             ];
-            if (Strings.equal(classroomAdmin.world, world)) {
+            if (arrayContainsString(classroomAdmin.worlds, world)) {
                 for (
                     uint256 j = 0;
                     j < classroomAdmin.classroomIds.length;
@@ -392,10 +403,12 @@ contract LiveTeachWorlds {
         address _walletAddress,
         string memory world
     ) private {
+        string[] memory worlds = new string[](1);
+        worlds[0] = world;
         idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
             walletAddress: _walletAddress,
             landIds: emptyUintList,
-            world: world,
+            worlds: worlds,
             landCoordinates: emptyIntList,
             classroomIds: emptyUintList,
             teacherIds: emptyAddressList
@@ -557,6 +570,19 @@ contract LiveTeachWorlds {
         }
     }
 
+    function removeStringFromArrayMaintainOrder(
+        string[] storage arr,
+        string memory val
+    ) private {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (Strings.equal(val, arr[i])) {
+                arr[i] = arr[arr.length - 1];
+                arr.pop();
+                break;
+            }
+        }
+    }
+
     function arrayContainsUint(
         uint256[] memory arr,
         uint256 val
@@ -575,6 +601,18 @@ contract LiveTeachWorlds {
     ) private pure returns (bool) {
         for (uint256 i = 0; i < arr.length; i++) {
             if (arr[i] == val) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function arrayContainsString(
+        string[] memory arr,
+        string memory val
+    ) private pure returns (bool) {
+        for (uint256 i = 0; i < arr.length; i++) {
+            if (Strings.equal(arr[i], val)) {
                 return true;
             }
         }
