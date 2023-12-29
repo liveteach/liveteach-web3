@@ -16,13 +16,10 @@ describe("LiveTeachContractDeleteCascade", function () {
   let T10;
   let operator;
   let teachContract;
-  let landContract;
-  let entityContract;
+  let landContract
 
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/LiveTeach.sol:LiveTeach");
-    entityContract = await ethers.deployContract("contracts/ContractUtils.sol:ContractUtils");
-
     let accounts = await ethers.getSigners();
     owner = accounts[0];
     CA0 = accounts[1];
@@ -39,10 +36,6 @@ describe("LiveTeachContractDeleteCascade", function () {
     operator = accounts[14];
     landContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
     let landContractAddress = await landContract.target;
-    let entityManagerContractAddress = await entityContract.target;
-    let teachContractAddress = await teachContract.target;
-    await entityContract.connect(owner).addAdmin(teachContractAddress);
-    await teachContract.connect(owner).setContractUtils(entityManagerContractAddress);
     await teachContract.connect(owner).setLANDRegistry(landContractAddress);
 
     await landContract.connect(owner).assignMultipleParcels([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 1], owner);

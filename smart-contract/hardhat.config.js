@@ -10,9 +10,7 @@ const { GOERLI_API_URL, SEPOLIA_API_URL, PRIVATE_KEY, MAINNET_PRIVATE_KEY, ETHER
 
 module.exports = {
   networks: {
-    hardhat: {
-      allowUnlimitedContractSize: true,
-    },
+    hardhat: {},
     sepolia: {
       url: SEPOLIA_API_URL,
       accounts: [`0x${PRIVATE_KEY}`]
