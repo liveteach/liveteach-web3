@@ -19,24 +19,16 @@ describe("LiveTeachContractLandRegistryInteractions", function () {
 
   let teachContract;
   let landRegistryContract;
-  let entityContract;
 
   this.beforeEach(async function () {
     teachContract = await ethers.deployContract("contracts/LiveTeach.sol:LiveTeach");
     landRegistryContract = await ethers.deployContract("contracts/references/LANDRegistry.sol:LANDRegistry");
-    entityContract = await ethers.deployContract("contracts/ContractUtils.sol:ContractUtils");
 
     let accounts = await ethers.getSigners();
     contractOwner = accounts[0];
     landOwner = accounts[1]
     operator = accounts[2];
     nonOperator = accounts[3];
-
-    let entityManagerContractAddress = await entityContract.target;
-    let teachContractAddress = await teachContract.target;
-
-    await entityContract.connect(contractOwner).addAdmin(teachContractAddress);
-    await teachContract.connect(contractOwner).setContractUtils(entityManagerContractAddress);
 
     await teachContract.connect(contractOwner).setLANDRegistry(landRegistryContract);
 
