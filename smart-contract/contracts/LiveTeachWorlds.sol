@@ -74,6 +74,10 @@ contract LiveTeachWorlds {
     }
 
     struct RegisteredIds {
+        mapping(string => uint256) worldToClassroom;
+        mapping(string => address) worldToClassroomAdmin;
+        mapping(string => string) worldToClassroomGuid;
+        // mapping(address => string) classroomAdminToWorld;
         uint256[] classroom;
         mapping(uint256 => bool) classroomBool;
         mapping(string => uint256) guidToClassroom;
@@ -133,10 +137,12 @@ contract LiveTeachWorlds {
     // create
     function createClassroomAdmin(
         address _walletAddress,
-        string memory world
+        string[] memory worlds
     ) public {
-        requireCallerWorldOwner(world);
-        registerClassroomAdmin(_walletAddress, world);
+        for (uint256 i = 0; i < worlds.length; i++) {
+            requireCallerWorldOwner(worlds[i]);
+        }
+        registerClassroomAdmin(_walletAddress, worlds);
     }
 
     // read
@@ -176,33 +182,57 @@ contract LiveTeachWorlds {
         ClassroomAdmin storage classroomAdmin = idsToObjects.classroomAdmin[
             _walletAddress
         ];
-        bool callerIsWorldOwner = false;
-        for (uint256 i = 0; i < classroomAdmin.worlds.length; i++) {
-            if (
-                msg.sender == dclRegistrar.getOwnerOf(classroomAdmin.worlds[i])
-            ) {
+
+        // remove the classrooms this CA has created
+        // but only if the world matches the callers world
+        // the caller can have many worlds
+        // go through the ca's classrooms, get the world, if owner owns it then delete
+
+        uint256[] memory classroomsToRemove = new uint256[](
+            classroomAdmin.classroomIds.length
+        );
+
+        if (classroomAdmin.classroomIds.length == 0) {
+            for (uint256 i = 0; i < classroomAdmin.worlds.length; i++) {
+                delete registeredIds.worldToClassroomAdmin[
+                    classroomAdmin.worlds[i]
+                ];
+
                 removeStringFromArrayMaintainOrder(
                     classroomAdmin.worlds,
                     classroomAdmin.worlds[i]
                 );
-                callerIsWorldOwner = true;
-                break;
+            }
+        } else {
+            for (uint256 i = 0; i < classroomAdmin.classroomIds.length; i++) {
+                Classroom memory classroom = idsToObjects.classroom[
+                    classroomAdmin.classroomIds[i]
+                ];
+
+                if (msg.sender == dclRegistrar.getOwnerOf(classroom.world)) {
+                    removeStringFromArrayMaintainOrder(
+                        classroomAdmin.worlds,
+                        classroom.world
+                    );
+                    classroomsToRemove[i] = classroom.id;
+                    delete registeredIds.worldToClassroomAdmin[classroom.world];
+                }
             }
         }
-        require(
-            callerIsWorldOwner,
-            "Caller does not have rights to remove this classroom admin."
-        );
+        for (uint256 i = 0; i < classroomsToRemove.length; i++) {
+            unregisterClassroom(classroomsToRemove[i]);
+        }
+        // require(false, Strings.toString(classroomAdmin.worlds.length));
+
         if (classroomAdmin.worlds.length == 0) {
             // remove existing mappings
-
-            // delete classrooms
-            for (uint256 i = 0; i < classroomAdmin.classroomIds.length; i++) {
-                unregisterClassroom(classroomAdmin.classroomIds[i]);
-            }
-
             delete idsToObjects.classroomAdmin[_walletAddress];
             toggleRole(_walletAddress, roleMap.classroomAdmin, false);
+            roleMap.classroomAdmin.boolMapping[_walletAddress] = false;
+            removeAddressFromArrayMaintainOrder(
+                roleMap.classroomAdmin.addressArray,
+                _walletAddress
+            );
         }
     }
 
@@ -347,34 +377,17 @@ contract LiveTeachWorlds {
         // check teacher was created by CA with access to this world
         require(!Strings.equal("", world), "Must pass valid world name");
         Teacher memory teacher = idsToObjects.teacher[msg.sender];
-        string memory _classroomGuid;
-
-        for (uint256 i = 0; i < teacher.classroomAdminIds.length; i++) {
-            ClassroomAdmin memory classroomAdmin = idsToObjects.classroomAdmin[
-                teacher.classroomAdminIds[i]
-            ];
-            if (arrayContainsString(classroomAdmin.worlds, world)) {
-                for (
-                    uint256 j = 0;
-                    j < classroomAdmin.classroomIds.length;
-                    j++
-                ) {
-                    Classroom memory classroom = idsToObjects.classroom[
-                        classroomAdmin.classroomIds[j]
-                    ];
-                    if (Strings.equal(classroom.world, world)) {
-                        _classroomGuid = classroom.guid;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
+        // check that this teacher has that classroom admin
         require(
-            !Strings.equal(_classroomGuid, ""),
+            arrayContainsAddress(
+                teacher.classroomAdminIds,
+                registeredIds.worldToClassroomAdmin[world]
+            ),
             "You are not authorised to use this world."
         );
-        return _classroomGuid;
+        // then get classroom guid by world
+
+        return registeredIds.worldToClassroomGuid[world];
     }
 
     // private
@@ -401,10 +414,8 @@ contract LiveTeachWorlds {
     // classroomAdmin
     function registerClassroomAdmin(
         address _walletAddress,
-        string memory world
+        string[] memory worlds
     ) private {
-        string[] memory worlds = new string[](1);
-        worlds[0] = world;
         idsToObjects.classroomAdmin[_walletAddress] = ClassroomAdmin({
             walletAddress: _walletAddress,
             landIds: emptyUintList,
@@ -415,6 +426,9 @@ contract LiveTeachWorlds {
         });
         if (!hasRole(roleMap.classroomAdmin, _walletAddress)) {
             toggleRole(_walletAddress, roleMap.classroomAdmin, true);
+        }
+        for (uint256 i = 0; i < worlds.length; i++) {
+            registeredIds.worldToClassroomAdmin[worlds[i]] = _walletAddress;
         }
     }
 
@@ -441,13 +455,16 @@ contract LiveTeachWorlds {
         registeredIds.guidToClassroom[_guid] = _id;
 
         idsToObjects.classroomAdmin[_classroomAdminId].classroomIds.push(_id);
+        registeredIds.worldToClassroom[world] = _id;
+        registeredIds.worldToClassroomGuid[world] = _guid;
     }
 
     function unregisterClassroom(uint256 _id) private {
         Classroom memory classroom = idsToObjects.classroom[_id];
         removeUintFromArrayMaintainOrder(registeredIds.classroom, _id);
-
         delete registeredIds.classroomBool[_id];
+        delete registeredIds.worldToClassroom[classroom.world];
+
         if (Strings.equal(classroom.guid, "")) {
             delete registeredIds.guidToClassroom[classroom.guid];
         }
@@ -457,6 +474,8 @@ contract LiveTeachWorlds {
                 .classroomIds,
             _id
         );
+
+        delete registeredIds.worldToClassroomGuid[classroom.world];
 
         // delete orphaned teachers
         for (uint256 i = 0; i < classroom.teacherIds.length; i++) {
@@ -473,9 +492,10 @@ contract LiveTeachWorlds {
                 // build the new array
                 // skip the classroom to be removed
                 uint256 keyCounter = 0;
+
                 for (uint256 j = 0; j < teacher.classroomIds.length; j++) {
                     if (teacher.classroomIds[j] != _id) {
-                        newClassroomIds[j] = teacher.classroomIds[keyCounter];
+                        newClassroomIds[keyCounter] = teacher.classroomIds[j];
                         keyCounter++;
                     }
                 }
@@ -519,7 +539,7 @@ contract LiveTeachWorlds {
     }
 
     function unregisterTeacher(address _walletAddress) private {
-        Teacher memory teacher = idsToObjects.teacher[_walletAddress];
+        Teacher storage teacher = idsToObjects.teacher[_walletAddress];
         uint256 classroomAdminCount = teacher.classroomAdminIds.length;
 
         removeAddressFromArrayMaintainOrder(

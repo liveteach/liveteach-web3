@@ -9,7 +9,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
 
   // classroom admin
   it("Can create world classroom admin", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     let result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmin(Utils.user1);
     assert.equal(true, result.worlds.indexOf(Utils.worldName) != -1);
     assert.equal(0, result.landIds);
@@ -17,8 +17,8 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
 
   it("Can create a classroom admin with already assigned world.", async function () {
     let admins = [Utils.user1, Utils.user2];
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user2, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user2, [Utils.worldName]);
 
     let result = await Utils.teachContract.connect(Utils.operator).getClassroomAdmins();
     assert.equal(2, result.length);
@@ -30,8 +30,8 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
   });
 
   it("Can get all classroom admins", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user3, Utils.worldName);
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user4, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user3, [Utils.worldName]);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user4, [Utils.worldName]);
 
     let result = await Utils.teachContract.connect(Utils.operator).getClassroomAdmins();
     assert.equal(2, result.length);
@@ -49,8 +49,8 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
   });
 
   it("Can get single world classroom admin", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user2, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user2, [Utils.worldName]);
 
     let classroomAdmin1 = await Utils.teachContract.connect(Utils.worldOwner).getClassroomAdmin(Utils.user1.address);
     assert.equal(true, classroomAdmin1.worlds.indexOf(Utils.worldName) != -1);
@@ -59,7 +59,7 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
 
 
   it("Can delete world classroom admin", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     let result = await Utils.teachContract.connect(Utils.worldOwner).getClassroomAdmins();
     assert.equal(1, result.length);
     await Utils.teachContract.connect(Utils.worldOwner).deleteClassroomAdmin(Utils.user1);
@@ -74,11 +74,12 @@ describe("LiveTeachWorldsContractClassroomAdmin", function () {
 
   it("Cannot delete world classroom admin if you're not the world owner", async function () {
 
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
+    await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", Utils.worldName, Utils.getGuid());
+
     let result = await Utils.teachContract.connect(Utils.worldOwner).getClassroomAdmins();
     assert.equal(1, result.length);
-    await expect(Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1))
-      .to.be.revertedWith("Caller does not have rights to remove this classroom admin.");
+    await Utils.teachContract.connect(Utils.owner).deleteClassroomAdmin(Utils.user1);
     result = await Utils.teachContract.connect(Utils.owner).getClassroomAdmins();
     assert.equal(result.length, 1);
   });

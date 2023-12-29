@@ -10,7 +10,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
   // create
 
   it("World classroom admin can create classroom", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", Utils.worldName, Utils.getGuid());
 
     let classrooms = await Utils.teachContract.connect(Utils.user1).getClassrooms();
@@ -23,14 +23,14 @@ describe("LiveTeachWorldsContractClassroom", function () {
 
   it("World classroom admin cannot create classroom with unregistered world", async function () {
     let fakeWorld = "nopeland";
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await expect(Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", fakeWorld, Utils.getGuid()))
       .to.be.revertedWith("You are not authorised to use world: " + fakeWorld);
   });
 
 
   it("Classrooms have unique ids", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     for (let i = 0; i < 20; i++) {
       await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", Utils.worldName, Utils.getGuid());
     }
@@ -48,7 +48,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
 
   // // read
   it("Classroom admin can get data about all their classrooms", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
 
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom 1", Utils.worldName, Utils.getGuid());
 
@@ -63,7 +63,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
 
 
   it("World classroom admin can get data about a single one of their classrooms", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom 1", Utils.worldName, Utils.getGuid());
     let result = await Utils.teachContract.connect(Utils.user1).getClassroom(100001);
     assert.equal(Utils.worldName, result.world);
@@ -73,7 +73,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
 
   // delete
   it("World classroom admin can delete their own classroom", async function () {
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom 1", Utils.worldName, Utils.getGuid());
     await Utils.teachContract.connect(Utils.user1).deleteClassroom(100001);
     let allClassrooms = await Utils.teachContract.connect(Utils.user1).getClassrooms();
@@ -85,8 +85,8 @@ describe("LiveTeachWorldsContractClassroom", function () {
     let world2 = "dollywood";
     await Utils.dclRegistrarContract.connect(Utils.owner).setOwnerOf(world2, Utils.user2);
 
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
-    await Utils.teachContract.connect(Utils.user2).createClassroomAdmin(Utils.user3, world2);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
+    await Utils.teachContract.connect(Utils.user2).createClassroomAdmin(Utils.user3, [world2]);
 
     await Utils.teachContract.connect(Utils.user3).createClassroom("Test Classroom 1", world2, Utils.getGuid());
 
@@ -99,7 +99,7 @@ describe("LiveTeachWorldsContractClassroom", function () {
   it("World teacher can get GUID from their own classroom", async function () {
     let guid = Utils.getGuid();
     let result;
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom 1", Utils.worldName, guid);
     await Utils.teachContract.connect(Utils.user1).createTeacher(Utils.user2, [100001]);
     result = await Utils.teachContract.connect(Utils.user2).getClassroomGuid(Utils.worldName);
@@ -109,11 +109,11 @@ describe("LiveTeachWorldsContractClassroom", function () {
   it("World teacher cannot get GUID from anothers classroom", async function () {
     let guid = Utils.getGuid();
     let result;
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom 1", Utils.worldName, guid);
     await Utils.teachContract.connect(Utils.user1).createTeacher(Utils.user2, [100001]);
 
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user3, Utils.worldName2);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user3, [Utils.worldName2]);
     await Utils.teachContract.connect(Utils.user3).createTeacher(Utils.user4, []);
 
     result = await expect(Utils.teachContract.connect(Utils.user4).getClassroomGuid(Utils.worldName))

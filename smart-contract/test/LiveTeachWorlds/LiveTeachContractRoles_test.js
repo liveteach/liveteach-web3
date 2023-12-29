@@ -4,7 +4,7 @@ const Utils = require("./LiveTeachUtils");
 describe("LiveTeachWorldsContractRoles", function () {
   this.beforeEach(async function () {
     await Utils.init();
-    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, Utils.worldName);
+    await Utils.teachContract.connect(Utils.worldOwner).createClassroomAdmin(Utils.user1, [Utils.worldName]);
     await Utils.teachContract.connect(Utils.user1).createClassroom("Test Classroom", Utils.worldName, Utils.getGuid());
 
     await Utils.teachContract.connect(Utils.user1).createTeacher(Utils.user2, [100001]);

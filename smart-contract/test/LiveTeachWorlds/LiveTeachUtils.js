@@ -14,6 +14,9 @@ module.exports = class Utils {
 
   static worldName = "decentraland";
   static worldName2 = "jumboland";
+  static worldName3 = "bedfordfalls";
+  static worldName4 = "oz";
+  static worldName5 = "piccolino";
 
   static user1;
   static user2;
@@ -40,6 +43,9 @@ module.exports = class Utils {
 
     await this.dclRegistrarContract.connect(this.owner).setOwnerOf(this.worldName, this.worldOwner);
     await this.dclRegistrarContract.connect(this.owner).setOwnerOf(this.worldName2, this.worldOwner);
+    await this.dclRegistrarContract.connect(this.owner).setOwnerOf(this.worldName3, this.worldOwner);
+    await this.dclRegistrarContract.connect(this.owner).setOwnerOf(this.worldName4, this.worldOwner);
+    await this.dclRegistrarContract.connect(this.owner).setOwnerOf(this.worldName5, this.worldOwner);
   }
 
   static getGuid() {
