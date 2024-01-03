@@ -1,47 +1,36 @@
 [
   {
-    "heading": "Main menu",
+    "heading": "Quick Guide",
     "menuItems": [
           {
             "id": 21,
-            "label": "page1",
+            "label": "Installation",
             "link": "/docs/dev/page1"
           },
           {
             "id": 23,
-            "label": "Page Two Dropdown",
+            "label": "Getting Started",
             "subMenu": [
               {
                 "id": 231,
-                "label": "page2",
+                "label": "Introduction",
                 "link": "/docs/dev/page2"
-              }
-            ]
-          },
-          {
-            "id": 24,
-            "label": "Page 3 Dropdown",
-            "subMenu": [
-              {
-                "id": 241,
-                "label": "page3",
-                "link": "/docs/dev/page3"
               }
             ]
           }
       ]
   },
   {
-    "heading": "Second menu",
+    "heading": "Tutorials",
     "menuItems": [
       {
         "id": 25,
-        "label": "page1",
+        "label": "Authentication",
         "link": "/docs/dev/page1"
       },
       {
         "id": 26,
-        "label": "Page Two Dropdown",
+        "label": "Seating of Students",
         "subMenu": [
           {
             "id": 261,
