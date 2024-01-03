@@ -15,11 +15,11 @@ module.exports = {
       url: SEPOLIA_API_URL,
       accounts: [`0x${PRIVATE_KEY}`]
     },
-    mainnet: {
-      url: MAINNET_JSON_RPC_PROVIDER_URL,
-      accounts: [`0x${MAINNET_PRIVATE_KEY}`],
-      // gasPrice: 60000000000, // 60 gwei
-    },
+    // mainnet: {
+    //   url: MAINNET_JSON_RPC_PROVIDER_URL,
+    //   accounts: [`0x${MAINNET_PRIVATE_KEY}`],
+    //   // gasPrice: 60000000000, // 60 gwei
+    // },
     goerli: {
       url: GOERLI_API_URL,
       accounts: [`0x${PRIVATE_KEY}`],

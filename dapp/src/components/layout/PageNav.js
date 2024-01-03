@@ -78,18 +78,18 @@ export default function PageNav({
                                 ""
                             )
                         }
-                        {
-                            !isPrivate ? (
-                                <Link to={"/worlds"} >
-                                    <div className="dcl tab tabColor">
-                                        Worlds Owner
-                                        {activeTab === 'worlds' && <div className="active-bar" id="worlds"/>}
-                                    </div>
-                                </Link>
-                            ) : (
-                                ""
-                            )
-                        }
+                        {/*{*/}
+                        {/*    !isPrivate ? (*/}
+                        {/*        <Link to={"/worlds"} >*/}
+                        {/*            <div className="dcl tab tabColor">*/}
+                        {/*                Worlds Owner*/}
+                        {/*                {activeTab === 'worlds' && <div className="active-bar" id="worlds"/>}*/}
+                        {/*            </div>*/}
+                        {/*        </Link>*/}
+                        {/*    ) : (*/}
+                        {/*        ""*/}
+                        {/*    )*/}
+                        {/*}*/}
                     </div>
                 </div>
             </div>

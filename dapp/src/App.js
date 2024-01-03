@@ -141,12 +141,12 @@ const App = () => {
               component={AddClass}
               layout={LayoutDefault}
           />
-          <AppRoute
-              exact
-              path="/worlds"
-              component={WorldsOwner}
-              layout={LayoutDefault}
-          />
+          {/*<AppRoute*/}
+          {/*    exact*/}
+          {/*    path="/worlds"*/}
+          {/*    component={WorldsOwner}*/}
+          {/*    layout={LayoutDefault}*/}
+          {/*/>*/}
 
           {/*outside login routes*/}
 
