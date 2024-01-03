@@ -5,18 +5,12 @@
           {
             "id": 21,
             "label": "Installation",
-            "link": "/docs/dev/page1"
+            "link": "/docs/dev/installation"
           },
           {
             "id": 23,
             "label": "Getting Started",
-            "subMenu": [
-              {
-                "id": 231,
-                "label": "Introduction",
-                "link": "/docs/dev/page2"
-              }
-            ]
+            "link": "/docs/dev/gettingStarted"
           }
       ]
   },
@@ -26,7 +20,7 @@
       {
         "id": 25,
         "label": "Authentication",
-        "link": "/docs/dev/page1"
+        "link": "/docs/dev/authentication"
       },
       {
         "id": 26,
@@ -34,8 +28,13 @@
         "subMenu": [
           {
             "id": 261,
-            "label": "page2",
-            "link": "/docs/dev/page2"
+            "label": "Scene Setup",
+            "link": "/docs/dev/seatingSceneSetup"
+          },
+          {
+            "id": 261,
+            "label": "Seating Data",
+            "link": "/docs/dev/seatingData"
           }
         ]
       }

@@ -36,7 +36,7 @@ export default function DocsNav(){
             <div className="dcl tabs">
                 <div className="ui container">
                     <div className="dcl tabs-left">
-                        <Link to="/docs/dev/page1">
+                        <Link to="/docs/dev/installation">
                             <div className="dcl tab active tabColor">
                                 Developers
                                 {activeTab === 'dev' && <div className="active-bar" id="dev"/>}
@@ -50,7 +50,7 @@ export default function DocsNav(){
                             </div>
                         </Link>
 
-                        <Link to="/docs/owner/page1">
+                        <Link to="/docs/owner/ownerGettingStarted">
                             <div className="dcl tab active tabColor">
                                 Land Owners
                                 {activeTab === 'owner' && <div className="active-bar" id="owner"/>}

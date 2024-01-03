@@ -1,8 +1,11 @@
 import devInstallation from "../components/markdown/developer/installation.md";
+import devGettingStarted from "../components/markdown/developer/gettingStarted.md";
+import devAuthentication from "../components/markdown/developer/authentication.md";
+import devSeatingSceneSetup from "../components/markdown/developer/seatingSceneSetup.md";
+import devSeatingData from "../components/markdown/developer/seatingData.md";
 import classroomAdminClassrooms from "../components/markdown/classroomAdmin/classroomAdminClassrooms.md";
 import classroomAdminTeachers  from "../components/markdown/classroomAdmin/classroomAdminTeachers.md";
 import * as teacher from  "../components/markdown/teacher/index";
-import devGettingStarted from "../components/markdown/developer/gettingStarted.md";
 import ownerGettingStarted from "../components/markdown/owner/gettingStarted.md";
 import devMenuData from '../resource/devMenuData.json';
 import teacherMenuData from '../resource/teacherMenuData.json';
@@ -11,8 +14,11 @@ import ownerMenuData from '../resource/ownerMenuData.json';
 import {DOCS} from "../components/sections/DOCS";
 
 export const devMarkup = {
-    page1: devInstallation,
-    page2: devGettingStarted
+    installation: devInstallation,
+    gettingStarted: devGettingStarted,
+    authentication: devAuthentication,
+    seatingSceneSetup: devSeatingSceneSetup,
+    seatingData: devSeatingData
 };
 
 export const devDocs = (props) => {
@@ -41,7 +47,7 @@ export const teacherDocs = (props) => {
 };
 
 export const ownerMarkup = {
-    page1: ownerGettingStarted
+    ownerGettingStarted: ownerGettingStarted
 };
 
 export const ownerDocs = (props) => {

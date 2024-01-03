@@ -19,7 +19,7 @@ export function DocsInitialPage(){
                             <h3 className="welcome-secondary">The Home Of Metaverse Education</h3>
                             <Grid container>
                                 <Grid item xs={3}>
-                                    <Link to={"/docs/dev/page1"}>
+                                    <Link to={"/docs/dev/installation"}>
                                         <div className="user-card" style={{background: '#FF2D55'}}>
                                             <div className="card-icon">
                                                 <img height="25px" src={terminal} alt="Icon" />
@@ -39,7 +39,7 @@ export function DocsInitialPage(){
                                     </Link>
                                 </Grid>
                                 <Grid item xs={3}>
-                                    <Link to={"/docs/owner/page1"}>
+                                    <Link to={"/docs/owner/ownerGettingStarted"}>
                                         <div className="user-card" style={{background: '#EE834A'}}>
                                             <div className="card-icon">
                                                 <img height="25px" src={diploma} alt="Icon" />

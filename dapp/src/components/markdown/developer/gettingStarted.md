@@ -97,5 +97,5 @@ LiveTeach classrooms can contain multiple instances of the screen that is used f
  ClassroomManager.AddScreen(classroomGuid, _position, _rotation, _scale, _parent)
 ```
 
-| That concludes the minimum setup of a LiveTeach classroom. Please brows the docs to incorporate other features such as a Seating Manager or 3D  Content Units |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| That concludes the minimum setup of a LiveTeach classroom. Please browse the docs to incorporate other features such as a Seating Manager or 3D  Content Units |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------|

@@ -4,19 +4,8 @@
     "menuItems": [
       {
         "id": 31,
-        "label": "page1",
-        "link": "/docs/owner/page1"
-      },
-      {
-        "id": 33,
-        "label": "Page Two Dropdown",
-        "subMenu": [
-          {
-            "id": 331,
-            "label": "page2",
-            "link": "/docs/owner/page2"
-          }
-        ]
+        "label": "Getting Started",
+        "link": "/docs/owner/ownerGettingStarted"
       }
     ]
   }
