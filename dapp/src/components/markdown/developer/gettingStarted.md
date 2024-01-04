@@ -30,11 +30,21 @@ For the purposes of this quick start we will use Peer to Peer comms which is ini
     let devTeachersContractAddress: string = "0x..."
     let useDev = false;
     if (useDev) {
-        ClassroomManager.Initialise(communicationChannel, devLiveTeachContractAddress, devTeachersContractAddress, false)
+        ClassroomManager.Initialise(
+            communicationChannel, 
+            devLiveTeachContractAddress, 
+            devTeachersContractAddress, 
+            false
+        )
     }
     else {
         // mainnet
-        ClassroomManager.Initialise(communicationChannel, undefined, undefined, false)
+        ClassroomManager.Initialise(
+            communicationChannel, 
+            undefined, 
+            undefined, 
+            false
+        )
     }
 ```
 _Note that you can provide alternative contract addresses so you can develop against testnet versions of the contracts. If you don't pass these arguments in, then the mainnet default contracts will be used._ 

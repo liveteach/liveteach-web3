@@ -50,7 +50,7 @@ Model:
                         },
                         {
                             "src": "contentUnits/InteractiveModel/models/mitochondria.glb",
-                            "srcSelected": "contentUnits/InteractiveModel/models/mitochondria_selected.glb",
+                            "srcSelected": "contentUnits/InteractiveModel/models/mitochondria.glb",
                             "caption": "Mitochondria",
                             "title": "Mitochondria",
                             "text": "Mitochondria are known as\n
@@ -69,7 +69,7 @@ Model:
                         },
                         {
                             "src": "contentUnits/InteractiveModel/models/microtubules.glb",
-                            "srcSelected": "contentUnits/InteractiveModel/models/microtubules_selected.glb",
+                            "srcSelected": "contentUnits/InteractiveModel/models/microtubules.glb",
                             "caption": "Microtubules",
                             "title": "Microtubules",
                             "text": "Microtubules are major\n
@@ -90,7 +90,7 @@ Model:
                         },
                         {
                             "src": "contentUnits/InteractiveModel/models/lysosome.glb",
-                            "srcSelected": "contentUnits/InteractiveModel/models/lysosome_selected.glb",
+                            "srcSelected": "contentUnits/InteractiveModel/models/lysosome.glb",
                             "caption": "Lysosome",
                             "title": "Lysosome",
                             "text": "A lysosome is a membrane-\n
@@ -109,7 +109,7 @@ Model:
                         },
                         {
                             "src": "contentUnits/InteractiveModel/models/golgiComplex.glb",
-                            "srcSelected": "contentUnits/InteractiveModel/models/golgiComplex_selected.glb",
+                            "srcSelected": "contentUnits/InteractiveModel/models/golgiComplex.glb",
                             "caption": "Golgi Complex",
                             "title": "Golgi Complex",
                             "text": "Golgi apparatus helps in\ntransporting the cargo,\n

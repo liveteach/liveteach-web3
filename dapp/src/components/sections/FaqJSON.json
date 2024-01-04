@@ -1,0 +1,10 @@
+[
+  {
+    "text": "Im a Question",
+    "answer" : "This is the answer with a Link <a href=\"https://www.google.com\" target=\"_blank\" rel=\"noreferrer\">google</a>"
+  },
+  {
+    "text": "Im a Question Too",
+    "answer" : "This is the second answer with a Link <a href=\"https://www.google.com\" target=\"_blank\" rel=\"noreferrer\">google</a>"
+  }
+]

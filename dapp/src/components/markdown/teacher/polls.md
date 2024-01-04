@@ -15,7 +15,7 @@ polls here to have multiple polls in the lesson.
 The approach for the Quiz content again is very similar to the polls the only difference in these inputs is to add the 
 correct answer.
 
-![](https://i.ibb.co/JQ2LNcz/Quiz.png)
+![](https://i.ibb.co/ZdZF71M/Quiz.png)
 
 #### Reference Links
 
