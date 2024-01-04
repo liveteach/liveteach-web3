@@ -37,7 +37,8 @@ export const teacherMarkup = {
     polls: teacher.polls,
     special: teacher.special,
     publish: teacher.publish,
-    activation: teacher.activation
+    activation: teacher.activation,
+    fileFormats: teacher.fileFormats
 };
 
 export const teacherDocs = (props) => {
