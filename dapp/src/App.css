@@ -199,3 +199,21 @@ h4{
 .endText {
     order: 2;
 }
+
+.faqAccordion{
+    background-color: #3d3b43!important;
+    color: white!important;
+}
+
+.faqAccordionDetails{
+    background-color: #a09ba8;
+}
+
+code{
+    display: inline-block;
+    background-color: #3d3b43;
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
