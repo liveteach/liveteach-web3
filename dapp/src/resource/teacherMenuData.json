@@ -35,6 +35,11 @@
             "id": 416,
             "label": "Publishing",
             "link": "/docs/teacher/publish"
+          },
+          {
+            "id": 417,
+            "label": "File Formats",
+            "link": "/docs/teacher/fileFormats"
           }
         ]
       },
@@ -43,7 +48,7 @@
         "label": "Using Content",
         "subMenu": [
           {
-            "id": 417,
+            "id": 418,
             "label": "Using The Console",
             "link": "/docs/teacher/activation"
           }
