@@ -37,6 +37,17 @@
             "link": "/docs/teacher/publish"
           }
         ]
+      },
+      {
+        "id": 42,
+        "label": "Using Content",
+        "subMenu": [
+          {
+            "id": 417,
+            "label": "Using The Console",
+            "link": "/docs/teacher/activation"
+          }
+        ]
       }
     ]
   }
