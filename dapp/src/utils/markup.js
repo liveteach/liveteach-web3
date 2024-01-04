@@ -11,6 +11,7 @@ import devMenuData from '../resource/devMenuData.json';
 import teacherMenuData from '../resource/teacherMenuData.json';
 import adminMenuData from '../resource/adminMenuData.json';
 import ownerMenuData from '../resource/ownerMenuData.json';
+
 import {DOCS} from "../components/sections/DOCS";
 
 export const devMarkup = {
@@ -35,7 +36,8 @@ export const teacherMarkup = {
     models: teacher.models,
     polls: teacher.polls,
     special: teacher.special,
-    publish: teacher.publish
+    publish: teacher.publish,
+    activation: teacher.activation
 };
 
 export const teacherDocs = (props) => {
