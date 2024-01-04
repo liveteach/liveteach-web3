@@ -29,13 +29,13 @@ You can switch between different content types by clicking on one of the followi
 
 The icon of the active content has a yellow colour.
 
-#### HANDLING THE DIFFERENT CONTENT TYPES
+### HANDLING THE DIFFERENT CONTENT TYPES
 
-PRESENTATION
+#### PRESENTATION
 
 Click on the Presentation icon to show your slides to your audience. To switch between slides use the  ‘previous’ / ‘next’ arrows. You can switch to a different content (e.g. video) whenever you want and come back to the slides later. It will continue from your last slide. To switch it off just click on the icon once more.
 
-MOVIE
+#### MOVIE
 
 Click on the Movie icon to show your video to your audience. To switch between videos (if you have uploaded more than 1) use the  ‘previous’ / ‘next’ arrows. You can switch to a different content (e.g. slides) whenever you want and come back to the video later. You can continue it from where you left off. To switch it off just click on the icon once more.
 
@@ -43,7 +43,7 @@ You can easily mute/unmute and pause your video anytime you want. The below exam
 
 ![](https://i.ibb.co/B645Bxw/image-5.png)
 
-3D CONTENT
+#### 3D CONTENT
 
 
 Click on the 3D icon to show your 3D content to your audience. To switch between 3D contents (if you have uploaded more than 1) use the  ‘previous’ / ‘next’ arrows. Your 3D content can be switched on even when you are continuing on with your video / slides. To switch it off just click on the icon once more.
@@ -52,7 +52,7 @@ Click on the 3D icon to show your 3D content to your audience. To switch between
 
 
 
-INTERACTIONS
+#### INTERACTIONS
 
 
 This section includes all your interactive contents: quizzes, polls, links, interactive 3D content (this is what you have added in the special JSON field when you were configuring your content).
